@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
+import { NewProjectOverlay } from "@/components/projects/new-project-overlay";
 import { listProjects } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
 import type { Project } from "@/lib/types";
@@ -29,7 +30,8 @@ import type { Project } from "@/lib/types";
  * client-side (frontend-only behavior; A4.1 documents no search parameter).
  * Both filter dropdowns stay inert - the file does not show their contents.
  * The dropdown border (#A8AAAC) and corner radius are pixel-sampled at 46%
- * zoom, not native reads. Add Project opens an overlay in the file; the
+ * zoom, not native reads. Add Project opens the New Project overlay
+ * (node 139-2255), wired to POST /projects (A4.2). Add Project opens an overlay in the file; the
  * overlay frame has not been extracted yet, so the button is rendered but
  * inert for now. Statuses/priorities beyond the two drawn samples render
  * in the default text color until their design treatment is known.
@@ -82,6 +84,7 @@ function Chevron() {
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [query, setQuery] = useState("");
+  const [showNew, setShowNew] = useState(false);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState<string | undefined>();
 
@@ -118,12 +121,9 @@ export default function ProjectsPage() {
           >
             All Projects
           </h1>
-          {/* Add Project opens the file's "New Project" overlay; rendered inert
-              until that frame is extracted. */}
           <button
             type="button"
-            aria-disabled="true"
-            title="New Project form is not available yet"
+            onClick={() => setShowNew(true)}
             className={`${SANS} flex items-center gap-2 rounded-[32px] bg-[#005AFB] py-3 pl-5 pr-3 text-sm font-medium text-white`}
           >
             Add Project
@@ -218,6 +218,16 @@ export default function ProjectsPage() {
           ) : null}
         </div>
       </main>
+      {showNew ? (
+        <NewProjectOverlay
+          onClose={() => setShowNew(false)}
+          onCreated={() => {
+            listProjects({ page: 1, per_page: 15, sort: "newest" })
+              .then((list) => setProjects(list.data.data))
+              .catch(() => {});
+          }}
+        />
+      ) : null}
     </div>
   );
 }
