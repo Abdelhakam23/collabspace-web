@@ -72,3 +72,28 @@ fill, 1px border in BG label #F3F4F6, radius 16, padding 20. KPI cards fixed
 orange is the native style Support colors/Dark orange-500 #FA9E00 with track
 dark orange-50 #FFF5E6. Card heights are fixed in the design, so cards keep
 their height regardless of record count (extra rows overflow hidden).
+
+## All Projects toolbar controls
+The frame draws a search box and two filter dropdowns ("All Projects",
+"Newest"). A4.1 documents no search parameter, and the file does not show
+the dropdown contents, so the search input and both dropdowns render inert
+(aria-disabled) until their behavior has a source.
+
+## All Projects "Add Project" overlay
+The button's interaction opens a "New Project" overlay in the file. The
+overlay frame has not been extracted yet, so the button is rendered inert
+for this pass; POST /projects (A4.2) is documented for when it ships.
+
+## All Projects icon glyphs and avatar images
+The violet project glyph and the file/folder glyph cannot be exported from
+the view-only file, so inline SVG approximations hold their geometry
+(approximate, not native). Team avatars are data images: with no
+avatar_url they render as initials circles in the design's avatar
+geometry (23.73px, 1.48px #C2C2C2 border).
+
+## All Projects status/priority coverage
+The frame draws only two samples per column: active #FA2B75 and Done
+#2BA52E for status, High #DB302A and Medium #E6BA0E for priority. Other
+API values (On Hold, Delayed, Low, Urgent) render in the default text
+color until their design treatment exists. Column x positions are
+pixel-measured at 46% zoom (auto layout exposes no absolute offsets).
