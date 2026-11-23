@@ -6,17 +6,22 @@ import { getDashboardOverview } from "@/lib/api/dashboard";
 import { getProfile } from "@/lib/api/profile";
 
 /**
- * Dashboard from the Figma "Dashboard" frame (node 75-1433, 1440x1024, white),
- * wired to GET /api/v1/dashboard (A10.1) and GET /api/v1/auth/me (A2.1).
- * Native typography: KPI labels Rubik 400 18px, KPI numbers Rubik 500 32px,
- * section titles Inter 600 16px #191919, "View All" Inter 500 12px #525256,
- * list rows Inter 400 14px.
- * Card radii/borders are pixel-measured from the frame render; the view-only
- * properties panel exposes no radius values for these containers.
- * The frame's chart filter dropdowns (All Projects / This week) and its weekly
- * bars have no documented API parameters (A10.1 takes none and defaults to
- * period=year, group_by=month), so the controls render inert and the chart
- * shows the documented default response - see docs/design-api-gaps.md.
+ * Dashboard from the FINAL hi-fi "Dashboard" frame (UI Design page,
+ * SectionDashboard, node 285-12895, 1440x1024), wired to GET /api/v1/dashboard
+ * (A10.1) and GET /api/v1/auth/me (A2.1).
+ *
+ * Native properties read in Figma: page fill style "BG color" #F6F8FA; color
+ * styles Text Color #000712, secodary-500 #27272B, Secondary #525256, BG label
+ * #F3F4F6, White #FFFFFF, Primary color-500 #005AFB; text styles "Team C Text"
+ * (H1 61 ... H6 20, Body 16, small body 14, Caption 13, Small Caption 12, all
+ * line-height 150%); font Montserrat (verified on the navbar user name,
+ * 400 14px); navbar component 1440x72 white.
+ * Accent palette (orange/teal/purple/chart blue, priority pills) is
+ * pixel-sampled from the final frame render - approximate, disclosed in
+ * docs/design-api-gaps.md.
+ * The frame's "from last month" KPI deltas have no field in the API payload,
+ * so they are omitted, not invented. Chart filter dropdowns remain inert:
+ * A10.1 documents no query parameters (default period=year, group_by=month).
  */
 
 type Overview = {
@@ -29,18 +34,20 @@ type Overview = {
 type DashboardPayload = {
   overview: Overview;
   project_overview: { data: { label: string; projects: number; created_tasks: number; completed_tasks: number }[] };
-  active_projects: { items: { id: number; name: string; tasks_done?: number; tasks_total?: number; progress?: number }[] };
-  tasks: { items: { id: number; title: string; priority?: string; due_date?: string; progress?: number; category?: string }[] };
+  active_projects: { items: { id: number; name: string; tasks_done?: number; tasks_total?: number; color?: string }[] };
+  tasks: { items: { id: number; title: string; priority?: string; due_date?: string; progress?: number }[] };
   teams: { items: { id: number; name: string; members_count?: number; tasks_count?: number }[] };
-  upcoming_meetings: { items: { id: number; title: string; starts_at?: string; time?: string; attendees_count?: number }[] };
-  recent_files: { items: { id: number; name: string; owner?: string; type?: string; updated_at?: string; project?: string }[] };
+  upcoming_meetings: { items: { id: number; title: string; starts_at?: string; time?: string; date_label?: string; attendees_count?: number }[] };
+  recent_files: { items: { id: number; name: string; owner?: string; type?: string; updated_at?: string }[] };
 };
+
+const M = "font-[family-name:var(--font-montserrat)]";
 
 function Card({ title, actions, children, className = "" }: { title: string; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`min-h-[240px] rounded-xl border border-[#ececec] bg-white p-5 shadow-[0_2px_12px_rgba(23,43,99,0.04)] ${className}`}>
+    <section className={`rounded-2xl bg-white p-5 ${className}`}>
       <header className="mb-4 flex items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-[#191919]">{title}</h2>
+        <h2 className={`${M} text-base font-semibold text-[#000712]`}>{title}</h2>
         {actions}
       </header>
       {children}
@@ -48,24 +55,16 @@ function Card({ title, actions, children, className = "" }: { title: string; act
   );
 }
 
-function TrackBar({ ratio, className = "" }: { ratio: number; className?: string }) {
-  const width = `${Math.min(100, Math.max(0, Math.round(ratio * 100)))}%`;
-  return (
-    <span className={`block h-2 rounded-full bg-[#e8ebf0] ${className}`} aria-hidden="true">
-      <span className="block h-full rounded-full bg-[#9aa3b2]" style={{ width }} />
-    </span>
-  );
+function ViewAll() {
+  return <span aria-disabled="true" className={`${M} text-xs font-medium text-[#005AFB]`}>View All</span>;
 }
 
-function KpiCard({ label, value, ratio }: { label: string; value: number; ratio: number }) {
+function Bar({ ratio, color, className = "" }: { ratio: number; color: string; className?: string }) {
+  const width = `${Math.min(100, Math.max(0, Math.round(ratio * 100)))}%`;
   return (
-    <section className="flex min-h-[120px] flex-col justify-between rounded-xl border border-[#ececec] bg-white p-5 shadow-[0_2px_12px_rgba(23,43,99,0.04)]">
-      <h2 className="font-[family-name:var(--font-rubik)] text-lg font-normal text-black">{label}</h2>
-      <div className="mt-3 flex items-end justify-between gap-4">
-        <span className="font-[family-name:var(--font-rubik)] text-[32px] font-medium leading-none text-black">{value}</span>
-        <TrackBar ratio={ratio} className="mb-1 w-24" />
-      </div>
-    </section>
+    <span className={`block h-1.5 rounded-full bg-[#f0f2f5] ${className}`} aria-hidden="true">
+      <span className="block h-full rounded-full" style={{ width, backgroundColor: color }} />
+    </span>
   );
 }
 
@@ -77,23 +76,81 @@ function ChevronDown() {
   );
 }
 
-function FileIcon() {
+function DownloadIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#718096" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <path d="M14 2v6h6" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#718096" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="m7 10 5 5 5-5" />
+      <path d="M12 15V3" />
     </svg>
   );
 }
 
-function ArrowRight() {
+function KpiIcon({ tone }: { tone: "orange" | "blue" | "green" }) {
+  const tones = { orange: ["#FEF3DE", "#FF9226"], blue: ["#E5EFFF", "#005AFB"], green: ["#E7F6EC", "#22B14C"] } as const;
+  const [bg, fg] = tones[tone];
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
+    <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ backgroundColor: bg }} aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={fg} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="17" rx="2" />
+        <path d="M8 2v4M16 2v4M3 10h18" />
+      </svg>
+    </span>
+  );
+}
+
+function KpiCard({ label, value, tone, ratio, fraction }: { label: string; value: number; tone: "orange" | "blue" | "green"; ratio: number; fraction: string }) {
+  const colors = { orange: "#FF9226", blue: "#005AFB", green: "#22B14C" } as const;
+  return (
+    <section className="rounded-2xl bg-white p-5">
+      <div className="flex items-center justify-between">
+        <h2 className={`${M} text-base font-medium text-[#000712]`}>{label}</h2>
+        <KpiIcon tone={tone} />
+      </div>
+      <p className={`${M} mt-1 text-[28px] font-bold leading-tight text-[#000712]`}>{value}</p>
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <Bar ratio={ratio} color={colors[tone]} className="w-2/3" />
+        <span className={`${M} text-xs text-[#718096]`}>{fraction}</span>
+      </div>
+    </section>
+  );
+}
+
+function Gauge({ ratio }: { ratio: number }) {
+  const r = 34;
+  const c = Math.PI * r;
+  const filled = Math.min(1, Math.max(0, ratio)) * c;
+  return (
+    <svg width="84" height="48" viewBox="0 0 84 48" aria-hidden="true">
+      <path d="M8 44 A34 34 0 0 1 76 44" fill="none" stroke="#eef1f5" strokeWidth="8" strokeLinecap="round" />
+      <path d="M8 44 A34 34 0 0 1 76 44" fill="none" stroke="#005AFB" strokeWidth="8" strokeLinecap="round"
+        strokeDasharray={`${filled} ${c * 2}`} />
     </svg>
   );
 }
+
+function AreaChart({ points, maxChart }: { points: number[]; maxChart: number }) {
+  const w = 560, h = 180, pad = 4;
+  const n = Math.max(2, points.length);
+  const xs = points.map((_, i) => pad + (i * (w - pad * 2)) / (n - 1));
+  const ys = points.map((v) => h - pad - (v / maxChart) * (h - pad * 2));
+  const path = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
+  const area = `${path} L${xs[n - 1].toFixed(1)},${h} L${xs[0].toFixed(1)},${h} Z`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="h-44 w-full" preserveAspectRatio="none" aria-hidden="true">
+      <path d={area} fill="rgba(38,146,255,0.10)" />
+      <path d={path} fill="none" stroke="#2692FF" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+const PRIORITY_TONES: Record<string, { text: string; bg: string }> = {
+  high: { text: "#D92D20", bg: "#FEE4E2" },
+  medium: { text: "#B54708", bg: "#FEF0C7" },
+  low: { text: "#067647", bg: "#D1FADF" },
+};
+
+const PROJECT_COLORS = ["#7B2C7E", "#0DB0A8", "#005AFB", "#FF9226"];
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardPayload | null>(null);
@@ -115,181 +172,209 @@ export default function DashboardPage() {
 
   const t = data?.overview.tasks ?? {};
   const total = t.total ?? 0;
-  const activeCount = (t.in_progress ?? 0) + (t.in_review ?? 0);
+  const pending = t.pending ?? 0;
+  const inProgress = (t.in_progress ?? 0) + (t.in_review ?? 0);
+  const completed = t.completed ?? 0;
+  const rate = t.completion_rate ?? (total > 0 ? Math.round((completed / total) * 100) : 0);
   const chart = data?.project_overview.data ?? [];
-  const rawMax = Math.max(1, ...chart.map((d) => Math.max(d.created_tasks, d.completed_tasks)));
-  const maxChart = Math.ceil(rawMax / 5) * 5;
-  const yTicks = [maxChart, Math.round((maxChart * 2) / 3), Math.round(maxChart / 3), 0];
+  const series = chart.map((d) => d.created_tasks);
+  const maxChart = Math.max(1, ...series);
+  const yMax = Math.ceil(maxChart / 5) * 5;
   const teams = data?.teams.items ?? [];
   const maxTeamTasks = Math.max(1, ...teams.map((tm) => tm.tasks_count ?? 0));
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} />
-      <main className="space-y-6 px-4 py-6 sm:px-9">
+      <main className="space-y-5 px-4 py-5 sm:px-8">
         {error ? <p className="rounded-lg bg-[#fdecea] px-4 py-2 text-sm text-[#af2622]" role="alert">{error}</p> : null}
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          <KpiCard label="Total Task" value={total} ratio={total > 0 ? 1 : 0} />
-          <KpiCard label="Active Tasks" value={activeCount} ratio={total > 0 ? activeCount / total : 0} />
-          <KpiCard label="Completed Tasks" value={t.completed ?? 0} ratio={(t.completed_percentage ?? 0) / 100} />
-          <KpiCard label="Overdue Tasks" value={t.overdue ?? 0} ratio={total > 0 ? (t.overdue ?? 0) / total : 0} />
+          <KpiCard label="Pending Tasks" value={pending} tone="orange" ratio={total > 0 ? pending / total : 0} fraction={`${pending}/${total}`} />
+          <KpiCard label="In Progress" value={inProgress} tone="blue" ratio={total > 0 ? inProgress / total : 0} fraction={`${inProgress}/${total}`} />
+          <KpiCard label="Completed" value={completed} tone="green" ratio={total > 0 ? completed / total : 0} fraction={`${completed}/${total}`} />
+          <section className="rounded-2xl bg-white p-5">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className={`${M} text-base font-medium text-[#000712]`}>Completion Rate</h2>
+                <p className={`${M} mt-1 text-[28px] font-bold leading-tight text-[#000712]`}>{rate}%</p>
+              </div>
+              <Gauge ratio={rate / 100} />
+            </div>
+          </section>
         </div>
 
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
           <Card title="Project overview" className="xl:col-span-5"
             actions={
-              <span className="flex items-center gap-4 text-xs font-medium text-[#525256]">
+              <span className={`${M} flex items-center gap-4 text-xs font-medium text-[#000712]`}>
                 <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown />All Projects</span>
                 <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown />This year</span>
               </span>
             }>
-            <div className="relative flex h-48 items-stretch gap-2">
-              <div className="pointer-events-none absolute inset-x-8 top-0 bottom-7 flex flex-col justify-between" aria-hidden="true">
-                {[0, 1, 2].map((i) => <span key={i} className="border-t border-[#f1f3f7]" />)}
+            <div className="flex items-stretch gap-2">
+              <div className="flex h-44 flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
+                {[yMax, Math.round((yMax * 2) / 3), Math.round(yMax / 3), 0].map((v, i) => <span key={i}>{v}</span>)}
               </div>
-              <div className="flex flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
-                {yTicks.map((v, i) => <span key={i}>{v}</span>)}
-              </div>
-              <div className="relative flex min-w-0 flex-1 items-end gap-3 overflow-x-auto">
-                {chart.map((d) => (
-                  <div key={d.label} className="flex flex-1 flex-col items-center gap-1">
-                    <div className="flex h-36 w-full items-end justify-center gap-1">
-                      <span className="w-2.5 rounded-sm bg-[#d9dee7]" style={{ height: `${(d.completed_tasks / maxChart) * 100}%` }} />
-                      <span className="w-2.5 rounded-sm bg-[#4b5563]" style={{ height: `${(d.created_tasks / maxChart) * 100}%` }} />
-                    </div>
-                    <span className="text-[10px] text-[#718096]">{d.label}</span>
-                  </div>
-                ))}
+              <div className="min-w-0 flex-1">
+                <AreaChart points={series.length ? series : [0, 0]} maxChart={yMax} />
+                <div className="mt-1 flex justify-between text-[10px] text-[#718096]">
+                  {chart.map((d) => <span key={d.label}>{d.label.split(" ")[0]}</span>)}
+                </div>
               </div>
             </div>
           </Card>
 
-          <Card title="Active Projects" actions={<span className="text-xs font-medium text-[#525256]">View All</span>} className="xl:col-span-3">
-            <ul className="space-y-3">
-              {(data?.active_projects.items ?? []).map((p) => {
+          <Card title="Active Projects" actions={<ViewAll />} className="xl:col-span-3">
+            <ul className="space-y-4">
+              {(data?.active_projects.items ?? []).map((p, idx) => {
+                const color = PROJECT_COLORS[idx % PROJECT_COLORS.length];
                 const done = p.tasks_done ?? 0;
                 const totalTasks = p.tasks_total ?? 0;
                 return (
-                  <li key={p.id} className="flex items-center gap-3 rounded-lg border border-[#ececec] p-3">
-                    <span className="h-10 w-10 shrink-0 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
-                    <div className="w-full min-w-0">
-                      <p className="text-sm text-black">{p.name}</p>
-                      <TrackBar ratio={totalTasks > 0 ? done / totalTasks : 0} className="mt-1.5" />
-                      <p className="mt-1 text-xs text-[#718096]">Task: {done} /{totalTasks}</p>
-                    </div>
+                  <li key={p.id} className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: `${color}1A` }} aria-hidden="true">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="7" width="18" height="13" rx="2" />
+                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </span>
+                    <span className="w-full min-w-0">
+                      <span className={`${M} block truncate text-sm font-medium text-[#000712]`}>{p.name}</span>
+                      <Bar ratio={totalTasks > 0 ? done / totalTasks : 0} color={color} className="mt-2" />
+                      <span className={`${M} mt-1 block text-xs text-[#718096]`}>Task: {done} /{totalTasks}</span>
+                    </span>
                   </li>
                 );
               })}
-              {data && data.active_projects.items.length === 0 ? <li className="text-sm text-[#718096]">No active projects yet.</li> : null}
+              {data && data.active_projects.items.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No active projects yet.</li> : null}
             </ul>
           </Card>
 
-          <Card title="Recent Files" actions={<span className="text-xs font-medium text-[#525256]">View All</span>} className="xl:col-span-4">
-            <ul className="divide-y divide-[#f1f3f7]">
+          <Card title="Recent Files" actions={<ViewAll />} className="xl:col-span-4">
+            <ul className="space-y-4">
               {(data?.recent_files.items ?? []).map((f) => (
-                <li key={f.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                <li key={f.id} className="flex items-center justify-between gap-3">
                   <span className="flex min-w-0 items-center gap-3">
-                    <FileIcon />
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FDE8E8]" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E5484D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6" />
+                      </svg>
+                    </span>
                     <span className="min-w-0">
-                      <p className="truncate text-sm text-black">{f.name}</p>
-                      <p className="text-xs text-[#718096]">{[f.owner, f.type, f.updated_at].filter(Boolean).join(" · ")}</p>
+                      <p className={`${M} truncate text-sm font-medium text-[#000712]`}>{f.name}</p>
+                      <p className={`${M} text-xs text-[#718096]`}>By {[f.owner, f.updated_at].filter(Boolean).join(" • ")}</p>
                     </span>
                   </span>
-                  {f.project ? <span className="shrink-0 rounded-full border border-[#ececec] px-2 py-0.5 text-[10px] text-[#525256]">{f.project}</span> : null}
+                  {/* Download affordance per the frame; file download endpoints are
+                      not part of the dashboard payload, so it stays inert here. */}
+                  <span aria-disabled="true" aria-label="Download (not wired yet)"><DownloadIcon /></span>
                 </li>
               ))}
-              {data && data.recent_files.items.length === 0 ? <li className="text-sm text-[#718096]">No files yet.</li> : null}
+              {data && data.recent_files.items.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No files yet.</li> : null}
             </ul>
           </Card>
         </div>
 
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-          <Card title="Deadlines & Tasks" actions={<span className="text-xs font-medium text-[#525256]">View All</span>} className="xl:col-span-3">
-            <ul className="space-y-3">
-              {(data?.tasks.items ?? []).map((task) => (
-                <li key={task.id} className="rounded-lg border border-[#ececec] p-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm text-black">{task.title}</p>
-                    {task.category ? <span className="shrink-0 rounded-full border border-[#ececec] px-2 py-0.5 text-[10px] text-[#525256]">{task.category}</span> : null}
-                  </div>
-                  <div className="mt-2 flex items-center justify-between gap-2">
-                    <span className="flex items-center gap-2 text-xs text-[#718096]">
-                      {task.priority ? <span className="rounded-full bg-[#f0f1f5] px-2 py-0.5 text-[10px] text-[#525256]">{task.priority}</span> : null}
-                      {task.due_date ?? ""}
-                    </span>
-                    {typeof task.progress === "number" ? <span className="text-[10px] text-[#718096]">{task.progress}%</span> : null}
-                  </div>
-                </li>
-              ))}
-              {data && data.tasks.items.length === 0 ? <li className="text-sm text-[#718096]">No tasks due.</li> : null}
+          <Card title="Tasks" actions={<ViewAll />} className="xl:col-span-3">
+            <ul className="space-y-4">
+              {(data?.tasks.items ?? []).map((task) => {
+                const tone = PRIORITY_TONES[(task.priority ?? "").toLowerCase()];
+                return (
+                  <li key={task.id}>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className={`${M} text-sm font-medium text-[#000712]`}>{task.title}</p>
+                      {task.priority && tone ? (
+                        <span className={`${M} shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold`} style={{ color: tone.text, backgroundColor: tone.bg }}>{task.priority}</span>
+                      ) : null}
+                    </div>
+                    <div className={`${M} mt-1 flex items-center justify-between text-xs text-[#718096]`}>
+                      <span>{task.due_date ?? ""}</span>
+                      {typeof task.progress === "number" ? <span>{task.progress}%</span> : null}
+                    </div>
+                    <Bar ratio={(task.progress ?? 0) / 100} color="#2692FF" className="mt-1.5" />
+                  </li>
+                );
+              })}
+              {data && data.tasks.items.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No tasks due.</li> : null}
             </ul>
           </Card>
 
           <Card title="Teams" className="xl:col-span-3"
             actions={
-              <span className="flex items-center gap-3 text-xs font-medium text-[#525256]">
-                <span aria-disabled="true" className="flex items-center gap-1">{teams[0]?.name ?? "All"}<ChevronDown /></span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" aria-disabled="true">
-                  <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
-                </svg>
+              <span aria-disabled="true" className={`${M} flex items-center gap-1 text-xs font-medium text-[#000712]`}>
+                {teams[0]?.name ?? "All"}<ChevronDown />
               </span>
             }>
-            <div className="flex justify-between text-[10px] uppercase tracking-wide text-[#a0a8b5]">
-              <span>Name</span><span>Tasks</span>
+            {/* The source panel heads its member list "Name"/"Tasks"; the payload
+                carries teams only, so these rows are teams and the header says so. */}
+            <div className={`${M} flex justify-between text-[10px] font-medium uppercase tracking-wide text-[#a0a8b5]`}>
+              <span>Team</span><span>Tasks</span>
             </div>
-            <ul className="mt-2 space-y-3">
+            <ul className="mt-3 space-y-4">
               {teams.map((team) => (
                 <li key={team.id} className="flex items-center gap-3">
-                  <span className="h-7 w-7 shrink-0 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
+                  <span className="h-8 w-8 shrink-0 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
                   <span className="w-full min-w-0">
-                    <span className="block truncate text-sm text-black">{team.name}</span>
-                    <TrackBar ratio={(team.tasks_count ?? 0) / maxTeamTasks} className="mt-1 h-1.5" />
+                    <span className={`${M} block truncate text-sm font-medium text-[#000712]`}>{team.name}</span>
+                    <Bar ratio={(team.tasks_count ?? 0) / maxTeamTasks} color="#2692FF" className="mt-1.5" />
                   </span>
-                  <span className="shrink-0 text-xs text-[#718096]">{team.tasks_count ?? 0}/{team.members_count ?? 0}</span>
+                  <span className={`${M} shrink-0 text-xs text-[#718096]`}>{team.tasks_count ?? 0}/{team.members_count ?? 0}</span>
                 </li>
               ))}
-              {data && teams.length === 0 ? <li className="text-sm text-[#718096]">No teams yet.</li> : null}
+              {data && teams.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No teams yet.</li> : null}
             </ul>
           </Card>
 
-          <Card title="Up coming meetings" actions={<span className="text-xs font-medium text-[#525256]">View All</span>} className="xl:col-span-3">
-            <ul className="space-y-3">
+          <Card title="Up coming meetings" actions={<ViewAll />} className="xl:col-span-3">
+            <ul className="space-y-4">
               {(data?.upcoming_meetings.items ?? []).map((m) => (
-                <li key={m.id} className="rounded-lg border border-[#ececec] p-3">
+                <li key={m.id}>
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm text-black">{m.title}</p>
-                    <span className="shrink-0 text-xs text-[#718096]">{m.time ?? m.starts_at ?? ""}</span>
+                    <p className={`${M} text-sm font-medium text-[#000712]`}>{m.title}</p>
+                    {m.date_label ? (
+                      <span className={`${M} flex shrink-0 items-center gap-1 rounded-md bg-[#f0f2f5] px-2 py-0.5 text-[10px] text-[#525256]`}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></svg>
+                        {m.date_label}
+                      </span>
+                    ) : null}
                   </div>
                   <div className="mt-2 flex items-center justify-between">
                     <span className="flex -space-x-2" aria-hidden="true">
                       <span className="h-6 w-6 rounded-full border-2 border-white bg-[#e2e8f0]" />
                       <span className="h-6 w-6 rounded-full border-2 border-white bg-[#d5dbe5]" />
                       {typeof m.attendees_count === "number" && m.attendees_count > 2 ? (
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#eef0f4] text-[9px] text-[#525256]">+{m.attendees_count - 2}</span>
+                        <span className={`${M} flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#eef0f4] text-[9px] text-[#525256]`}>+{m.attendees_count - 2}</span>
                       ) : null}
                     </span>
-                    <ArrowRight />
+                    <span className={`${M} text-xs text-[#718096]`}>{m.time ?? m.starts_at ?? ""}</span>
                   </div>
                 </li>
               ))}
-              {data && data.upcoming_meetings.items.length === 0 ? <li className="text-sm text-[#718096]">No meetings scheduled.</li> : null}
+              {data && data.upcoming_meetings.items.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No meetings scheduled.</li> : null}
             </ul>
           </Card>
 
           <Card title="Ask AI" className="xl:col-span-3">
-            {/* The frame shows an illustration above the prompt and a large
-                input with a send button. POST /api/v1/ai/ask (A10.2) is wired
-                in the AI milestone; kept read-only here so this PR changes no
-                server state. The illustration asset cannot be exported from a
-                view-only file, so a neutral placeholder block holds its space. */}
+            {/* The frame shows a blue robot illustration. Export from the
+                view-only file is being verified separately; until the asset is
+                in the repo a neutral block holds its geometry. POST /ai/ask is
+                wired in the AI milestone - read-only here. */}
             <div className="flex flex-col items-center gap-3 py-4">
-              <span className="h-20 w-20 rounded-lg bg-[#eceef2]" aria-hidden="true" />
-              <p className="text-sm text-[#718096]">ask me anything about...</p>
+              <span className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#E5EFFF]" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#005AFB" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="5" y="8" width="14" height="11" rx="3" />
+                  <path d="M12 5v3M9 13h.01M15 13h.01M9 16h6" />
+                  <circle cx="12" cy="4" r="1.4" />
+                </svg>
+              </span>
+              <p className={`${M} text-sm text-[#525256]`}>ask me anything about...</p>
             </div>
-            <p className="flex items-end justify-between rounded-lg bg-[#f6f8fa] px-4 py-3 text-sm text-[#718096]">
+            <p className={`${M} flex items-center justify-between rounded-xl bg-[#F6F8FA] px-4 py-3 text-sm text-[#718096]`}>
               ask me anything about...
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#718096" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" aria-disabled="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#005AFB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" aria-disabled="true">
                 <path d="m22 2-7 20-4-9-9-4z" />
                 <path d="M22 2 11 13" />
               </svg>

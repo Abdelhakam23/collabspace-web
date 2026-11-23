@@ -27,3 +27,28 @@ payload returns team-level items only (name, members/tasks counts), with no
 member breakdown, so the panel renders one row per team in the same row
 geometry and the selector stays inert. Member rows need a members source in
 the dashboard payload or a documented per-team members endpoint.
+
+## Source correction: UX wireframe vs UI Design final frames
+The first dashboard/auth pass was extracted from the grayscale wireframes on the
+Figma "UX" page. The authoritative source is the "UI Design" page (user
+instruction, Nov 24): SectionDashboard (node 190-4108) with the final Dashboard
+frame (node 285-12895, 1440x1024, Montserrat, BG #F6F8FA, Primary #005AFB).
+Wireframe-extracted typography (Inter/Rubik values) was discarded.
+
+## Dashboard KPI "from last month" deltas
+The final frame shows "+9% from last month" style deltas on the KPI cards. The
+dashboard payload has no delta fields, so the deltas are omitted rather than
+invented.
+
+## Accent palette
+KPI accents (orange #FF9226, blue #005AFB, green #22B14C), project colors
+(purple #7B2C7E, teal #0DB0A8), chart blue (#2692FF) and the priority pill
+tones are pixel-sampled from the final frame render (JPEG), so they are
+approximations; the named color styles (BG color #F6F8FA, Text Color #000712,
+secodary-500 #27272B, Secondary #525256, BG label #F3F4F6, Primary #005AFB,
+White) and the "Team C Text" scale (H1 61 - H6 20, Body 16, small body 14,
+Caption 13, Small Caption 12, line-height 150%) are native Figma reads.
+
+## Ask AI illustration
+The frame shows a blue robot illustration. A neutral inline SVG holds its
+geometry until the asset is exported from the file (export check in progress).
