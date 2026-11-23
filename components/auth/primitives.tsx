@@ -82,9 +82,10 @@ export function FormError({ message }: { message: string | null }) {
 
 export function AuthHeading({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <div className="space-y-1 text-center">
-      <h1 className="text-[31px] font-semibold leading-tight text-secondary-900">{title}</h1>
-      <p className="text-sm text-[#94a0b0]">{subtitle}</p>
+    <div className="space-y-3 text-center">
+      {/* 31px matches the documented H4 step; glyph cores sample to #1F2937. */}
+      <h1 className="text-[31px] font-semibold leading-tight text-[#1f2937]">{title}</h1>
+      <p className="text-base text-[#94a0b0]">{subtitle}</p>
     </div>
   );
 }

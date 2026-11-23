@@ -51,7 +51,7 @@ export default function RegisterPage() {
 
   return (
     <AuthShell>
-      <form onSubmit={onSubmit} className="space-y-5">
+      <form onSubmit={onSubmit} className="space-y-6">
         <AuthHeading title="Sign Up" subtitle="Connect with every application!" />
         <GoogleButton />
         <OrDivider />
@@ -98,7 +98,7 @@ export default function RegisterPage() {
         <PrimaryButton type="submit" disabled={pending}>
           {pending ? "Signing up..." : "Sign up"}
         </PrimaryButton>
-        <p className="text-center text-sm text-secondary-600">
+        <p className="pt-3 text-center text-base text-[#718096]">
           Already have an account?{" "}
           <Link href="/login" className="font-semibold text-primary-500 hover:underline">
             Sign In

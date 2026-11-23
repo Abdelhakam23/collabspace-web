@@ -49,7 +49,7 @@ export default function LoginPage() {
 
   return (
     <AuthShell>
-      <form onSubmit={onSubmit} className="space-y-5">
+      <form onSubmit={onSubmit} className="space-y-6">
         <AuthHeading title="Sign In" subtitle="Welcome back, you've been missed!" />
         <GoogleButton />
         <OrDivider />
@@ -87,7 +87,7 @@ export default function LoginPage() {
         <PrimaryButton type="submit" disabled={pending}>
           {pending ? "Logging in..." : "Log in"}
         </PrimaryButton>
-        <p className="text-center text-sm text-secondary-600">
+        <p className="pt-3 text-center text-base text-[#718096]">
           Don&apos;t have an account yet?{" "}
           <Link href="/register" className="font-semibold text-primary-500 hover:underline">
             Sign Up
