@@ -23,18 +23,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [pending, setPending] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setFieldErrors({});
     setPending(true);
     try {
       const res = await login({ email, password, remember });
       if (res.data?.token) storeToken(res.data.token);
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
+      if (err instanceof ApiError) {
+        if (err.fields) setFieldErrors(err.fields);
+        if (!err.fields || Object.keys(err.fields).length === 0) setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setPending(false);
     }
@@ -56,6 +63,7 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           icon={<EnvelopeIcon />}
+          error={fieldErrors.email?.[0]}
         />
         <TextField
           id="password"
@@ -67,6 +75,7 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           icon={<LockIcon />}
+          error={fieldErrors.password?.[0]}
         />
         <div className="flex items-center justify-between">
           <RememberMe checked={remember} onChange={setRemember} />

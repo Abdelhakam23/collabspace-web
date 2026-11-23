@@ -4,11 +4,14 @@ import axios, { AxiosError } from "axios";
 /** One clear error type for the whole app. */
 export class ApiError extends Error {
   status?: number;
+  /** Validation messages keyed by field, when the API returns them. */
+  fields?: Record<string, string[]>;
 
-  constructor(message: string, status?: number) {
+  constructor(message: string, status?: number, fields?: Record<string, string[]>) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.fields = fields;
   }
 }
 
@@ -74,6 +77,6 @@ apiClient.interceptors.response.use(
       window.location.href = "/login";
     }
 
-    return Promise.reject(new ApiError(message, status));
+    return Promise.reject(new ApiError(message, status, body?.errors ?? undefined));
   },
 );

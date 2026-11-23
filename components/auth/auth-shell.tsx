@@ -1,14 +1,20 @@
 import type { ReactNode } from "react";
 
-/** Page chrome shared by the auth screens: top bar + centered card. */
+/**
+ * Page chrome shared by the auth screens: top bar + centered card.
+ * Measurements taken from the Figma UI Design frames at 100% zoom:
+ * page background #F6F8FA, card 600px wide, white, 24px radius, 64px side padding.
+ */
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#f4f6fa]">
+    <div className="min-h-screen bg-[#f6f8fa]">
       <header className="flex items-center justify-between px-6 py-4 sm:px-10">
         <span className="text-lg font-semibold text-secondary-900">Collabspace</span>
+        {/* Language switcher is visual only for now: no i18n backend yet. */}
         <button
           type="button"
           className="flex items-center gap-1 text-sm text-secondary-600"
+          title="English"
         >
           English
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -16,8 +22,8 @@ export function AuthShell({ children }: { children: ReactNode }) {
           </svg>
         </button>
       </header>
-      <main className="flex items-start justify-center px-4 pb-16 pt-6 sm:pt-10">
-        <div className="w-full max-w-[440px] rounded-2xl bg-white px-6 py-10 shadow-[0_8px_40px_rgba(16,16,18,0.06)] sm:px-10">
+      <main className="flex items-start justify-center px-4 pb-16 pt-4 sm:pt-8">
+        <div className="w-full max-w-[600px] rounded-3xl bg-white px-6 py-10 shadow-[0_16px_48px_rgba(23,43,99,0.08)] sm:px-16 sm:py-12">
           {children}
         </div>
       </main>

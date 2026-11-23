@@ -1,10 +1,11 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes } from "react";
 import { GoogleIcon } from "./icons";
 
+/** Primary action: 40px tall, 16px radius, primary blue. */
 export function PrimaryButton({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className="h-12 w-full rounded-full bg-primary-500 text-base font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
+      className="h-10 w-full rounded-2xl bg-primary-500 text-base font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
       {...props}
     >
       {children}
@@ -12,24 +13,29 @@ export function PrimaryButton({ children, ...props }: ButtonHTMLAttributes<HTMLB
   );
 }
 
+/**
+ * "Sign With Google" from the design: 50px tall, 6px radius, white fill,
+ * #CBD5E0 border. Links to the backend's Google OAuth redirect endpoint.
+ */
 export function GoogleButton() {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
   return (
-    <button
-      type="button"
-      className="flex h-12 w-full items-center justify-center gap-3 rounded-full border border-secondary-200 bg-white text-base font-medium text-secondary-900 transition-colors hover:bg-secondary-50"
+    <a
+      href={`${base}/api/v1/auth/social/google/redirect`}
+      className="flex h-[50px] w-full items-center justify-center gap-3 rounded-md border border-[#cbd5e0] bg-white text-base font-medium text-[#8390a4] transition-colors hover:bg-[#f9fafb]"
     >
       <GoogleIcon />
       Sign With Google
-    </button>
+    </a>
   );
 }
 
 export function OrDivider() {
   return (
-    <div className="flex items-center gap-4 text-sm text-secondary-400">
-      <span className="h-px flex-1 bg-secondary-200" />
+    <div className="flex items-center gap-4 text-sm text-[#8390a4]">
+      <span className="h-px flex-1 bg-[#cbd5e0]" />
       OR
-      <span className="h-px flex-1 bg-secondary-200" />
+      <span className="h-px flex-1 bg-[#cbd5e0]" />
     </div>
   );
 }
@@ -42,7 +48,7 @@ export function RememberMe({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2 text-sm text-secondary-600">
+    <label className="flex cursor-pointer items-center gap-2 text-base text-[#718096]">
       <input
         type="checkbox"
         checked={checked}
@@ -66,10 +72,8 @@ export function FormError({ message }: { message: string | null }) {
 export function AuthHeading({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div className="space-y-1 text-center">
-      <h1 className="text-2xl font-semibold text-secondary-900">{title}</h1>
-      <p className="text-sm text-secondary-400">{subtitle}</p>
+      <h1 className="text-[31px] font-semibold leading-tight text-secondary-900">{title}</h1>
+      <p className="text-sm text-[#94a0b0]">{subtitle}</p>
     </div>
   );
 }
-
-export type { ReactNode };
