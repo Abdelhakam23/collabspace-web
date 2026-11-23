@@ -177,7 +177,7 @@ function ProjectDetailContent() {
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} active="Projects" />
-      <main className="relative px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[61px]">
+      <main className="relative px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[43px]">
         <div>
           <div>
             <p className={`${SANS} text-sm text-black/60`}>
@@ -185,7 +185,7 @@ function ProjectDetailContent() {
               <span className="px-1">&gt;</span>
               {project?.name ?? "…"}
             </p>
-            <div className="mt-1 flex items-baseline gap-3">
+            <div className="mt-[10px] flex items-baseline gap-3">
               <h1
                 className={`${SANS} text-[31px] font-semibold leading-[150%] text-black`}
                 style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as React.CSSProperties}
@@ -215,7 +215,7 @@ function ProjectDetailContent() {
           </section>
         </div>
 
-        <nav className="mt-4 flex items-center gap-8">
+        <nav className="mt-[40px] flex items-center gap-8">
           {TABS.map((t, i) =>
             i === 0 ? (
               <span key={t} aria-current="page" className={`${SANS} border-b-2 border-[#005AFB] pb-1 text-base font-medium text-[#005AFB]`}>
@@ -229,7 +229,7 @@ function ProjectDetailContent() {
           )}
         </nav>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[862px_416px] lg:justify-between">
+        <div className="mt-[46px] grid gap-6 lg:grid-cols-[862px_416px] lg:justify-between">
           <div className="flex flex-col gap-6">
             <Card title="Description">
               <p className={`${SANS} text-base leading-[150%] text-[#525256]`}>
