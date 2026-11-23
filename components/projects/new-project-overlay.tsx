@@ -33,7 +33,7 @@ const PRIORITIES: TaskPriority[] = ["Low", "Medium", "High", "Urgent"];
 // Labels notch into the field border as drawn in the frame: they sit on the
 // top border line with a white chip behind the text, not above the field.
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
-const fieldBox = `${SANS} h-[56px] w-full rounded-[12px] border border-[#CBD5E0] bg-[#F9FAFB] px-4 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
+const fieldBox = `${SANS} h-[62px] w-full rounded-[12px] border border-[#CBD5E0] bg-[#F9FAFB] px-4 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
 
 export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [name, setName] = useState("");
@@ -126,13 +126,18 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           </label>
           <label className="relative block">
             <span className={fieldLabel}>Priority</span>
-            <select value={priority} onChange={(e) => setPriority(e.target.value as TaskPriority)} className={`${fieldBox} appearance-none`}>
+            <select value={priority} onChange={(e) => setPriority(e.target.value as TaskPriority)} className={`${fieldBox} appearance-none pr-10`}>
               {PRIORITIES.map((p) => (
                 <option key={p} value={p}>
                   {p}
                 </option>
               ))}
             </select>
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2">
+              <svg width="10" height="5" viewBox="0 0 10 5" fill="none" stroke="#000712" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+                <path d="m1 1 4 4 4-4" />
+              </svg>
+            </span>
           </label>
         </div>
 
@@ -179,8 +184,28 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          <input required type="date" aria-label="Start Date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={fieldBox} />
-          <input required type="date" aria-label="End Date" value={deadline} onChange={(e) => setDeadline(e.target.value)} className={fieldBox} />
+          <label className="relative block">
+            <input
+              required
+              type="date"
+              aria-label="Start Date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className={`${fieldBox} ${startDate ? "" : "text-transparent"}`}
+            />
+            {!startDate ? <span className={`${SANS} pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#718096]`}>Start Date</span> : null}
+          </label>
+          <label className="relative block">
+            <input
+              required
+              type="date"
+              aria-label="End Date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              className={`${fieldBox} ${deadline ? "" : "text-transparent"}`}
+            />
+            {!deadline ? <span className={`${SANS} pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#718096]`}>End Date</span> : null}
+          </label>
         </div>
 
         <div>
