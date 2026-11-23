@@ -10,7 +10,7 @@ const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Repor
 
 export function DashboardNavbar({ userName, userRole }: { userName: string; userRole?: string }) {
   return (
-    <header className="flex h-[72px] flex-wrap items-center gap-x-6 gap-y-2 border-b border-[#eeeeee] bg-white px-4 sm:px-9">
+    <header className="flex min-h-[72px] flex-wrap items-center gap-x-6 gap-y-2 border-b border-[#eeeeee] bg-white px-4 py-2 sm:px-9 lg:h-[72px] lg:py-0">
       <span className="font-[family-name:var(--font-rubik)] text-lg font-semibold text-black">
         Collabspace
       </span>
@@ -55,11 +55,12 @@ export function DashboardNavbar({ userName, userRole }: { userName: string; user
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
         </button>
-        <button type="button" aria-disabled="true" aria-label="Notifications (not available yet)" className="text-black">
+        <button type="button" aria-disabled="true" aria-label="Notifications (not available yet)" className="relative text-black">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
           </svg>
+          <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#e5484d]" aria-hidden="true" />
         </button>
         <span className="flex items-center gap-2">
           <span className="h-9 w-9 rounded-full bg-[#e2e8f0]" aria-hidden="true" />

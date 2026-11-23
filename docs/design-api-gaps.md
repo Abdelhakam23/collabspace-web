@@ -19,3 +19,11 @@ endpoint takes no query parameters and its default response is yearly, grouped b
 month (`period: "year", `group_by: "month"`). The controls are rendered as in the
 design but left inert (`aria-disabled`) until the API documents period/project
 filtering; the chart renders the documented default response.
+
+## Dashboard Teams panel member rows
+The design's Teams panel lists individual members (avatar, name, role tag,
+per-member progress bar, task counts) under a team selector. The dashboard
+payload returns team-level items only (name, members/tasks counts), with no
+member breakdown, so the panel renders one row per team in the same row
+geometry and the selector stays inert. Member rows need a members source in
+the dashboard payload or a documented per-team members endpoint.
