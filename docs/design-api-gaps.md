@@ -91,6 +91,13 @@ the view-only file, so inline SVG approximations hold their geometry
 avatar_url they render as initials circles in the design's avatar
 geometry (23.73px, 1.48px #C2C2C2 border).
 
+## All Projects filter dropdowns
+Frame 2147224288 native reads: Hug x 40px, radius 16, border 1px
+secodary-500 #27272B, padding 16 left / 10 right, gap 10, label Rubik 400
+12px #000712, chevron 10x5 with 1.5px #000712 stroke. Earlier
+pixel-sampled border/radius values are superseded by these reads. The
+dropdown contents remain undesigned, so the controls stay inert.
+
 ## All Projects status/priority coverage
 The frame draws only two samples per column: active #FA2B75 and Done
 #2BA52E for status, High #DB302A and Medium #E6BA0E for priority. Other
@@ -114,7 +121,10 @@ date fields are boxed in the source and the implementation (an earlier
 Project model and is omitted. "Total Tasks" is read from A5.1 (List Tasks,
 whose project_id filter is documented) via the pagination total; the
 collection documents no response shape for A5.1, so the item renders only
-when the response actually carries a numeric meta.total. The pending /
+when the response actually carries a numeric meta.total. This envelope
+position is an inference from A4.1's observed shape and has been verified
+only against stubbed fixture responses, not against the live API (live
+calls are on hold). The pending /
 in progress / completed fractions under the gauge and the Project overview
 chart card depend on A4.3/A4.4, whose response shapes are undocumented, so
 both are omitted rather than parsed with guessed keys; the avatar drawn
@@ -124,7 +134,9 @@ documented start_date and deadline; the frame draws the track without
 stating its semantics. Product Details icon tints and icon colors are
 pixel-sampled from the 46% capture (#F2E9F1/#BF75A9 start date,
 #FFEDE6/#FB743A deadline, #FBEAEA/#DB302A priority, #F3F4F6/#191919 total
-tasks); the gauge track uses #27272B on #E9E9EA as sampled. Tasks, Teams
+tasks); the gauge track uses #27272B on #E9E9EA as sampled. All of these
+sampled values remain unresolved approximations pending native component
+reads from the file; they are not accepted final values. Tasks, Teams
 and Files tabs are drawn in the frame but their sibling frames are not yet
 implemented, so they render inert with an aria-disabled note. Table rows on
 All Projects navigate to this page (Link), matching the breadcrumb's

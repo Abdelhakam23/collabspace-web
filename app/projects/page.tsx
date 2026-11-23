@@ -30,7 +30,10 @@ import type { Project } from "@/lib/types";
  * Scope (design x API): the toolbar search filters the loaded rows
  * client-side (frontend-only behavior; A4.1 documents no search parameter).
  * Both filter dropdowns stay inert - the file does not show their contents.
- * The dropdown border (#A8AAAC) and corner radius are pixel-sampled at 46%
+ * Filter dropdowns (frame 2147224288): Hug x 40px, radius 16, border 1px
+ * secodary-500 #27272B, padding 16/10, gap 10, label Rubik 400 12px #000712,
+ * chevron 10x5 with 1.5px #000712 stroke - all native reads. Earlier
+ * pixel-sampled values superseded.
  * zoom, not native reads. Add Project opens the New Project overlay
  * (node 139-2255), wired to POST /projects (A4.2). Add Project opens an overlay in the file; the
  * overlay frame has not been extracted yet, so the button is rendered but
@@ -153,7 +156,7 @@ export default function ProjectsPage() {
                 key={label}
                 aria-disabled="true"
                 title="Filter options are not designed yet"
-                className={`${RUBIK} flex h-[26px] items-center gap-2 rounded-[8px] border border-[#A8AAAC] bg-white px-[19px] text-xs text-[#000712]`}
+                className={`${RUBIK} flex h-10 items-center gap-[10px] rounded-2xl border border-[#27272B] bg-white pl-4 pr-[10px] text-xs text-[#000712]`}
               >
                 {label}
                 <Chevron />

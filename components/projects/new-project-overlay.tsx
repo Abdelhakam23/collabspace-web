@@ -30,7 +30,9 @@ import type { TaskPriority, User } from "@/lib/types";
 const SANS = "font-[family-name:var(--font-sans)]";
 const PRIORITIES: TaskPriority[] = ["Low", "Medium", "High", "Urgent"];
 
-const fieldLabel = `${SANS} text-xs text-[#718096]`;
+// Labels notch into the field border as drawn in the frame: they sit on the
+// top border line with a white chip behind the text, not above the field.
+const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
 const fieldBox = `${SANS} h-[56px] w-full rounded-[12px] border border-[#CBD5E0] bg-[#F9FAFB] px-4 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
 
 export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
@@ -112,13 +114,19 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
         </div>
 
         <div className="grid gap-6 sm:grid-cols-[1.6fr_1fr]">
-          <label className="block">
+          <label className="relative block">
             <span className={fieldLabel}>Project Name</span>
-            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Project Name" className={`${fieldBox} mt-1`} />
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#718096]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="5" y="4" width="14" height="17" rx="2" />
+                <path d="M9 4a3 3 0 0 1 6 0M9 11h6M9 15h4" />
+              </svg>
+            </span>
+            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Project Name" className={`${fieldBox} pl-11`} />
           </label>
-          <label className="block">
+          <label className="relative block">
             <span className={fieldLabel}>Priority</span>
-            <select value={priority} onChange={(e) => setPriority(e.target.value as TaskPriority)} className={`${fieldBox} mt-1 appearance-none`}>
+            <select value={priority} onChange={(e) => setPriority(e.target.value as TaskPriority)} className={`${fieldBox} appearance-none`}>
               {PRIORITIES.map((p) => (
                 <option key={p} value={p}>
                   {p}
@@ -129,8 +137,8 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
         </div>
 
         <div>
-          <span className={fieldLabel}>Add Guess</span>
-          <div className="relative mt-1">
+          <div className="relative">
+            <span className={fieldLabel}>Add Guess</span>
             <input value={guess} onChange={(e) => setGuess(e.target.value)} placeholder="@Anas Mohamed" className={`${fieldBox} pr-24`} list="new-project-users" />
             <datalist id="new-project-users">
               {matches.map((u) => (
@@ -146,7 +154,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
                   setGuess("");
                 }
               }}
-              className="absolute right-2 top-1/2 flex h-10 -translate-y-1/2 items-center gap-1.5 rounded-[12px] bg-[#000712] px-4 text-sm font-medium text-white"
+              className="absolute right-2 top-1/2 flex h-10 -translate-y-1/2 items-center gap-1.5 rounded-full bg-[#000712] px-5 text-sm font-medium text-white"
             >
               Add
               <svg width="9.33" height="9.33" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
@@ -171,23 +179,21 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          <label className="block">
-            <span className={fieldLabel}>Start Date</span>
-            <input required type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={`${fieldBox} mt-1`} />
-          </label>
-          <label className="block">
-            <span className={fieldLabel}>End Date</span>
-            <input required type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} className={`${fieldBox} mt-1`} />
-          </label>
+          <input required type="date" aria-label="Start Date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={fieldBox} />
+          <input required type="date" aria-label="End Date" value={deadline} onChange={(e) => setDeadline(e.target.value)} className={fieldBox} />
         </div>
 
-        <div>
+        <div className="relative">
           <span className={fieldLabel}>Add Project Files</span>
           <button
             type="button"
             onClick={() => fileInput.current?.click()}
-            className="mt-1 flex h-[129px] w-full items-center justify-center rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white p-9 text-sm text-[#718096]"
+            className="flex h-[129px] w-full items-center justify-center gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white p-9 text-sm text-[#718096]"
           >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 16V4m0 0 4 4m-4-4L8 8" />
+              <path d="M4 15v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3" />
+            </svg>
             {files.length ? files.map((f) => f.name).join(", ") : "Drag and drop files or click to upload"}
           </button>
           <input

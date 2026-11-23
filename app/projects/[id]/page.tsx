@@ -51,24 +51,24 @@ function Card({ title, children, className = "" }: { title: string; children: Re
   );
 }
 
-/** Needle gauge as drawn: thin track #27272B on #E9E9EA remainder, dark needle. */
+/** Needle gauge: the frame draws the dark arc as a 177.61px ellipse #27272B
+ *  (native read); remainder #E9E9EA and the 6px track are pixel-sampled and
+ *  remain disclosed as sampled in docs/design-api-gaps.md. */
 function Gauge({ pct }: { pct: number }) {
   const clamped = Math.min(100, Math.max(0, pct));
   const angle = Math.PI * (1 - clamped / 100);
-  const nx = 60 + 33 * Math.cos(angle);
-  const ny = 62 - 33 * Math.sin(angle);
   return (
-    <svg viewBox="0 0 120 70" className="mx-auto w-52">
-      <path d="M14 62 A46 46 0 0 1 106 62" fill="none" stroke="#E9E9EA" strokeWidth="6" strokeLinecap="round" />
+    <svg viewBox="0 0 190 112" className="mx-auto w-[190px]">
+      <path d="M6.2 105 A88.8 88.8 0 0 1 183.8 105" fill="none" stroke="#E9E9EA" strokeWidth="6" strokeLinecap="round" />
       <path
-        d={`M14 62 A46 46 0 0 1 ${60 + 46 * Math.cos(angle)} ${62 - 46 * Math.sin(angle)}`}
+        d={`M6.2 105 A88.8 88.8 0 0 1 ${95 + 88.8 * Math.cos(angle)} ${105 - 88.8 * Math.sin(angle)}`}
         fill="none"
         stroke="#27272B"
         strokeWidth="6"
         strokeLinecap="round"
       />
-      <line x1="60" y1="62" x2={nx} y2={ny} stroke="#27272B" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="60" cy="62" r="4" fill="#FFFFFF" stroke="#27272B" strokeWidth="3" />
+      <line x1="95" y1="105" x2={95 + 53 * Math.cos(angle)} y2={105 - 53 * Math.sin(angle)} stroke="#27272B" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="95" cy="105" r="5" fill="#FFFFFF" stroke="#27272B" strokeWidth="3" />
     </svg>
   );
 }
@@ -78,7 +78,7 @@ function Gauge({ pct }: { pct: number }) {
  *  docs/design-api-gaps.md); circle 40px, icon ~20px. */
 function DetailIcon({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: bg, color }}>
+    <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: bg, color }}>
       {children}
     </span>
   );
@@ -88,7 +88,7 @@ const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeL
 
 function CalendarIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}>
+    <svg viewBox="0 0 24 24" className="h-6 w-6" {...stroke}>
       <rect x="3" y="5" width="18" height="16" rx="2" />
       <path d="M3 10h18M8 3v4M16 3v4" />
     </svg>
@@ -97,7 +97,7 @@ function CalendarIcon() {
 
 function TargetIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}>
+    <svg viewBox="0 0 24 24" className="h-6 w-6" {...stroke}>
       <circle cx="12" cy="12" r="9" />
       <circle cx="12" cy="12" r="4.5" />
       <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
@@ -107,7 +107,7 @@ function TargetIcon() {
 
 function CheckCircleIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}>
+    <svg viewBox="0 0 24 24" className="h-6 w-6" {...stroke}>
       <circle cx="12" cy="12" r="9" />
       <path d="M8 12.5l2.5 2.5L16 9.5" />
     </svg>
@@ -177,8 +177,8 @@ function ProjectDetailContent() {
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} active="Projects" />
-      <main className="px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[61px]">
-        <div className="flex items-start justify-between gap-6">
+      <main className="relative px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[61px]">
+        <div>
           <div>
             <p className={`${SANS} text-sm text-black/60`}>
               <Link href="/projects" className="hover:underline">Projects</Link>
@@ -196,8 +196,10 @@ function ProjectDetailContent() {
             </div>
           </div>
 
-          {/* Due Date card drawn in the top header, right of the title. */}
-          <section className="hidden w-[284px] shrink-0 rounded-2xl border border-[#F3F4F6] bg-white p-5 lg:block">
+          {/* Due Date card drawn in the top header, right of the title.
+              Absolutely positioned so it does not push the tabs row down;
+              the source's title/tabs flow is unchanged. */}
+          <section className="absolute right-4 top-8 hidden w-[284px] rounded-2xl border border-[#F3F4F6] bg-white p-5 sm:right-8 lg:right-16 lg:top-[38px] lg:block">
             <h2 className={`${SANS} mb-3 text-[20px] font-medium leading-[150%] text-[#191919]`}>Due Date</h2>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E6EFFF]">
               <div className="h-full rounded-full bg-[#005AFB]" style={{ width: `${Math.round(elapsed * 100)}%` }} />
@@ -227,7 +229,7 @@ function ProjectDetailContent() {
           )}
         </nav>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[862px_414px] lg:justify-between">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[862px_416px] lg:justify-between">
           <div className="flex flex-col gap-6">
             <Card title="Description">
               <p className={`${SANS} text-base leading-[150%] text-[#525256]`}>
@@ -236,11 +238,13 @@ function ProjectDetailContent() {
             </Card>
 
             <Card title="Product Details">
-              <div className="grid grid-cols-2 gap-x-6 gap-y-8">
-                {/* "Project Type" has no field in the documented Project model
-                    and is omitted (docs/design-api-gaps.md). */}
+              <div className="grid grid-cols-3 gap-x-6 gap-y-8">
+                {/* Project Type: no field in the documented Project model; its
+                    cell stays empty so the supported items keep their drawn
+                    positions (docs/design-api-gaps.md). */}
+                <span aria-hidden="true" />
                 <div className="flex items-center gap-3">
-                  <DetailIcon bg="#F2E9F1" color="#BF75A9"><CalendarIcon /></DetailIcon>
+                  <DetailIcon bg="#F2EAF2" color="#BF75A9"><CalendarIcon /></DetailIcon>
                   <div>
                     <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Start Date</p>
                     <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(project?.start_date)}</p>
