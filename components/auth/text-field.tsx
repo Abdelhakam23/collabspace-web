@@ -16,7 +16,7 @@ export function TextField({ label, icon, error, id, ...props }: TextFieldProps) 
       <div className="relative">
         <label
           htmlFor={id}
-          className="absolute -top-2 left-3 z-10 bg-white px-1 text-[13px] leading-4 text-[#8390a4]"
+          className="absolute -top-2 left-3 z-10 bg-white px-1 text-xs leading-4 text-[#718096]"
         >
           {label}
         </label>

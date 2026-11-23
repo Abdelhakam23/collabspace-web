@@ -5,7 +5,7 @@ import { GoogleIcon } from "./icons";
 export function PrimaryButton({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className="h-10 w-full rounded-2xl bg-primary-500 text-base font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
+      className="h-10 w-full rounded-2xl bg-primary-500 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
       {...props}
     >
       {children}
@@ -29,7 +29,7 @@ export function GoogleButton() {
         type="button"
         disabled
         aria-describedby="google-unavailable"
-        className="flex h-[50px] w-full cursor-not-allowed items-center justify-center gap-3 rounded-md border border-[#cbd5e0] bg-white text-base font-medium text-[#8390a4] opacity-70"
+        className="flex h-[50px] w-full cursor-not-allowed items-center justify-center gap-3 rounded-md border border-[#cbd5e0] bg-white text-base font-medium text-[#718096] opacity-70"
       >
         <GoogleIcon />
         Sign With Google
@@ -80,12 +80,21 @@ export function FormError({ message }: { message: string | null }) {
   );
 }
 
-export function AuthHeading({ title, subtitle }: { title: string; subtitle: string }) {
+export function AuthHeading({
+  title,
+  subtitle,
+  titleClassName = "text-[31px] font-semibold",
+}: {
+  title: string;
+  subtitle: string;
+  titleClassName?: string;
+}) {
   return (
     <div className="space-y-3 text-center">
-      {/* 31px matches the documented H4 step; glyph cores sample to #1F2937. */}
-      <h1 className="text-[31px] font-semibold leading-tight text-[#1f2937]">{title}</h1>
-      <p className="text-base text-[#94a0b0]">{subtitle}</p>
+      {/* Native Figma properties: Sign In title Inter 600 31px #1F2937,
+          Sign Up title Inter 700 36px #1F2937, subtitle Inter 400 16px #718096. */}
+      <h1 className={`${titleClassName} leading-tight text-[#1f2937]`}>{title}</h1>
+      <p className="text-base text-[#718096]">{subtitle}</p>
     </div>
   );
 }
