@@ -97,7 +97,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true" aria-label="New Project">
       <form
         onSubmit={onSubmit}
-        className={`${SANS} flex max-h-[90vh] w-full max-w-[720px] flex-col gap-8 overflow-y-auto rounded-2xl bg-white p-6 shadow-[0_8px_16px_rgba(0,0,0,0.16)]`}
+        className={`${SANS} flex max-h-[90vh] min-h-[661px] w-full max-w-[720px] flex-col gap-8 overflow-y-auto rounded-2xl bg-white p-6 shadow-[0_8px_16px_rgba(0,0,0,0.16)]`}
       >
         <div className="flex items-center justify-between">
           <h2
@@ -183,8 +183,8 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           <input required type="date" aria-label="End Date" value={deadline} onChange={(e) => setDeadline(e.target.value)} className={fieldBox} />
         </div>
 
-        <div className="relative">
-          <span className={fieldLabel}>Add Project Files</span>
+        <div>
+          <span className={`${SANS} mb-1 block text-xs text-[#718096]`}>Add Project Files</span>
           <button
             type="button"
             onClick={() => fileInput.current?.click()}
