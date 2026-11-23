@@ -25,9 +25,11 @@ import type { Project } from "@/lib/types";
  * Column x positions are pixel-measured at 46% zoom (the row uses auto
  * layout with space-between, so no absolute offsets are exposed).
  *
- * Scope (design x API): the toolbar search and both filter dropdowns stay
- * inert - A4.1 documents no search parameter and the design does not show
- * the dropdown contents. Add Project opens an overlay in the file; the
+ * Scope (design x API): the toolbar search filters the loaded rows
+ * client-side (frontend-only behavior; A4.1 documents no search parameter).
+ * Both filter dropdowns stay inert - the file does not show their contents.
+ * The dropdown border (#A8AAAC) and corner radius are pixel-sampled at 46%
+ * zoom, not native reads. Add Project opens an overlay in the file; the
  * overlay frame has not been extracted yet, so the button is rendered but
  * inert for now. Statuses/priorities beyond the two drawn samples render
  * in the default text color until their design treatment is known.
@@ -79,6 +81,7 @@ function Chevron() {
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[] | null>(null);
+  const [query, setQuery] = useState("");
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState<string | undefined>();
 
@@ -107,7 +110,7 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} active="Projects" />
-      <main className="px-4 pt-10 sm:px-8 lg:px-16 lg:pt-[67px]">
+      <main className="px-4 pt-10 sm:px-8 lg:px-16 lg:pt-[36px]">
         <div className="flex items-center justify-between gap-4">
           <h1
             className={`${SANS} text-[31px] font-semibold leading-[150%] text-[#000712]`}
@@ -130,19 +133,18 @@ export default function ProjectsPage() {
           </button>
         </div>
 
-        <div className="mt-[27px] flex items-center justify-between gap-4">
+        <div className="mt-[36px] flex items-center justify-between gap-4">
           {/* Search and filters: drawn in the frame, but A4.1 documents no
               search parameter and the dropdown contents are not designed, so
               both stay inert (docs/design-api-gaps.md). */}
           <label
-            aria-disabled="true"
             className={`${RUBIK} flex h-10 w-full max-w-[326px] items-center gap-2 rounded-full border border-[#F3F4F6] bg-white pl-4 pr-1 text-sm text-[#000712]`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.3-4.3" />
             </svg>
-            <input type="search" placeholder="Search" aria-label="Search projects (not available yet)" disabled className="w-full min-w-0 bg-transparent outline-none placeholder:text-[#000712]" />
+            <input type="search" placeholder="Search" aria-label="Search projects" value={query} onChange={(e) => setQuery(e.target.value)} className="w-full min-w-0 bg-transparent outline-none placeholder:text-[#000712]" />
           </label>
           <div className="flex items-center gap-3">
             {["All Projects", "Newest"].map((label) => (
@@ -150,7 +152,7 @@ export default function ProjectsPage() {
                 key={label}
                 aria-disabled="true"
                 title="Filter options are not designed yet"
-                className={`${RUBIK} flex items-center gap-2 rounded-full border border-[#F3F4F6] bg-white px-4 py-2 text-xs text-[#000712]`}
+                className={`${RUBIK} flex h-[26px] items-center gap-2 rounded-[8px] border border-[#A8AAAC] bg-white px-[19px] text-xs text-[#000712]`}
               >
                 {label}
                 <Chevron />
@@ -159,15 +161,15 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        <div className="mt-[45px]">
-          <div className="grid grid-cols-[164px_178px_189px_173px_193px_167px_1fr] items-center border-b border-[#F3F4F6] bg-white pl-[34px]">
+        <div className="mt-[27px]">
+          <div className="grid grid-cols-[164px_178px_189px_173px_193px_167px_1fr] items-center border-b border-[#E8E9EB] pl-[34px]">
             {["Project Name", "Start Date", "Deadline", "Status", "Files", "Teams", "Priority"].map((h) => (
               <span key={h} className={`${SANS} py-4 text-[18px] font-medium leading-[150%] text-[#000712]`}>
                 {h}
               </span>
             ))}
           </div>
-          {(projects ?? []).map((p) => {
+          {(projects ?? []).filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase())).map((p) => {
             const members = (p.teams ?? []).flatMap((t) => t.members ?? []);
             return (
               <div
