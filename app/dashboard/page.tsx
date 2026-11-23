@@ -117,14 +117,27 @@ function KpiCard({ label, value, tone, ratio, fraction }: { label: string; value
 }
 
 function Gauge({ ratio }: { ratio: number }) {
-  const r = 34;
-  const c = Math.PI * r;
-  const filled = Math.min(1, Math.max(0, ratio)) * c;
+  const clamped = Math.min(1, Math.max(0, ratio));
+  // Semicircular gauge with a needle, as in the final frame.
+  const cx = 42, cy = 44, r = 32;
+  const angle = Math.PI - clamped * Math.PI;
+  const nx = cx + Math.cos(angle) * (r - 8);
+  const ny = cy - Math.sin(angle) * (r - 8);
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => {
+    const a = Math.PI - t * Math.PI;
+    return {
+      x1: cx + Math.cos(a) * (r + 2), y1: cy - Math.sin(a) * (r + 2),
+      x2: cx + Math.cos(a) * (r + 6), y2: cy - Math.sin(a) * (r + 6),
+    };
+  });
   return (
-    <svg width="84" height="48" viewBox="0 0 84 48" aria-hidden="true">
-      <path d="M8 44 A34 34 0 0 1 76 44" fill="none" stroke="#eef1f5" strokeWidth="8" strokeLinecap="round" />
-      <path d="M8 44 A34 34 0 0 1 76 44" fill="none" stroke="#005AFB" strokeWidth="8" strokeLinecap="round"
-        strokeDasharray={`${filled} ${c * 2}`} />
+    <svg width="84" height="52" viewBox="0 0 84 52" aria-hidden="true">
+      <path d={`M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy}`} fill="none" stroke="#eef1f5" strokeWidth="7" />
+      {ticks.map((t, i) => (
+        <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="#cbd2da" strokeWidth="1.5" strokeLinecap="round" />
+      ))}
+      <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#000712" strokeWidth="3" strokeLinecap="round" />
+      <circle cx={cx} cy={cy} r="4" fill="#000712" />
     </svg>
   );
 }
@@ -134,12 +147,25 @@ function AreaChart({ points, maxChart }: { points: number[]; maxChart: number })
   const n = Math.max(2, points.length);
   const xs = points.map((_, i) => pad + (i * (w - pad * 2)) / (n - 1));
   const ys = points.map((v) => h - pad - (v / maxChart) * (h - pad * 2));
-  const path = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
+  // Monotone-smooth (Catmull-Rom) curve through the monthly points, as in the final frame.
+  const seg = (i: number) => {
+    const p0 = i > 0 ? i - 1 : 0, p1 = i, p2 = i + 1 < n ? i + 1 : n - 1, p3 = i + 2 < n ? i + 2 : n - 1;
+    const c1x = xs[p1] + (xs[p2] - xs[p0]) / 6, c1y = ys[p1] + (ys[p2] - ys[p0]) / 6;
+    const c2x = xs[p2] - (xs[p3] - xs[p1]) / 6, c2y = ys[p2] - (ys[p3] - ys[p1]) / 6;
+    return `C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${xs[p2].toFixed(1)},${ys[p2].toFixed(1)}`;
+  };
+  const path = `M${xs[0].toFixed(1)},${ys[0].toFixed(1)} ${Array.from({ length: n - 1 }, (_, i) => seg(i)).join(" ")}`;
   const area = `${path} L${xs[n - 1].toFixed(1)},${h} L${xs[0].toFixed(1)},${h} Z`;
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="h-44 w-full" preserveAspectRatio="none" aria-hidden="true">
-      <path d={area} fill="rgba(38,146,255,0.10)" />
-      <path d={path} fill="none" stroke="#2692FF" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+      <defs>
+        <linearGradient id="overviewArea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#2692FF" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#2692FF" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill="url(#overviewArea)" />
+      <path d={path} fill="none" stroke="#2692FF" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -205,7 +231,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-          <Card title="Project overview" className="xl:col-span-5"
+          <Card title="Project overview" className="xl:col-span-6"
             actions={
               <span className={`${M} flex items-center gap-4 text-xs font-medium text-[#000712]`}>
                 <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown />All Projects</span>
@@ -251,7 +277,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Recent Files" actions={<ViewAll />} className="xl:col-span-4">
+          <Card title="Recent Files" actions={<ViewAll />} className="xl:col-span-3">
             <ul className="space-y-4">
               {(data?.recent_files.items ?? []).map((f) => (
                 <li key={f.id} className="flex items-center justify-between gap-3">
