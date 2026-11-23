@@ -108,3 +108,16 @@ come from the API's documented TaskPriority values - the file shows only
 "High". Input containers reuse the file's input component styling; the
 date fields are boxed in the source and the implementation (an earlier
 "underlined" note was a misread of the capture).
+
+## Project detail (All Projects / Alpha) gaps
+"Project Type" and "Total Tasks" in the Product Details card have no field in
+the documented Project model, so the card shows Start Date, Deadline and
+Priority only. The pending / in progress / completed fractions under the gauge
+depend on A4.3 whose response shape the collection does not document; they
+render only when the response actually carries them. The "Project overview"
+chart card is omitted for now: its series data would come from the same
+undocumented overview response, so there is no documented source for it yet.
+Tasks, Teams and Files tabs are drawn in the frame but their sibling frames
+are not yet implemented, so they render inert with an aria-disabled note.
+Table rows on All Projects navigate to this page (Link), matching the
+breadcrumb's "Projects" back-navigation drawn in the frame.

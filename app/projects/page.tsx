@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { NewProjectOverlay } from "@/components/projects/new-project-overlay";
 import { listProjects } from "@/lib/api/projects";
@@ -172,8 +173,9 @@ export default function ProjectsPage() {
           {(projects ?? []).filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase())).map((p) => {
             const members = (p.teams ?? []).flatMap((t) => t.members ?? []);
             return (
-              <div
+              <Link
                 key={p.id}
+                href={`/projects/${p.id}`}
                 className="grid h-[60px] grid-cols-[164px_178px_189px_173px_193px_167px_1fr] items-center border-b border-[#F3F4F6] bg-white py-1 pl-[34px]"
               >
                 <span className="flex items-center gap-2">
@@ -208,7 +210,7 @@ export default function ProjectsPage() {
                 <span className={`${SANS} text-sm`} style={{ color: PRIORITY_COLORS[p.priority] ?? "#000712" }}>
                   {p.priority}
                 </span>
-              </div>
+              </Link>
             );
           })}
           {projects !== null && projects.length === 0 ? (
