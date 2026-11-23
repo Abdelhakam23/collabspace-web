@@ -9,7 +9,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[#f6f8fa]">
       <header className="flex items-center justify-between px-6 py-4 sm:px-10">
-        <span className="text-lg font-semibold text-secondary-900">Collabspace</span>
+        <span className="font-[family-name:var(--font-rubik)] text-[20px] font-normal text-[#000712]">Collabspace</span>
         {/* Language switcher: the design shows it, but there is no i18n API, so it
             stays visible and intentionally non-functional. See docs/design-api-gaps.md. */}
         <button
@@ -25,7 +25,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
         </button>
       </header>
       <main className="flex items-start justify-center px-4 pb-16 pt-4 sm:pt-8">
-        <div className="w-full max-w-[600px] rounded-3xl bg-white px-6 py-10 shadow-[0_16px_48px_rgba(23,43,99,0.08)] sm:px-16 sm:py-12">
+        <div className="w-full max-w-[600px] rounded-3xl bg-white px-6 py-10 shadow-[0_4px_16px_rgba(0,0,0,0.16)] sm:px-16 sm:py-12">
           {children}
         </div>
       </main>

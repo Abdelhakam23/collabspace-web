@@ -21,7 +21,7 @@ export function TextField({ label, icon, error, id, ...props }: TextFieldProps) 
           {label}
         </label>
         <div
-          className={`flex h-14 items-center gap-3 rounded-[10px] border bg-[#f9fafb] px-4 text-[#718096] transition-colors focus-within:border-primary-500 ${
+          className={`flex h-14 items-center gap-3 rounded-xl border bg-[#f9fafb] px-4 text-[#718096] transition-colors focus-within:border-primary-500 ${
             error ? "border-[#af2622]" : "border-[#cbd5e0]"
           }`}
         >
