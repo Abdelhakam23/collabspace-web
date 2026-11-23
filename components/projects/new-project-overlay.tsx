@@ -21,10 +21,10 @@ import type { TaskPriority, User } from "@/lib/types";
  *
  * Wiring (A4.2 POST /projects, then A7.2 POST /files per selected file):
  * name, priority, start_date, deadline ("End Date") and members come from
- * the form. The payload's required `status` and `description` fields have
- * no counterpart in the design: status is sent as "Active" and description
- * as empty, both flagged in docs/design-api-gaps.md. The priority options
- * are the API's documented TaskPriority values; the file shows only "High".
+ * the form. A4.2 lists description/status with no required markers or
+ * validation rules, so they are omitted rather than invented; the priority
+ * options are the API's documented TaskPriority values (the file shows
+ * only "High"). Members are sent as the documented array, all of them.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -67,17 +67,16 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
     setPending(true);
     setError(null);
     try {
+      // A4.2 documents description/status without required markers and no
+      // validation rules, so only the designed fields are sent; the backend
+      // answer (422 or default) is surfaced instead of inventing values.
       const res = await createProject({
         name,
-        description: "",
         start_date: startDate,
         deadline,
         priority,
-        status: "Active",
-        teams: "",
-        members: "",
-        "members[].user_id": members[0]?.id ?? 0,
-        "members[].role": members[0]?.roles?.[0] ?? "Member",
+        teams: [],
+        members: members.map((m) => ({ user_id: m.id, role: m.roles?.[0] ?? "Member" })),
       });
       const created = (res.data as { project?: { id?: number } }).project;
       for (const f of files) {
@@ -112,7 +111,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           </button>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-[1.6fr_1fr]">
           <label className="block">
             <span className={fieldLabel}>Project Name</span>
             <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Project Name" className={`${fieldBox} mt-1`} />
@@ -131,8 +130,8 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
 
         <div>
           <span className={fieldLabel}>Add Guess</span>
-          <div className="mt-1 flex items-center gap-3">
-            <input value={guess} onChange={(e) => setGuess(e.target.value)} placeholder="@Anas Mohamed" className={fieldBox} list="new-project-users" />
+          <div className="relative mt-1">
+            <input value={guess} onChange={(e) => setGuess(e.target.value)} placeholder="@Anas Mohamed" className={`${fieldBox} pr-24`} list="new-project-users" />
             <datalist id="new-project-users">
               {matches.map((u) => (
                 <option key={u.id} value={u.name} />
@@ -147,7 +146,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
                   setGuess("");
                 }
               }}
-              className="flex h-10 shrink-0 items-center gap-1.5 rounded-[12px] bg-[#000712] px-4 text-sm font-medium text-white"
+              className="absolute right-2 top-1/2 flex h-10 -translate-y-1/2 items-center gap-1.5 rounded-[12px] bg-[#000712] px-4 text-sm font-medium text-white"
             >
               Add
               <svg width="9.33" height="9.33" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">

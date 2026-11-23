@@ -99,13 +99,12 @@ color until their design treatment exists. Column x positions are
 pixel-measured at 46% zoom (auto layout exposes no absolute offsets).
 
 ## New Project overlay payload gaps
-The overlay has no description or status fields, but A4.2's documented
-payload requires both: the form sends description as empty and status as
-"Active". The multi-member payload shape (`members[].user_id`,
-`members[].role` literal keys) is documented for a single member; the
-form sends the first added member. Priority options come from the API's
-documented TaskPriority values - the file shows only "High". Input
-containers reuse the file's input component styling; the date fields are
-boxed in the implementation while the source draws them underlined
-(container reads kept resolving to the overlay frame itself - unresolved,
-flagged).
+The overlay has no description or status fields. A4.2 lists both without
+required markers, validation rules or example responses, so the form
+omits them rather than inventing values; whether the backend defaults
+status and accepts a missing description is an open API question. Members
+are a documented array and all added members are sent. Priority options
+come from the API's documented TaskPriority values - the file shows only
+"High". Input containers reuse the file's input component styling; the
+date fields are boxed in the source and the implementation (an earlier
+"underlined" note was a misread of the capture).

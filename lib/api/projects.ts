@@ -9,15 +9,11 @@ export async function listProjects(query?: { page: string | number; per_page: st
 
 export interface CreateProjectPayload {
   name: string;
-  description: string;
   start_date: string;
   deadline: string;
   priority: string;
-  status: string;
-  teams: string;
-  members: string;
-  "members[].user_id": number;
-  "members[].role": string;
+  teams: string[];
+  members: { user_id: number; role: string }[];
 }
 
 /** POST /api/v1/projects — Create Project (A4.2) */
