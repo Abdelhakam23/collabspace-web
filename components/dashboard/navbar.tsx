@@ -20,7 +20,7 @@ export function DashboardNavbar({ userName, userRole }: { userName: string; user
             <span
               key={item}
               aria-current="page"
-              className={`${M} rounded-full bg-[#005AFB] px-4 py-1.5 text-xs font-medium text-white`}
+              className={`${M} rounded-full bg-[#005AFB] px-4 py-1.5 text-xs font-normal text-white`}
             >
               {item}
             </span>
@@ -28,7 +28,7 @@ export function DashboardNavbar({ userName, userRole }: { userName: string; user
             <span
               key={item}
               aria-disabled="true"
-              className={`${M} px-3 py-1.5 text-xs font-medium text-[#000712]`}
+              className={`${M} px-3 py-1.5 text-xs font-normal text-[#000712]`}
             >
               {item}
             </span>
