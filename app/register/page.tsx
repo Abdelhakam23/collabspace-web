@@ -50,7 +50,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <AuthShell>
+    <AuthShell cardTop={142} cardBg="#FAFAFA">
       <form onSubmit={onSubmit} className="space-y-6">
         <AuthHeading title="Sign Up" titleClassName="text-4xl font-bold" subtitle="Connect with every application!" />
         <GoogleButton />
