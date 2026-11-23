@@ -52,7 +52,7 @@ export default function RegisterPage() {
   return (
     <AuthShell>
       <form onSubmit={onSubmit} className="space-y-6">
-        <AuthHeading title="Sign Up" subtitle="Connect with every application!" />
+        <AuthHeading title="Sign Up" titleClassName="text-4xl font-bold" subtitle="Connect with every application!" />
         <GoogleButton />
         <OrDivider />
         <TextField
