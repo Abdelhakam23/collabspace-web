@@ -79,9 +79,12 @@ export default function LoginPage() {
         />
         <div className="flex items-center justify-between">
           <RememberMe checked={remember} onChange={setRemember} />
-          <Link href="/forgot-password" className="text-sm font-medium text-primary-500 hover:underline">
+          {/* The design shows this link, but the file has no recovery screens, so
+              there is no Figma source for where it leads. Rendered inert until a
+              designed target exists - see docs/design-api-gaps.md. */}
+          <span className="text-sm font-medium text-primary-500" aria-disabled="true">
             Forget Password?
-          </Link>
+          </span>
         </div>
         <FormError message={error} />
         <PrimaryButton type="submit" disabled={pending}>
