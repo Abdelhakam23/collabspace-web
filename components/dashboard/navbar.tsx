@@ -8,12 +8,12 @@
  * Items whose screens are not built yet stay inert so nothing routes to a 404.
  */
 const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Reports"];
-const M = "font-[family-name:var(--font-montserrat)]";
+const M = "font-[family-name:var(--font-rubik)]";
 
 export function DashboardNavbar({ userName, userRole }: { userName: string; userRole?: string }) {
   return (
     <header className="flex min-h-[72px] flex-wrap items-center gap-x-6 gap-y-2 bg-white px-4 py-2 sm:px-8 lg:h-[72px] lg:py-0">
-      <span className={`${M} text-lg font-bold text-[#000712]`}>Collabspace</span>
+      <span className={`${M} text-[20px] font-normal text-[#000712]`}>Collabspace</span>
       <nav className="order-3 flex basis-full min-w-0 flex-wrap items-center gap-1 lg:order-none lg:basis-auto">
         {NAV_ITEMS.map((item) =>
           item === "Dashboard" ? (
@@ -58,7 +58,7 @@ export function DashboardNavbar({ userName, userRole }: { userName: string; user
         </button>
         <span className="flex items-center gap-2">
           <span className={`${M} text-right text-xs leading-tight`}>
-            <span className="block font-semibold text-[#000712]">{userName}</span>
+            <span className="block font-medium text-[#000712]">{userName}</span>
             {userRole ? <span className="block font-normal text-[#718096]">{userRole}</span> : null}
           </span>
           <span className="h-9 w-9 rounded-full bg-[#e2e8f0]" aria-hidden="true" />

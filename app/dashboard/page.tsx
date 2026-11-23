@@ -41,13 +41,13 @@ type DashboardPayload = {
   recent_files: { items: { id: number; name: string; owner?: string; type?: string; updated_at?: string }[] };
 };
 
-const M = "font-[family-name:var(--font-montserrat)]";
+const M = "font-[family-name:var(--font-sans)]";
 
 function Card({ title, actions, children, className = "" }: { title: string; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
     <section className={`rounded-2xl bg-white p-5 ${className}`}>
       <header className="mb-4 flex items-center justify-between gap-2">
-        <h2 className={`${M} text-base font-semibold text-[#000712]`}>{title}</h2>
+        <h2 className={`${M} text-[20px] font-medium leading-[150%] text-[#191919]`}>{title}</h2>
         {actions}
       </header>
       {children}
@@ -104,13 +104,13 @@ function KpiCard({ label, value, tone, ratio, fraction }: { label: string; value
   return (
     <section className="rounded-2xl bg-white p-5">
       <div className="flex items-center justify-between">
-        <h2 className={`${M} text-base font-medium text-[#000712]`}>{label}</h2>
+        <h2 className={`${M} text-[20px] font-medium leading-[150%] text-[#000000]`}>{label}</h2>
         <KpiIcon tone={tone} />
       </div>
-      <p className={`${M} mt-1 text-[28px] font-bold leading-tight text-[#000712]`}>{value}</p>
+      <p className={`${M} mt-1 text-[31px] font-semibold leading-[150%] text-[#000000]`}>{value}</p>
       <div className="mt-2 flex items-center justify-between gap-3">
         <Bar ratio={ratio} color={colors[tone]} className="w-2/3" />
-        <span className={`${M} text-xs text-[#718096]`}>{fraction}</span>
+        <span className={`${M} text-xs font-medium text-[#525256]`}>{fraction}</span>
       </div>
     </section>
   );
@@ -223,7 +223,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={`${M} text-base font-medium text-[#000712]`}>Completion Rate</h2>
-                <p className={`${M} mt-1 text-[28px] font-bold leading-tight text-[#000712]`}>{rate}%</p>
+                <p className={`${M} mt-1 text-[31px] font-semibold leading-[150%] text-[#000000]`}>{rate}%</p>
               </div>
               <Gauge ratio={rate / 100} />
             </div>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
                 return (
                   <li key={task.id} className="rounded-xl border border-[#eef1f5] p-3">
                     <div className="flex items-start justify-between gap-2">
-                      <p className={`${M} text-sm font-medium text-[#000712]`}>{task.title}</p>
+                      <p className={`${M} text-sm font-normal text-[#252525]`}>{task.title}</p>
                       {task.priority && tone ? (
                         <span className={`${M} shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold`} style={{ color: tone.text, backgroundColor: tone.bg }}>{task.priority}</span>
                       ) : null}
@@ -361,7 +361,7 @@ export default function DashboardPage() {
               {(data?.upcoming_meetings.items ?? []).map((m) => (
                 <li key={m.id} className="rounded-xl border border-[#eef1f5] p-3">
                   <div className="flex items-center justify-between gap-2">
-                    <p className={`${M} text-sm font-medium text-[#000712]`}>{m.title}</p>
+                    <p className={`${M} text-sm font-normal text-[#000000]`}>{m.title}</p>
                     {m.date_label ? (
                       <span className={`${M} flex shrink-0 items-center gap-1 rounded-md bg-[#f0f2f5] px-2 py-0.5 text-[10px] text-[#525256]`}>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></svg>

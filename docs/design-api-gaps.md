@@ -52,3 +52,14 @@ Caption 13, Small Caption 12, line-height 150%) are native Figma reads.
 ## Ask AI illustration
 The frame shows a blue robot illustration. A neutral inline SVG holds its
 geometry until the asset is exported from the file (export check in progress).
+
+## Native typography of the final frame (read from Figma properties, Nov 24)
+The final frame does NOT use Montserrat. Navbar text (logo, items, user name
+and role) is Rubik; all dashboard content uses Inter with the "Team C Text"
+styles: KPI numbers and completion rate H4 = Inter SemiBold 31px #000000;
+card titles and KPI labels H6 = Inter Medium 20px (#191919 / #000000); task
+titles small Body r = Inter Regular 14px #252525; meeting titles Inter
+Regular 14px #000000; fractions and meta Inter Medium 12px #525256; View All
+Small Caption = Inter Regular 12px #005AFB; chart axis = Inter Regular 12px
+#718096. Unverified native reads (pill labels, member names, month labels,
+file rows, Ask AI hint) follow the same scale pending deeper selection.
