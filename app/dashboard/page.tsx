@@ -32,12 +32,12 @@ type DashboardPayload = {
   recent_files: { items: { id: number; name: string; owner?: string; type?: string; updated_at?: string }[] };
 };
 
-function Card({ title, action, children, className = "" }: { title: string; action?: string; children: React.ReactNode; className?: string }) {
+function Card({ title, actions, children, className = "" }: { title: string; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`rounded-xl border border-[#ececec] bg-white p-5 shadow-[0_2px_12px_rgba(23,43,99,0.04)] ${className}`}>
+    <section className={`min-h-[240px] rounded-xl border border-[#ececec] bg-white p-5 shadow-[0_2px_12px_rgba(23,43,99,0.04)] ${className}`}>
       <header className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-semibold text-[#191919]">{title}</h2>
-        {action ? <span className="text-xs font-medium text-[#525256]">{action}</span> : null}
+        {actions}
       </header>
       {children}
     </section>
@@ -97,8 +97,18 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-          <Card title="Project overview" action="This year" className="xl:col-span-5">
-            <div className="flex h-48 items-end gap-3">
+          <Card title="Project overview" className="xl:col-span-5"
+            actions={
+              <span className="flex items-center gap-2">
+                <span aria-disabled="true" className="rounded-md border border-[#ececec] px-2 py-1 text-xs font-medium text-[#525256]">All Projects</span>
+                <span aria-disabled="true" className="rounded-md border border-[#ececec] px-2 py-1 text-xs font-medium text-[#525256]">This year</span>
+              </span>
+            }>
+            <div className="flex h-48 items-stretch gap-2">
+              <div className="flex flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
+                {[maxChart, Math.round(maxChart * 0.66), Math.round(maxChart * 0.33), 0].map((v, i) => <span key={i}>{v}</span>)}
+              </div>
+              <div className="flex min-w-0 flex-1 items-end gap-3 overflow-x-auto">
               {chart.map((d) => (
                 <div key={d.label} className="flex flex-1 flex-col items-center gap-1">
                   <div className="flex h-36 w-full items-end justify-center gap-1">
@@ -108,10 +118,11 @@ export default function DashboardPage() {
                   <span className="text-[10px] text-[#718096]">{d.label}</span>
                 </div>
               ))}
+              </div>
             </div>
           </Card>
 
-          <Card title="Active Projects" action="View All" className="xl:col-span-3">
+          <Card title="Active Projects" actions={<span className="text-xs font-medium text-[#525256]">View All</span>} className="xl:col-span-3">
             <ul className="space-y-4">
               {(data?.active_projects.items ?? []).map((p) => (
                 <li key={p.id} className="flex items-center gap-3">
@@ -126,7 +137,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Recent Files" action="View All" className="xl:col-span-4">
+          <Card title="Recent Files" actions={<span className="text-xs font-medium text-[#525256]">View All</span>} className="xl:col-span-4">
             <ul className="space-y-4">
               {(data?.recent_files.items ?? []).map((f) => (
                 <li key={f.id} className="flex items-center justify-between gap-3">
@@ -143,7 +154,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-          <Card title="Deadlines & Tasks" action="View All" className="xl:col-span-3">
+          <Card title="Deadlines & Tasks" actions={<span className="text-xs font-medium text-[#525256]">View All</span>} className="xl:col-span-3">
             <ul className="space-y-4">
               {(data?.tasks.items ?? []).map((task) => (
                 <li key={task.id} className="rounded-lg border border-[#ececec] p-3">
@@ -167,7 +178,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Up coming meetings" action="View All" className="xl:col-span-3">
+          <Card title="Up coming meetings" actions={<span className="text-xs font-medium text-[#525256]">View All</span>} className="xl:col-span-3">
             <ul className="space-y-4">
               {(data?.upcoming_meetings.items ?? []).map((m) => (
                 <li key={m.id} className="flex items-center gap-3">
