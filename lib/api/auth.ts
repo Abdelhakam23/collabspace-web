@@ -26,16 +26,6 @@ export async function login(payload: LoginPayload) {
   return data;
 }
 
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
-
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
-
 export interface ForgotPasswordPayload {
   email: string;
 }
