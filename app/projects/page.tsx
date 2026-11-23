@@ -166,7 +166,7 @@ export default function ProjectsPage() {
         </div>
 
         <div className="mt-[27px]">
-          <div className="grid grid-cols-[171px_197px_165px_180px_184px_176px_1fr] items-center border-b border-[#E8E9EB] pl-[28px]">
+          <div className="grid grid-cols-[171px_184px_178px_180px_184px_176px_1fr] items-center border-b border-[#E8E9EB] pl-[28px]">
             {["Project Name", "Start Date", "Deadline", "Status", "Files", "Teams", "Priority"].map((h) => (
               <span key={h} className={`${SANS} py-4 text-[18px] font-medium leading-[150%] text-[#000712]`}>
                 {h}
@@ -179,7 +179,7 @@ export default function ProjectsPage() {
               <Link
                 key={p.id}
                 href={`/projects/${p.id}`}
-                className="grid h-[60px] grid-cols-[171px_197px_165px_180px_184px_176px_1fr] items-center border-b border-[#F3F4F6] bg-white py-1 pl-[34px] [&>*]:pl-7"
+                className="grid h-[60px] grid-cols-[171px_184px_178px_180px_184px_176px_1fr] items-center border-b border-[#F3F4F6] bg-white py-1 pl-[28px] [&>*:first-child]:pl-7"
               >
                 <span className="flex items-center gap-2">
                   <ProjectIcon />
