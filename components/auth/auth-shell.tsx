@@ -42,7 +42,7 @@ export function AuthShell({
         style={{ paddingTop: Math.max(0, cardTop - headerBlock) }}
       >
         <div
-          className="w-full max-w-[601px] rounded-3xl px-6 py-10 shadow-[0_4px_16px_rgba(0,0,0,0.16)] sm:px-16 sm:py-12"
+          className="w-full max-w-[601px] rounded-3xl px-6 py-10 shadow-[0_4px_16px_rgba(0,0,0,0.16)] sm:px-16 sm:py-16"
           style={{ backgroundColor: cardBg }}
         >
           {children}

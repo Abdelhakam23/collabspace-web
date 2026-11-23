@@ -85,16 +85,24 @@ export function AuthHeading({
   title,
   subtitle,
   titleClassName = "text-[31px] font-semibold",
+  trimTitle = false,
 }: {
   title: string;
   subtitle: string;
   titleClassName?: string;
+  trimTitle?: boolean;
 }) {
   return (
     <div className="space-y-3 text-center">
-      {/* Native Figma properties: Sign In title Inter 600 31px #1F2937,
-          Sign Up title Inter 700 36px #1F2937, subtitle Inter 400 16px #718096. */}
-      <h1 className={`${titleClassName} leading-tight text-[#1f2937]`}>{title}</h1>
+      {/* Native Figma properties: Sign In title Inter 600 31px #1F2937 with
+          150% line height and cap-height vertical trim, Sign Up title
+          Inter 700 36px #1F2937, subtitle Inter 400 16px #718096. */}
+      <h1
+        className={`${titleClassName} ${trimTitle ? "leading-[150%]" : "leading-tight"} text-[#1f2937]`}
+        style={trimTitle ? ({ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as React.CSSProperties) : undefined}
+      >
+        {title}
+      </h1>
       <p className="text-base text-[#718096]">{subtitle}</p>
     </div>
   );
