@@ -24,15 +24,20 @@ export function PrimaryButton({ children, ...props }: ButtonHTMLAttributes<HTMLB
  */
 export function GoogleButton() {
   return (
-    <button
-      type="button"
-      disabled
-      title="Google sign-in is not available yet"
-      className="flex h-[50px] w-full cursor-not-allowed items-center justify-center gap-3 rounded-md border border-[#cbd5e0] bg-white text-base font-medium text-[#8390a4] opacity-70"
-    >
-      <GoogleIcon />
-      Sign With Google
-    </button>
+    <div className="space-y-1">
+      <button
+        type="button"
+        disabled
+        aria-describedby="google-unavailable"
+        className="flex h-[50px] w-full cursor-not-allowed items-center justify-center gap-3 rounded-md border border-[#cbd5e0] bg-white text-base font-medium text-[#8390a4] opacity-70"
+      >
+        <GoogleIcon />
+        Sign With Google
+      </button>
+      <p id="google-unavailable" className="text-center text-xs text-[#94a0b0]">
+        Google sign-in isn&apos;t available yet
+      </p>
+    </div>
   );
 }
 

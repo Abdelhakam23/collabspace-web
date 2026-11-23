@@ -35,7 +35,7 @@ export default function RegisterPage() {
     try {
       // The design has a single password field, so it doubles as confirmation.
       const res = await registerAccount({ name, email, password, password_confirmation: password });
-      if (res.data?.token) storeToken(res.data.token);
+      if (res.data?.token) storeToken(res.data.token, remember);
       router.push("/dashboard");
     } catch (err) {
       if (err instanceof ApiError) {
@@ -91,8 +91,8 @@ export default function RegisterPage() {
           icon={<LockIcon />}
           error={fieldErrors.password?.[0]}
         />
-        {/* Shown per the design; the register endpoint has no remember
-            field, so this is visual state only for now. */}
+        {/* The register endpoint has no remember field; here it controls
+            how long the session is kept on this device. */}
         <RememberMe checked={remember} onChange={setRemember} />
         <FormError message={error} />
         <PrimaryButton type="submit" disabled={pending}>

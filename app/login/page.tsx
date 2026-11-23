@@ -33,7 +33,7 @@ export default function LoginPage() {
     setPending(true);
     try {
       const res = await login({ email, password, remember });
-      if (res.data?.token) storeToken(res.data.token);
+      if (res.data?.token) storeToken(res.data.token, remember);
       router.push("/dashboard");
     } catch (err) {
       if (err instanceof ApiError) {

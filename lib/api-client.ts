@@ -19,15 +19,26 @@ export const TOKEN_STORAGE_KEY = "collabspace_token";
 
 export function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_STORAGE_KEY);
+  return localStorage.getItem(TOKEN_STORAGE_KEY) ?? sessionStorage.getItem(TOKEN_STORAGE_KEY);
 }
 
-export function storeToken(token: string): void {
-  localStorage.setItem(TOKEN_STORAGE_KEY, token);
+/**
+ * remember=true keeps the session across browser restarts (localStorage);
+ * remember=false limits it to the current browser session (sessionStorage).
+ */
+export function storeToken(token: string, remember = true): void {
+  if (remember) {
+    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+  } else {
+    sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+  }
 }
 
 export function clearStoredToken(): void {
   localStorage.removeItem(TOKEN_STORAGE_KEY);
+  sessionStorage.removeItem(TOKEN_STORAGE_KEY);
 }
 
 export const apiClient = axios.create({
