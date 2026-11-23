@@ -15,18 +15,24 @@ export function PrimaryButton({ children, ...props }: ButtonHTMLAttributes<HTMLB
 
 /**
  * "Sign With Google" from the design: 50px tall, 6px radius, white fill,
- * #CBD5E0 border. Links to the backend's Google OAuth redirect endpoint.
+ * #CBD5E0 border. Shown disabled on purpose: the API documents the flow
+ * (GET /auth/social/google/redirect returns an authorization_url, then
+ * POST /auth/social/google/callback with the token), but the saved
+ * backend response points its redirect at a localhost callback URL, so
+ * the round trip cannot work yet. Wire it up once the backend's
+ * callback configuration is confirmed.
  */
 export function GoogleButton() {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "";
   return (
-    <a
-      href={`${base}/api/v1/auth/social/google/redirect`}
-      className="flex h-[50px] w-full items-center justify-center gap-3 rounded-md border border-[#cbd5e0] bg-white text-base font-medium text-[#8390a4] transition-colors hover:bg-[#f9fafb]"
+    <button
+      type="button"
+      disabled
+      title="Google sign-in is not available yet"
+      className="flex h-[50px] w-full cursor-not-allowed items-center justify-center gap-3 rounded-md border border-[#cbd5e0] bg-white text-base font-medium text-[#8390a4] opacity-70"
     >
       <GoogleIcon />
       Sign With Google
-    </a>
+    </button>
   );
 }
 

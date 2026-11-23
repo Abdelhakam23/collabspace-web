@@ -91,6 +91,8 @@ export default function RegisterPage() {
           icon={<LockIcon />}
           error={fieldErrors.password?.[0]}
         />
+        {/* Shown per the design; the register endpoint has no remember
+            field, so this is visual state only for now. */}
         <RememberMe checked={remember} onChange={setRemember} />
         <FormError message={error} />
         <PrimaryButton type="submit" disabled={pending}>
