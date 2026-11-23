@@ -141,3 +141,13 @@ and Files tabs are drawn in the frame but their sibling frames are not yet
 implemented, so they render inert with an aria-disabled note. Table rows on
 All Projects navigate to this page (Link), matching the breadcrumb's
 "Projects" back-navigation drawn in the frame.
+
+## Project detail verticals (pixel-measured at 46%, pending application)
+Breadcrumb text y115-124, title glyphs y146-170 (H4 cap-trim box), tabs row
+~211-245, Description card top ~297. Right column: Due Date card ~110-176,
+Project Progress card region ~159-495, Team Members card ~504 onward.
+Current implementation places the breadcrumb ~20px lower (pt-[61px] vs the
+~43px these readings imply); tabs/content spacing to be adjusted together
+with these. Row frame native read on All Projects: Fill 1312 x Hug 60,
+white, padding 4 vertical, border-bottom 1px, justify space-between, click
+navigates to All Projects/Alpha.
