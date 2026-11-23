@@ -63,3 +63,12 @@ Regular 14px #000000; fractions and meta Inter Medium 12px #525256; View All
 Small Caption = Inter Regular 12px #005AFB; chart axis = Inter Regular 12px
 #718096. Unverified native reads (pill labels, member names, month labels,
 file rows, Ask AI hint) follow the same scale pending deeper selection.
+
+## Native dashboard geometry (read from Figma properties, Nov 24)
+Frame 1440x1024, BG #F6F8FA, page padding 64px, card gap 24px. Cards: white
+fill, 1px border in BG label #F3F4F6, radius 16, padding 20. KPI cards fixed
+310x160; Project overview fixed 644x285; Active Projects and Recent Files
+310x276; Tasks, Teams, Up coming meetings and Ask AI 310x414. KPI bar fill
+orange is the native style Support colors/Dark orange-500 #FA9E00 with track
+dark orange-50 #FFF5E6. Card heights are fixed in the design, so cards keep
+their height regardless of record count (extra rows overflow hidden).

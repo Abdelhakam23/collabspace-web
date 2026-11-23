@@ -45,7 +45,7 @@ const M = "font-[family-name:var(--font-sans)]";
 
 function Card({ title, actions, children, className = "" }: { title: string; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`rounded-2xl bg-white p-5 ${className}`}>
+    <section className={`rounded-2xl border border-[#F3F4F6] bg-white p-5 ${className}`}>
       <header className="mb-4 flex items-center justify-between gap-2">
         <h2 className={`${M} text-[20px] font-medium leading-[150%] text-[#191919]`}>{title}</h2>
         {actions}
@@ -87,7 +87,7 @@ function DownloadIcon() {
 }
 
 function KpiIcon({ tone }: { tone: "orange" | "blue" | "green" }) {
-  const tones = { orange: ["#FEF3DE", "#FF9226"], blue: ["#E5EFFF", "#005AFB"], green: ["#E7F6EC", "#22B14C"] } as const;
+  const tones = { orange: ["#FFF5E6", "#FA9E00"], blue: ["#E5EFFF", "#005AFB"], green: ["#E7F6EC", "#22B14C"] } as const;
   const [bg, fg] = tones[tone];
   return (
     <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ backgroundColor: bg }} aria-hidden="true">
@@ -100,9 +100,9 @@ function KpiIcon({ tone }: { tone: "orange" | "blue" | "green" }) {
 }
 
 function KpiCard({ label, value, tone, ratio, fraction }: { label: string; value: number; tone: "orange" | "blue" | "green"; ratio: number; fraction: string }) {
-  const colors = { orange: "#FF9226", blue: "#005AFB", green: "#22B14C" } as const;
+  const colors = { orange: "#FA9E00", blue: "#005AFB", green: "#22B14C" } as const;
   return (
-    <section className="rounded-2xl bg-white p-5">
+    <section className="rounded-2xl border border-[#F3F4F6] bg-white p-5 xl:h-[160px]">
       <div className="flex items-center justify-between">
         <h2 className={`${M} text-[20px] font-medium leading-[150%] text-[#000000]`}>{label}</h2>
         <KpiIcon tone={tone} />
@@ -212,17 +212,17 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} />
-      <main className="space-y-5 px-4 py-5 sm:px-8">
+      <main className="space-y-6 px-4 py-6 sm:px-8 xl:px-16 xl:py-10">
         {error ? <p className="rounded-lg bg-[#fdecea] px-4 py-2 text-sm text-[#af2622]" role="alert">{error}</p> : null}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard label="Pending Tasks" value={pending} tone="orange" ratio={total > 0 ? pending / total : 0} fraction={`${pending}/${total}`} />
           <KpiCard label="In Progress" value={inProgress} tone="blue" ratio={total > 0 ? inProgress / total : 0} fraction={`${inProgress}/${total}`} />
           <KpiCard label="Completed" value={completed} tone="green" ratio={total > 0 ? completed / total : 0} fraction={`${completed}/${total}`} />
-          <section className="rounded-2xl bg-white p-5">
+          <section className="rounded-2xl border border-[#F3F4F6] bg-white p-5 xl:h-[160px]">
             <div className="flex items-start justify-between">
               <div>
-                <h2 className={`${M} text-base font-medium text-[#000712]`}>Completion Rate</h2>
+                <h2 className={`${M} text-[20px] font-medium leading-[150%] text-[#000000]`}>Completion Rate</h2>
                 <p className={`${M} mt-1 text-[31px] font-semibold leading-[150%] text-[#000000]`}>{rate}%</p>
               </div>
               <Gauge ratio={rate / 100} />
@@ -230,8 +230,8 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-          <Card title="Project overview" className="xl:col-span-6"
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+          <Card title="Project overview" className="xl:col-span-6 xl:h-[285px]"
             actions={
               <span className={`${M} flex items-center gap-4 text-xs font-medium text-[#000712]`}>
                 <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown />All Projects</span>
@@ -253,7 +253,7 @@ export default function DashboardPage() {
             </div>
           </Card>
 
-          <Card title="Active Projects" actions={<ViewAll />} className="xl:col-span-3">
+          <Card title="Active Projects" actions={<ViewAll />} className="xl:col-span-3 xl:h-[285px] xl:overflow-hidden">
             <ul className="space-y-4">
               {(data?.active_projects.items ?? []).map((p, idx) => {
                 const color = PROJECT_COLORS[idx % PROJECT_COLORS.length];
@@ -279,7 +279,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Recent Files" actions={<ViewAll />} className="xl:col-span-3">
+          <Card title="Recent Files" actions={<ViewAll />} className="xl:col-span-3 xl:h-[285px] xl:overflow-hidden">
             <ul className="space-y-4">
               {(data?.recent_files.items ?? []).map((f) => (
                 <li key={f.id} className="flex items-center justify-between gap-3">
@@ -305,8 +305,8 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-          <Card title="Tasks" actions={<ViewAll />} className="xl:col-span-3">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+          <Card title="Tasks" actions={<ViewAll />} className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden">
             <ul className="space-y-4">
               {(data?.tasks.items ?? []).map((task) => {
                 const tone = PRIORITY_TONES[(task.priority ?? "").toLowerCase()];
@@ -330,7 +330,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Teams" className="xl:col-span-3"
+          <Card title="Teams" className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden"
             actions={
               <span aria-disabled="true" className={`${M} flex items-center gap-1 text-xs font-medium text-[#000712]`}>
                 {teams[0]?.name ?? "All"}<ChevronDown />
@@ -356,7 +356,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Up coming meetings" actions={<ViewAll />} className="xl:col-span-3">
+          <Card title="Up coming meetings" actions={<ViewAll />} className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden">
             <ul className="space-y-4">
               {(data?.upcoming_meetings.items ?? []).map((m) => (
                 <li key={m.id} className="rounded-xl border border-[#eef1f5] p-3">
@@ -385,7 +385,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Ask AI" className="xl:col-span-3">
+          <Card title="Ask AI" className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden">
             {/* The frame shows a blue robot illustration. Export from the
                 view-only file is being verified separately; until the asset is
                 in the repo a neutral block holds its geometry. POST /ai/ask is
