@@ -240,7 +240,9 @@ export default function DashboardPage() {
             }>
             <div className="flex items-stretch gap-2">
               <div className="flex h-44 flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
-                {[yMax, Math.round((yMax * 2) / 3), Math.round(yMax / 3), 0].map((v, i) => <span key={i}>{v}</span>)}
+                {[yMax, Math.round((yMax * 2) / 3), Math.round(yMax / 3), 0].map((v, i) => (
+                  <span key={i}>{v >= 1000 ? `${Math.round(v / 100) / 10}k` : v}</span>
+                ))}
               </div>
               <div className="min-w-0 flex-1">
                 <AreaChart points={series.length ? series : [0, 0]} maxChart={yMax} />
@@ -258,7 +260,7 @@ export default function DashboardPage() {
                 const done = p.tasks_done ?? 0;
                 const totalTasks = p.tasks_total ?? 0;
                 return (
-                  <li key={p.id} className="flex items-start gap-3">
+                  <li key={p.id} className="flex items-start gap-3 rounded-xl border border-[#eef1f5] p-3">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: `${color}1A` }} aria-hidden="true">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="3" y="7" width="18" height="13" rx="2" />
@@ -309,7 +311,7 @@ export default function DashboardPage() {
               {(data?.tasks.items ?? []).map((task) => {
                 const tone = PRIORITY_TONES[(task.priority ?? "").toLowerCase()];
                 return (
-                  <li key={task.id}>
+                  <li key={task.id} className="rounded-xl border border-[#eef1f5] p-3">
                     <div className="flex items-start justify-between gap-2">
                       <p className={`${M} text-sm font-medium text-[#000712]`}>{task.title}</p>
                       {task.priority && tone ? (
@@ -357,7 +359,7 @@ export default function DashboardPage() {
           <Card title="Up coming meetings" actions={<ViewAll />} className="xl:col-span-3">
             <ul className="space-y-4">
               {(data?.upcoming_meetings.items ?? []).map((m) => (
-                <li key={m.id}>
+                <li key={m.id} className="rounded-xl border border-[#eef1f5] p-3">
                   <div className="flex items-center justify-between gap-2">
                     <p className={`${M} text-sm font-medium text-[#000712]`}>{m.title}</p>
                     {m.date_label ? (
