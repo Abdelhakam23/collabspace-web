@@ -1,29 +1,38 @@
 "use client";
 
+import Link from "next/link";
+
 /**
  * Final hi-fi navbar (UI Design page, Navbar component in the Dashboard frame):
- * 1440x72, white fill; active item is a Primary #005AFB pill with white text;
- * other items dark; right side search, settings, bell with red dot, user name
- * + role and avatar. Text is Montserrat (native: user name 400 14px).
- * Items whose screens are not built yet stay inert so nothing routes to a 404.
+ * 1440x72, white fill; active item is a Primary #005AFB pill with white text
+ * (hug width, 36px tall, radius 100, 10px padding); other items dark; right
+ * side search, settings, bell with red dot, user name + role and avatar.
+ * Text is Rubik. Items whose screens are not built yet stay inert so nothing
+ * routes to a 404.
  */
 const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Reports"];
 const M = "font-[family-name:var(--font-rubik)]";
 
-export function DashboardNavbar({ userName, userRole }: { userName: string; userRole?: string }) {
+const ROUTES: Record<string, string> = { Dashboard: "/dashboard", Projects: "/projects" };
+
+export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { userName: string; userRole?: string; active?: string }) {
   return (
     <header className="flex min-h-[72px] flex-wrap items-center gap-x-6 gap-y-2 bg-white px-4 py-2 sm:px-8 lg:h-[72px] lg:py-0">
       <span className={`${M} text-[20px] font-normal text-[#000712]`}>Collabspace</span>
       <nav className="order-3 flex basis-full min-w-0 flex-wrap items-center gap-1 lg:order-none lg:basis-auto">
         {NAV_ITEMS.map((item) =>
-          item === "Dashboard" ? (
+          item === active ? (
             <span
               key={item}
               aria-current="page"
-              className={`${M} rounded-full bg-[#005AFB] px-4 py-1.5 text-xs font-normal text-white`}
+              className={`${M} rounded-full bg-[#005AFB] p-2.5 text-xs font-normal text-white`}
             >
               {item}
             </span>
+          ) : ROUTES[item] ? (
+            <Link key={item} href={ROUTES[item]} className={`${M} px-3 py-1.5 text-xs font-normal text-[#000712]`}>
+              {item}
+            </Link>
           ) : (
             <span
               key={item}
