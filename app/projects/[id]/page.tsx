@@ -4,8 +4,9 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
-import { listProjects, getProjectOverview, getProjectTeamsTaskProgress } from "@/lib/api/projects";
+import { listProjects } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
+import { apiClient } from "@/lib/api-client";
 import type { Project } from "@/lib/types";
 
 /**
@@ -15,29 +16,31 @@ import type { Project } from "@/lib/types";
  * tabs Body Me 16px, active tab Primary #005AFB; card titles H6 (Inter 500
  * 20px); description body Body Re 16px Secondary #525256; member names small
  * Body 14px #525256, Leader tag Inter 400 10px #27272B; member avatars 40px
- * radius 30 with 2.5px #E9E9EA border; card geometry pixel-measured at 46%
- * zoom (left column x64 w642/862, right column x962 w414).
+ * radius 30 with 2.5px #E9E9EA border; Due Date card sits in the top header
+ * right of the title, with its track drawn #005AFB on #E6EFFF.
  *
  * Scope (design x API): title, dates, priority, progress and team members
- * come from the documented Project model (A4.1). "Project Type" and "Total
- * Tasks" in Product Details have no field in the model and are omitted; the
- * pending/in-progress/completed fractions and the Project overview chart
- * depend on A4.3/A4.4 whose response shapes the collection does not
- * document - they render only when the responses actually carry them
- * (docs/design-api-gaps.md). Tasks/Teams/Files tabs stay inert until their
- * sibling frames are implemented.
+ * come from the documented Project model (A4.1). "Project Type" in Product
+ * Details has no field in the model and is omitted. "Total Tasks" is read
+ * from A5.1 (List Tasks, project_id filter documented) via the pagination
+ * total; the collection documents no response shape for A5.1, so the item
+ * renders only when the response actually carries a numeric total
+ * (docs/design-api-gaps.md). The pending/in-progress/completed fractions and
+ * the Project overview chart card depend on A4.3/A4.4 whose response shapes
+ * are undocumented, so they are omitted rather than parsed with guessed
+ * keys. Tasks/Teams/Files tabs stay inert until their sibling frames ship.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
+const TABS = ["Overview", "Tasks", "Teams", "Files"];
 
-// Short "Mon D" presentation of an ISO date as drawn in the Due Date card.
+// Short "Mon D" presentation of an ISO date as drawn in the frame.
 function shortDate(value?: string | null) {
   if (!value) return "";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
-const TABS = ["Overview", "Tasks", "Teams", "Files"];
 
 function Card({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
@@ -48,23 +51,65 @@ function Card({ title, children, className = "" }: { title: string; children: Re
   );
 }
 
+/** Needle gauge as drawn: thin track #27272B on #E9E9EA remainder, dark needle. */
 function Gauge({ pct }: { pct: number }) {
-  // Same needle-gauge geometry as the dashboard completion card.
-  const angle = Math.PI * (1 - Math.min(100, Math.max(0, pct)) / 100);
-  const nx = 60 + 34 * Math.cos(angle);
-  const ny = 60 - 34 * Math.sin(angle);
+  const clamped = Math.min(100, Math.max(0, pct));
+  const angle = Math.PI * (1 - clamped / 100);
+  const nx = 60 + 33 * Math.cos(angle);
+  const ny = 62 - 33 * Math.sin(angle);
   return (
-    <svg viewBox="0 0 120 70" className="mx-auto w-56">
-      <path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="#F3F4F6" strokeWidth="10" strokeLinecap="round" />
+    <svg viewBox="0 0 120 70" className="mx-auto w-52">
+      <path d="M14 62 A46 46 0 0 1 106 62" fill="none" stroke="#E9E9EA" strokeWidth="6" strokeLinecap="round" />
       <path
-        d={`M10 60 A50 50 0 0 1 ${60 + 50 * Math.cos(angle)} ${60 - 50 * Math.sin(angle)}`}
+        d={`M14 62 A46 46 0 0 1 ${60 + 46 * Math.cos(angle)} ${62 - 46 * Math.sin(angle)}`}
         fill="none"
-        stroke="#000000"
-        strokeWidth="10"
+        stroke="#27272B"
+        strokeWidth="6"
         strokeLinecap="round"
       />
-      <line x1="60" y1="60" x2={nx} y2={ny} stroke="#000000" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="60" cy="60" r="4" fill="#000000" />
+      <line x1="60" y1="62" x2={nx} y2={ny} stroke="#27272B" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="60" cy="62" r="4" fill="#FFFFFF" stroke="#27272B" strokeWidth="3" />
+    </svg>
+  );
+}
+
+/** Icon-in-tinted-circle marker used by the Product Details grid. Tints and
+ *  icon colors pixel-sampled from the 46% capture (disclosed in
+ *  docs/design-api-gaps.md); circle 40px, icon ~20px. */
+function DetailIcon({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
+  return (
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: bg, color }}>
+      {children}
+    </span>
+  );
+}
+
+const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+
+function CalendarIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M3 10h18M8 3v4M16 3v4" />
+    </svg>
+  );
+}
+
+function TargetIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="4.5" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function CheckCircleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8 12.5l2.5 2.5L16 9.5" />
     </svg>
   );
 }
@@ -80,7 +125,7 @@ export default function ProjectDetailPage() {
 function ProjectDetailContent() {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
-  const [counts, setCounts] = useState<{ pending?: number; in_progress?: number; completed?: number; total?: number } | null>(null);
+  const [totalTasks, setTotalTasks] = useState<number | null>(null);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState<string | undefined>();
 
@@ -100,25 +145,15 @@ function ProjectDetailContent() {
       } catch {
         if (!cancelled) setProject(null);
       }
-      // A4.3/A4.4 response shapes are undocumented; pick up task counts only
-      // if the response actually carries them, never invented.
+      // Total Tasks from A5.1 (project_id filter documented). The collection
+      // documents no response shape for A5.1; the value is picked up only
+      // when the response actually carries a numeric pagination total, never
+      // invented (docs/design-api-gaps.md).
       try {
-        const ov = await getProjectOverview(id);
-        const d = ov.data as Record<string, unknown>;
-        const t = (d?.tasks ?? d) as Record<string, unknown>;
-        if (t && typeof t === "object" && ("pending" in t || "completed" in t)) {
-          if (!cancelled) {
-            setCounts({
-              pending: typeof t.pending === "number" ? t.pending : undefined,
-              in_progress: typeof t.in_progress === "number" ? t.in_progress : undefined,
-              completed: typeof t.completed === "number" ? t.completed : undefined,
-              total: typeof t.total === "number" ? t.total : undefined,
-            });
-          }
-        }
-      } catch {}
-      try {
-        await getProjectTeamsTaskProgress(id);
+        const { data } = await apiClient.get(`/api/v1/tasks`, { params: { project_id: id, per_page: 1 } });
+        const body = data as { meta?: { total?: unknown }; data?: { meta?: { total?: unknown } } };
+        const total = body?.data?.meta?.total ?? body?.meta?.total;
+        if (!cancelled && typeof total === "number") setTotalTasks(total);
       } catch {}
     })();
     return () => {
@@ -129,23 +164,53 @@ function ProjectDetailContent() {
   const members = (project?.teams ?? []).flatMap((t) => t.members ?? []);
   const pct = project?.progress ?? 0;
 
+  // Due Date track fill: elapsed fraction between the documented start and
+  // deadline dates, clamped; the frame draws the track without stating its
+  // semantics (docs/design-api-gaps.md).
+  let elapsed = 0;
+  if (project?.start_date && project?.deadline) {
+    const s = new Date(project.start_date).getTime();
+    const e = new Date(project.deadline).getTime();
+    if (e > s) elapsed = Math.min(1, Math.max(0, (Date.now() - s) / (e - s)));
+  }
+
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} active="Projects" />
       <main className="px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[61px]">
-        <p className={`${SANS} text-sm text-black/60`}>
-          <Link href="/projects" className="hover:underline">Projects</Link>
-          <span className="px-1">&gt;</span>
-          {project?.name ?? "…"}
-        </p>
-        <div className="mt-1 flex items-baseline gap-3">
-          <h1
-            className={`${SANS} text-[31px] font-semibold leading-[150%] text-black`}
-            style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as React.CSSProperties}
-          >
-            {project?.name ?? "…"}
-          </h1>
-          {project ? <span className={`${SANS} text-xs text-[#2BA52E]`}>{pct}% Completed</span> : null}
+        <div className="flex items-start justify-between gap-6">
+          <div>
+            <p className={`${SANS} text-sm text-black/60`}>
+              <Link href="/projects" className="hover:underline">Projects</Link>
+              <span className="px-1">&gt;</span>
+              {project?.name ?? "…"}
+            </p>
+            <div className="mt-1 flex items-baseline gap-3">
+              <h1
+                className={`${SANS} text-[31px] font-semibold leading-[150%] text-black`}
+                style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as React.CSSProperties}
+              >
+                {project?.name ?? "…"}
+              </h1>
+              {project ? <span className={`${SANS} text-xs text-[#2BA52E]`}>{pct}% Completed</span> : null}
+            </div>
+          </div>
+
+          {/* Due Date card drawn in the top header, right of the title. */}
+          <section className="hidden w-[284px] shrink-0 rounded-2xl border border-[#F3F4F6] bg-white p-5 lg:block">
+            <h2 className={`${SANS} mb-3 text-[20px] font-medium leading-[150%] text-[#191919]`}>Due Date</h2>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E6EFFF]">
+              <div className="h-full rounded-full bg-[#005AFB]" style={{ width: `${Math.round(elapsed * 100)}%` }} />
+            </div>
+            <div className="mt-3 flex items-center justify-between">
+              <p className={`${SANS} text-[13px] text-[#383838]`}>
+                Start Date: <span className="font-medium">{shortDate(project?.start_date)}</span>
+              </p>
+              <p className={`${SANS} text-[13px] text-[#383838]`}>
+                Deadline: <span className="font-medium">{shortDate(project?.deadline)}</span>
+              </p>
+            </div>
+          </section>
         </div>
 
         <nav className="mt-4 flex items-center gap-8">
@@ -162,7 +227,7 @@ function ProjectDetailContent() {
           )}
         </nav>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[642px_414px] lg:justify-between">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[862px_414px] lg:justify-between">
           <div className="flex flex-col gap-6">
             <Card title="Description">
               <p className={`${SANS} text-base leading-[150%] text-[#525256]`}>
@@ -171,70 +236,52 @@ function ProjectDetailContent() {
             </Card>
 
             <Card title="Product Details">
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <p className={`${SANS} text-xs text-[#4A4A4A]`}>Start Date</p>
-                  <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(project?.start_date)}</p>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-8">
+                {/* "Project Type" has no field in the documented Project model
+                    and is omitted (docs/design-api-gaps.md). */}
+                <div className="flex items-center gap-3">
+                  <DetailIcon bg="#F2E9F1" color="#BF75A9"><CalendarIcon /></DetailIcon>
+                  <div>
+                    <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Start Date</p>
+                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(project?.start_date)}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className={`${SANS} text-xs text-[#4A4A4A]`}>Deadline</p>
-                  <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(project?.deadline)}</p>
+                <div className="flex items-center gap-3">
+                  <DetailIcon bg="#FFEDE6" color="#FB743A"><CalendarIcon /></DetailIcon>
+                  <div>
+                    <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Deadline</p>
+                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(project?.deadline)}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className={`${SANS} text-xs text-[#4A4A4A]`}>Priority</p>
-                  <p className={`${SANS} text-base font-medium text-[#000712]`}>{project?.priority ?? ""}</p>
+                <div className="flex items-center gap-3">
+                  <DetailIcon bg="#FBEAEA" color="#DB302A"><TargetIcon /></DetailIcon>
+                  <div>
+                    <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Priority</p>
+                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{project?.priority ?? ""}</p>
+                  </div>
                 </div>
-                {/* "Project Type" and "Total Tasks" appear in the frame but have
-                    no field in the documented Project model - omitted, see
-                    docs/design-api-gaps.md. */}
+                {totalTasks !== null ? (
+                  <div className="flex items-center gap-3">
+                    <DetailIcon bg="#F3F4F6" color="#191919"><CheckCircleIcon /></DetailIcon>
+                    <div>
+                      <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Total Tasks</p>
+                      <p className={`${SANS} text-base font-medium text-[#000712]`}>{totalTasks}</p>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </Card>
           </div>
 
           <div className="flex flex-col gap-6">
-            {/* Due Date card drawn top-right in the frame: title, a decorative
-                two-segment track, and the start/deadline values (Caption 13px
-                #383838). Track segment colors are as drawn (primary + amber);
-                the track carries no documented semantics. */}
-            <section className="rounded-2xl border border-[#F3F4F6] bg-white p-5">
-              <h2 className={`${SANS} mb-3 text-[20px] font-medium leading-[150%] text-[#191919]`}>Due Date</h2>
-              <div className="flex h-1.5 w-full overflow-hidden rounded-full">
-                <span className="w-1/2 bg-[#005AFB]" />
-                <span className="w-1/2 bg-[#E6BA0E]" />
-              </div>
-              <div className="mt-3 flex items-center justify-between">
-                <p className={`${SANS} text-[13px] text-[#383838]`}>
-                  Start Date: <span className="font-medium">{shortDate(project?.start_date)}</span>
-                </p>
-                <p className={`${SANS} text-[13px] text-[#383838]`}>
-                  Deadline: <span className="font-medium">{shortDate(project?.deadline)}</span>
-                </p>
-              </div>
-            </section>
-
             <Card title="Project Progress">
               <Gauge pct={pct} />
               <p className={`${SANS} mt-1 text-center text-base font-medium text-black`}>{pct}%</p>
               <p className={`${SANS} text-center text-xs text-black`}>Project Completed</p>
-              {counts ? (
-                <div className="mt-3 flex items-center justify-between text-center">
-                  {(
-                    [
-                      ["Pending tasks", counts.pending, "#525256"],
-                      ["In progress tasks", counts.in_progress, "#005AFB"],
-                      ["Completed tasks", counts.completed, "#2BA52E"],
-                    ] as const
-                  ).map(([label, value, color]) => (
-                    <div key={label}>
-                      <p className={`${SANS} text-base font-medium text-black`}>
-                        {value ?? "–"}
-                        {counts.total ? <span className="text-sm font-normal text-[#525256]">/{counts.total}</span> : null}
-                      </p>
-                      <p className={`${SANS} text-xs`} style={{ color }}>{label}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
+              {/* The pending / in progress / completed fractions drawn below the
+                  gauge depend on A4.3/A4.4, whose response shapes the collection
+                  does not document; omitted rather than parsed with guessed keys
+                  (docs/design-api-gaps.md). */}
             </Card>
 
             <Card title="Team Members">

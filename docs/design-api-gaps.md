@@ -110,14 +110,22 @@ date fields are boxed in the source and the implementation (an earlier
 "underlined" note was a misread of the capture).
 
 ## Project detail (All Projects / Alpha) gaps
-"Project Type" and "Total Tasks" in the Product Details card have no field in
-the documented Project model, so the card shows Start Date, Deadline and
-Priority only. The pending / in progress / completed fractions under the gauge
-depend on A4.3 whose response shape the collection does not document; they
-render only when the response actually carries them. The "Project overview"
-chart card is omitted for now: its series data would come from the same
-undocumented overview response, so there is no documented source for it yet.
-Tasks, Teams and Files tabs are drawn in the frame but their sibling frames
-are not yet implemented, so they render inert with an aria-disabled note.
-Table rows on All Projects navigate to this page (Link), matching the
-breadcrumb's "Projects" back-navigation drawn in the frame.
+"Project Type" in the Product Details grid has no field in the documented
+Project model and is omitted. "Total Tasks" is read from A5.1 (List Tasks,
+whose project_id filter is documented) via the pagination total; the
+collection documents no response shape for A5.1, so the item renders only
+when the response actually carries a numeric meta.total. The pending /
+in progress / completed fractions under the gauge and the Project overview
+chart card depend on A4.3/A4.4, whose response shapes are undocumented, so
+both are omitted rather than parsed with guessed keys; the avatar drawn
+above the Due Date card has no owner/avatar field in the model and is
+omitted. The Due Date track fill presents the elapsed fraction between the
+documented start_date and deadline; the frame draws the track without
+stating its semantics. Product Details icon tints and icon colors are
+pixel-sampled from the 46% capture (#F2E9F1/#BF75A9 start date,
+#FFEDE6/#FB743A deadline, #FBEAEA/#DB302A priority, #F3F4F6/#191919 total
+tasks); the gauge track uses #27272B on #E9E9EA as sampled. Tasks, Teams
+and Files tabs are drawn in the frame but their sibling frames are not yet
+implemented, so they render inert with an aria-disabled note. Table rows on
+All Projects navigate to this page (Link), matching the breadcrumb's
+"Projects" back-navigation drawn in the frame.
