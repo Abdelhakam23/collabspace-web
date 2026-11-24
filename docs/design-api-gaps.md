@@ -139,9 +139,10 @@ documented start_date and deadline; the frame draws the track without
 stating its semantics. Product Details icon tints and icon colors are
 pixel-sampled from the 46% capture (#F2E9F1/#BF75A9 start date,
 #FFEDE6/#FB743A deadline, #FBEAEA/#DB302A priority, #F3F4F6/#191919 total
-tasks). Native reads since replaced the pixel estimates: the gauge is a
-270-degree ring (gap at the bottom), 177.61px ellipse, #27272B stroke
-~11px on the light track, needle plus white center dot. Header block:
+tasks). Native reads since replaced the pixel estimates: the gauge ring is
+a 177.61px ellipse pair, #27272B on #E9E9EA, stroke ~11 with round caps;
+the exact arc geometry (198deg track from 168deg, drawn 126deg dark arc,
+pivot 8.7px below ring center) is documented in the gauge section below. Header block:
 Fixed 1311 x Hug 71 at top 104 / left 65 with a 32px gap to the Due Date
 card (Fixed 324 x Hug 71, radius 12, border #F3F4F6, padding 12). The
 Product Details icon tints above remain sampled, not native. Tasks, Teams
@@ -212,12 +213,21 @@ inert (design-only control, no documented filter parameter).
   column 792x241; plot 218, month labels row 12, gap 11).
 - Project Progress card: padding 20, gap 43, gauge group 178x178, legend row
   items vertical (value 16px/12 + gap 16 + dot+label 12px/9).
-- Needle (Rectangle 40109): rounded bar 9.45x54.32, radius 7.56, #27272B,
-  drawn rotated -22.09deg at the sample's 78%. The drawing is decorative:
-  the needle does NOT sit at the dark arc's tip. Implementation anchors the
-  drawn measurement (78% -> 22.09deg clockwise from vertical) and sweeps
-  2.25deg per percentage point (the track's own 225deg sweep); endpoints are
-  extrapolated from that anchor, so extreme values are honest but not drawn
-  from a second sample.
+- Needle gauge inner geometry (1:1 native capture + node reads): track
+  #E9E9EA is a 198deg arc from 168deg (screen coords, clockwise from 3
+  o'clock), r 83.3, stroke ~11, round caps; the ~162deg gap spans the
+  bottom from 3 o'clock to ~8:45 and does not wrap the bottom. Dark arc
+  #27272B drawn 168deg -> 294deg (126deg) starting at the track start.
+  Pivot dot 17.01 white, border 1.89 #27272B drawn inside, center 8.7px
+  below ring center. Needle (Rectangle 40109): 9.45x54.32 rounded bar,
+  #27272B, tilted 22.09deg clockwise from vertical; Figma reports its
+  rotated bounding box, so the implementation places it by center.
+- Drawn-vs-truthful: the drawn dark arc (126deg) covers ~64% of the track,
+  not the labeled 78%, so the design gauge is decorative (same pattern as
+  the drawn 36+62+42>94 legend). Runtime mode maps pct truthfully over
+  the 198deg track (arc end and needle both at 168 + 1.98 * pct degrees);
+  the guarded visual fixture (localStorage collabspace_visual_fixture=1)
+  reproduces the drawn 126deg arc and 22.09deg needle verbatim for pixel
+  comparison only.
 - Figma strokes render inside the frame box, so cards use a 1px ring instead
   of a CSS border to land on exact native heights.

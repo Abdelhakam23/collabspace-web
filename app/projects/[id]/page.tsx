@@ -61,34 +61,51 @@ function Card({ title, children, className = "", gap = 20, aside, asideInline = 
   );
 }
 
-/** Needle gauge (Group 1171275875, 178x178 native): track is a 225-degree
- *  arc starting at 155deg (screen coords, clockwise from 3 o'clock) so the
- *  135-degree gap sits centered at the bottom; the dark progress arc starts
- *  at the track start. Ellipse 177.61px, stroke 11px (#27272B on #E9E9EA).
- *  Needle pivot ~29.5px below ring center with a white ring dot (1.89px
- *  #27272B border). Geometry from native ellipse reads plus pixel analysis
- *  of the zoomed capture (docs/design-api-gaps.md). */
-function Gauge({ pct }: { pct: number }) {
+/** Needle gauge (Group 1171275875, 178x178 native; ring box 177.61 at
+ *  card-relative (119,78), so the ring center is (88.8,88.8) in the box).
+ *  Measured from the 1:1 native capture plus ellipse/rectangle node reads:
+ *  - Track #E9E9EA: 198deg arc from 168deg (screen coords, clockwise from
+ *    3 o'clock), r 83.3, stroke 11, round caps. The ~162deg gap spans the
+ *    bottom from 3 o'clock to ~8:45; it does not wrap the bottom.
+ *  - Progress #27272B starts at the track start (168deg).
+ *  - Pivot dot: 17.01 white, 1.89 #27272B border, center (88.06,97.51),
+ *    8.7px below ring center.
+ *  - Needle (Rectangle 40109): 9.45x54.32 #27272B bar with fully rounded
+ *    ends, drawn tilted 22.09deg clockwise from vertical, tip ending at
+ *    the dark arc end (~292deg).
+ *  Drawn-vs-truthful: the drawn dark arc (126deg) is ~64% of the track,
+ *  not the labeled 78%, so the design arc is decorative (same pattern as
+ *  the drawn 36+62+42>94 legend). Runtime mode maps pct truthfully over
+ *  the 198deg track and rotates the needle to the arc end around the
+ *  pivot; the visual fixture (localStorage collabspace_visual_fixture=1)
+ *  reproduces the drawn 126deg arc and 22.09deg needle verbatim
+ *  (docs/design-api-gaps.md). */
+function Gauge({ pct, drawn = false }: { pct: number; drawn?: boolean }) {
   const clamped = Math.min(100, Math.max(0, pct));
   const c = 89, r = 83.3, C = 2 * Math.PI * r;
-  const trackLen = (225 / 360) * C;
-  const pivotY = c + 29.5;
-  // Needle angle: degrees clockwise from straight up, anchored to the drawn
-  // sample (78% -> 22.09deg, Rectangle 40109) sweeping 2.25deg per point.
-  const deg = 22.09 + 2.25 * (clamped - 78);
-  const rad = (deg * Math.PI) / 180;
-  const tipX = c + 54.32 * Math.sin(rad);
-  const tipY = pivotY - 54.32 * Math.cos(rad);
+  const trackLen = (198 / 360) * C;
+  const pivotX = 88.06, pivotY = 97.51;
+  // Truthful mapping: arc end and needle sit at 168 + 1.98 * pct degrees,
+  // i.e. (1.98 * pct - 102) degrees clockwise from straight up.
+  const trueDeg = 1.98 * clamped - 102;
+  const needleDeg = drawn ? 22.09 : trueDeg;
+  const progLen = drawn ? (126 / 360) * C : (trackLen * clamped) / 100;
   return (
     <svg viewBox="0 0 178 178" className="absolute inset-0 h-full w-full">
       <circle cx={c} cy={c} r={r} fill="none" stroke="#E9E9EA" strokeWidth="11"
-        strokeDasharray={`${trackLen} ${C}`} transform={`rotate(155 ${c} ${c})`} />
-      {clamped > 0 ? (
+        strokeLinecap="round" strokeDasharray={`${trackLen} ${C}`} transform={`rotate(168 ${c} ${c})`} />
+      {progLen > 0 ? (
         <circle cx={c} cy={c} r={r} fill="none" stroke="#27272B" strokeWidth="11"
-          strokeDasharray={`${(trackLen * clamped) / 100} ${C}`} transform={`rotate(155 ${c} ${c})`} />
+          strokeLinecap="round" strokeDasharray={`${progLen} ${C}`} transform={`rotate(168 ${c} ${c})`} />
       ) : null}
-      <line x1={c} y1={pivotY} x2={tipX} y2={tipY} stroke="#27272B" strokeWidth="9.45" strokeLinecap="round" />
-      <circle cx={c} cy={pivotY} r="7.5" fill="#FFFFFF" stroke="#27272B" strokeWidth="1.89" />
+      <g transform={`rotate(${needleDeg - 22.09} ${pivotX} ${pivotY})`}>
+        {/* Figma reports the rotated bounding box for the needle, so place
+            by its center (99.5,69.1) and tilt 22.09deg clockwise. */}
+        <rect x={94.78} y={41.94} width={9.45} height={54.32} rx={4.725} fill="#27272B"
+          transform="rotate(22.09 99.5 69.1)" />
+      </g>
+      {/* Dot stroke draws inside the 17.01 box, so r = 8.505 - 1.89/2. */}
+      <circle cx={pivotX} cy={pivotY} r={7.56} fill="#FFFFFF" stroke="#27272B" strokeWidth="1.89" />
     </svg>
   );
 }
@@ -180,6 +197,11 @@ function ProjectDetailContent() {
   const [teamsProgress, setTeamsProgress] = useState<ProjectTeamProgress[]>([]);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState<string | undefined>();
+  // Set only by the guarded visual-fixture harness (tests/cs-fixture), never
+  // in production: reproduces the design's drawn gauge arc/needle verbatim.
+  const [visualFixture] = useState(
+    () => typeof window !== "undefined" && window.localStorage.getItem("collabspace_visual_fixture") === "1",
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -380,7 +402,7 @@ function ProjectDetailContent() {
           <div className="flex flex-col gap-8 lg:h-[707px]">
             <Card title="Project Progress" gap={43}>
               <div className="relative mx-auto h-[178px] w-[178px]">
-                <Gauge pct={pct} />
+                <Gauge pct={pct} drawn={visualFixture} />
                 <div className="absolute left-[36px] top-[133px] w-[106px] text-center">
                   <p className={`${SANS} text-[16px] font-medium leading-[12px] text-black`}>{pct}%</p>
                   <p className={`${SANS} mt-[9px] whitespace-nowrap text-[12px] leading-[9px] text-black`}>Project Completed</p>
