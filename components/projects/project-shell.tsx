@@ -8,16 +8,11 @@ import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { getProjectOverview } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
 import { shortDate } from "@/lib/format";
-import type { ProjectOverview } from "@/lib/types";
+import type { ProjectOverview } from "@/types";
+import { PROJECT_TABS } from "@/constants/projects";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
-const TABS = [
-  { label: "Overview", path: "" },
-  { label: "Tasks", path: "/tasks" },
-  { label: "Teams", path: "/teams" },
-  { label: "Files", path: "/files" },
-];
 
 export function ProjectShell({ projectId, children }: { projectId: string; children: ReactNode }) {
   const pathname = usePathname();
@@ -94,7 +89,7 @@ export function ProjectShell({ projectId, children }: { projectId: string; child
         </div>
 
         <nav className="mt-8 flex h-[28px] items-start gap-[30px]">
-          {TABS.map((t) => {
+          {PROJECT_TABS.map((t) => {
             const href = `${base}${t.path}`;
             const active = pathname === href;
             return (
