@@ -92,8 +92,8 @@ export function WeekGrid({ meetings, startDate }: { meetings: Meeting[]; startDa
   const hiddenCount = placed.length - inGrid.length;
 
   return (
-    <div className="mt-[39px] max-w-[1311px]">
-            <div className="grid grid-cols-6 border-b border-[#F3F4F6]">
+    <div className="mt-[39px] max-w-[1311px] overflow-x-auto">
+            <div className="grid min-w-[640px] grid-cols-6 border-b border-[#F3F4F6]">
         <div className="flex h-[137px] flex-col gap-0.5 border-r border-[#F3F4F6] p-4">
           <span className={`${RUBIK} text-sm font-normal leading-4 text-black`}>Time</span>
         </div>
@@ -107,7 +107,7 @@ export function WeekGrid({ meetings, startDate }: { meetings: Meeting[]; startDa
         ))}
       </div>
             {hours.map((hour) => (
-        <div key={hour} className="grid grid-cols-6 border-b border-[#F3F4F6]">
+        <div key={hour} className="grid min-w-[640px] grid-cols-6 border-b border-[#F3F4F6]">
           <div className="flex min-h-[137px] flex-col gap-0.5 border-r border-[#F3F4F6] p-4">
             <span className={`${RUBIK} text-sm font-normal leading-4 text-black`}>{hour}:00</span>
           </div>
