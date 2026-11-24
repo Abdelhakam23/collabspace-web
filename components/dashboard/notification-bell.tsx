@@ -70,7 +70,7 @@ export function NotificationBell() {
         {unread > 0 ? <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#e5484d]" aria-hidden="true" /> : null}
       </button>
       {open ? (
-        <span className="fixed inset-x-4 top-[64px] z-50 block rounded-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-9 sm:w-[311px] bg-white py-4 shadow-lg ring-1 ring-black/5">
+        <span className="fixed inset-x-4 top-[64px] z-50 block rounded-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-9 sm:w-[311px] xl:left-0 xl:right-auto bg-white py-4 shadow-lg ring-1 ring-black/5">
           <span className="block px-4 text-base font-medium text-[#000712]">Notifications</span>
           <span className="mt-5 block">
             {items === null ? (
@@ -99,3 +99,4 @@ export function NotificationBell() {
     </span>
   );
 }
+
