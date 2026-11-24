@@ -21,18 +21,6 @@ const DISABLED_REASONS = {
   project: "Changing the current team or project is not documented in the API",
 } as const;
 
-/**
- * "Profile/Settomgs" frame (1440x1024, #F6F8FA): header card with the
- * avatar and its camera badge, the Personal Info section (Full Name, Email
- * Address, Phone Number, Availability Status), the Experience section (Job
- * Title, Years Of Experience, Current Team / Project) and the full-width
- * Save button.
- *
- * Scope: A2.2 writes name, phone, job_title, years_of_experience and the
- * avatar only, so Email, Availability Status and Current Team / Project are
- * disabled with reasons. No password form is drawn, so A2.4 is not wired
- * here. Field styles are estimated (unmeasured).
- */
 export default function ProfileSettingsPage() {
   const [me, setMe] = useState<User | null>(null);
   const [name, setName] = useState("");
