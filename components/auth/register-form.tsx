@@ -24,7 +24,6 @@ export function RegisterForm() {
     setFieldErrors({});
     setPending(true);
     try {
-      // The design has a single password field, so it doubles as confirmation.
       const res = await registerAccount({ name, email, password, password_confirmation: password });
       if (res.data?.token) storeToken(res.data.token, remember);
       router.push("/dashboard");
@@ -75,9 +74,7 @@ export function RegisterForm() {
         icon={<Lock size={20} strokeWidth={1.6} />}
         error={fieldErrors.password?.[0]}
       />
-      {/* The register endpoint has no remember field; here it controls
-          how long the session is kept on this device. */}
-      <RememberMe checked={remember} onChange={setRemember} />
+            <RememberMe checked={remember} onChange={setRemember} />
       <FormError message={error} />
       <PrimaryButton type="submit" disabled={pending}>
         {pending ? "Signing up..." : "Sign up"}
