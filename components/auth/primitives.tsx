@@ -1,0 +1,112 @@
+import type { ButtonHTMLAttributes, CSSProperties } from "react";
+import { GoogleIcon } from "./icons";
+
+/** Primary action: 40px tall, 16px radius, primary blue. */
+export function PrimaryButton({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      className="h-10 w-full rounded-2xl bg-primary-500 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-60"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+/**
+ * "Sign With Google" from the design: 50px tall, 6px radius, white fill,
+ * #CBD5E0 border. Shown disabled on purpose: the API documents the flow
+ * (GET /auth/social/google/redirect returns an authorization_url, then
+ * POST /auth/social/google/callback with the token), but the saved
+ * backend response points its redirect at a localhost callback URL, so
+ * the round trip cannot work yet. Wire it up once the backend's
+ * callback configuration is confirmed.
+ */
+export function GoogleButton() {
+  return (
+    <div className="space-y-1">
+      <button
+        type="button"
+        disabled
+        aria-describedby="google-unavailable"
+        className="flex h-[50px] w-full cursor-not-allowed items-center justify-center gap-3 rounded-md border border-[#cbd5e0] bg-white text-base font-medium text-[#718096] opacity-70"
+      >
+        <GoogleIcon />
+        Sign With Google
+      </button>
+      <p id="google-unavailable" className="text-center text-xs text-[#94a0b0]">
+        Google sign-in isn&apos;t available yet
+      </p>
+    </div>
+  );
+}
+
+export function OrDivider() {
+  return (
+    <div className="flex items-center gap-4 text-sm text-[#8390a4]">
+      <span className="h-px flex-1 bg-[#cbd5e0]" />
+      OR
+      <span className="h-px flex-1 bg-[#cbd5e0]" />
+    </div>
+  );
+}
+
+export function RememberMe({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2 text-base text-[#718096]">
+      {/* Native checkbox is 16x16; the Remember/Forgot row block measures 36px tall. */}
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="h-4 w-4 rounded accent-primary-500"
+      />
+      Remember Me
+    </label>
+  );
+}
+
+export function FormError({ message }: { message: string | null }) {
+  if (!message) return null;
+  return (
+    <p className="rounded-lg bg-[#fdecea] px-4 py-2 text-sm text-[#af2622]" role="alert">
+      {message}
+    </p>
+  );
+}
+
+export function AuthHeading({
+  title,
+  subtitle,
+  titleClassName = "text-[31px] font-semibold",
+}: {
+  title: string;
+  subtitle: string;
+  titleClassName?: string;
+}) {
+  return (
+    <div className="space-y-[15px] text-center">
+      {/* Native Figma properties: Sign In title Inter 600 31px #1F2937,
+          Sign Up title Inter 700 36px #1F2937, subtitle Inter 400 16px #718096.
+          Boxes are cap-trimmed: the native heading block measures 48px tall. */}
+      <h1
+        className={`${titleClassName} text-[#1f2937]`}
+        style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as CSSProperties}
+      >
+        {title}
+      </h1>
+      <p
+        className="text-base text-[#718096]"
+        style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as CSSProperties}
+      >
+        {subtitle}
+      </p>
+    </div>
+  );
+}
