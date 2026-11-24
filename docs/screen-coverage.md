@@ -19,10 +19,11 @@ it, not yet implemented; EXCLUDED = one source missing, reason given.
   "Forgot" on the UI Design page returns zero results; the
   "Forget Password?" link stays inert by design rule.
 - Language overlay (139-2996, 210xHug116 r16 p16, rows English (checked)
-  / Arabic / France): TODO as a marked control — the selector itself is
-  drawn, but neither source contains any translated strings, so Arabic
-  and France render disabled with the limitation noted; no translations
-  will be invented.
+  / Arabic / France): EXCLUDED — the overlay is drawn, but the measured
+  navbar right group (search, bell, user block only) contains no language
+  trigger and no other reachable screen draws one, and neither source
+  contains any translated strings. Rendering an English-only overlay with
+  disabled rows would add a control the design never places.
 
 ## Core app
 - Dashboard (285-12895, A10.1): DONE.
@@ -160,11 +161,9 @@ DONE (meetings/[id] room, canonical node 114-3107 on UI Design,
 AI summary work (A6.6-A6.9) depends on what the summary surface
 offers.
 
-## Chats (design frames + A8.1-A8.7): TODO
-Hi-fi frames: Chats (screen; node id pending). "Project Chat", "Search
-in chat", "Chat settings" are in-screen elements of it (find-box type
-evidence). Message send/edit/delete and thread replies have API support;
-frame review pending.
+## Chats (Chats list + conversation + A8.1-A8.7): DONE (2026-11-24)
+List and conversation screens implemented with send, attachments and
+retry-safe failure handling; fixture-verified. Details below.
 
 ## Notifications (Notification overlay 209-6425 + A9): DONE (2026-11-24)
 Navbar bell is live: unread dot from A9.3, overlay from A9.1, clicking an
@@ -173,12 +172,13 @@ mark-all or delete control, so A9.5/A9.6 stay unused. Row title/message/
 time text sizes are pixel-estimated from the 100% frame read (only the
 overlay title typography is node-read: Inter 500 16px #000712); time
 labels follow the drawn samples (HH:MM today, Yesterday, else date).
-## Reports (Reports screen + pickers + A11.1-A11.5): TODO
-Hi-fi frames: Reports (screen; node id pending) with the report-type
-picker 163-1089 and period picker 163-995. "Detailed Reports", "Print/
-Save Report", "KPI's", "Personal", "Project progress" are in-screen
-labels (find-box type evidence); print/save has no API (browser print
-is a client concern — review during implementation).
+## Reports (Reports screen + pickers + A11.1-A11.5): DONE, INTEGRATION UNVERIFIED (2026-11-24)
+Screen, pickers, charts and zero-delta handling implemented and
+fixture-verified. The A11.x response fields are undocumented, so data
+semantics fail closed: no guessed metric or axis renders as real data
+and missing deltas never render as zero. Semantics stay UNVERIFIED until
+an authorized live payload read grounds them. Print/Save uses the
+browser's own print (client concern; no API exists).
 
 ## Ask AI (frames 225-9992 + 229-5948, A10.2): DONE (2026-11-24)
 /ask-ai implements the empty state and the chat surface, entered from the
@@ -195,17 +195,20 @@ renders as the drawn blue link card showing only what the URL carries
 omitted). Project-scoped asks (A10.3) are excluded: the collection
 documents no field names for the extra parameter and no drawn screen
 offers a project selector, so wiring it would invent both.
-## Profile (Profile, /overview, /tasks, /files, /Settomgs + A2.x): TODO
-Profile/overview (A2.1), Profile / tasks (A2.5), Profile / files (A2.6),
-Profile/Settings (A2.2 avatar, A2.3 remove avatar, A2.4 password) are all
-in the intersection. Node ids pending harvest.
+## Profile (Profile, /overview, /tasks, /files, /Settomgs + A2.x): DONE (2026-11-24)
+Overview, tasks, files and settings implemented and fixture-verified.
+The settings availability field binds only the payload value (no default
+status is fabricated). The stats cards inherit the Reports data-semantics
+uncertainty (same A11 family) and stay marked UNVERIFIED. Reachability:
+the profile screens have no drawn prototype entry point, so the navbar
+user chip links to /profile as the only drawn affordance (judgment call,
+disclosed; the Navbar instance shows no Prototype interactions).
 
 ## Search
-- Search Bar overlay (225-10323): REVIEW PENDING — no global /search
-  endpoint exists in the collection; per-field search is already
-  client-side where drawn. If the overlay is a command/search UI, it is
-  EXCLUDED unless an endpoint is found. Inspect the frame content before
-  finalizing.
+- Search Bar overlay (225-10323): RESOLVED (2026-11-24) — no global
+  /search endpoint exists in the collection, so the navbar search input
+  renders disabled with the reason named, and the overlay is EXCLUDED.
+  Per-field search stays client-side where drawn.
 
 ## Admin/AI settings/audit
 - A12 user management, A13.1/A13.2 AI settings, A13.3 audit logs:
