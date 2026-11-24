@@ -257,7 +257,12 @@ function ProjectDetailContent() {
                   its documented status filter, shown only when the response
                   actually carries a numeric pagination total; a dash marks a
                   count the API did not supply - never an invented number. */}
-              <div className="mx-auto flex w-fit items-start gap-[43px]">
+              {/* Centered with justify-center, not auto margins: the drawn
+                  row (407px natively) is wider than the card's padding box,
+                  and auto margins clamp an overflowing item to the start edge
+                  while justify-center overflows symmetrically, as the frame does. */}
+              <div className="flex justify-center">
+                <div className="flex w-fit items-start gap-[43px]">
                 {STATUS_LEGEND.map((item, i) => (
                   <div key={item.label} className="flex flex-col items-center gap-4">
                     <span className={`${SANS} text-[16px] font-medium leading-[12px] text-black`}>
@@ -269,6 +274,7 @@ function ProjectDetailContent() {
                     </span>
                   </div>
                 ))}
+                </div>
               </div>
             </Card>
 
