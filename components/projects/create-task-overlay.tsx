@@ -51,10 +51,11 @@ export function CreateTaskOverlay({
   // Set once the task exists: the form never submits twice, and a failed
   // file upload after a successful create becomes a visible partial success.
   const [created, setCreated] = useState(false);
-  const [uploadFailures, setUploadFailures] = useState(0);
+  const [failedFiles, setFailedFiles] = useState<File[]>([]);
   const fileInput = useRef<HTMLInputElement>(null);
   // Ref guard: state alone cannot stop two submits in the same render batch.
   const submitting = useRef(false);
+  const createdTaskId = useRef<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,17 +90,19 @@ export function CreateTaskOverlay({
       setCreated(true);
       onCreated();
       const createdTask = (res.data as { task?: { id?: number } }).task;
-      let failed = 0;
+      createdTaskId.current = createdTask?.id ?? null;
+      const failed: File[] = [];
       for (const f of files) {
         if (!createdTask?.id) break;
         try {
           await uploadFileToTask({ file: f, task_id: String(createdTask.id) });
         } catch {
-          failed += 1;
+          failed.push(f);
         }
       }
-      if (failed) {
-        setUploadFailures(failed);
+      if (failed.length) {
+        setFailedFiles(failed);
+        submitting.current = false;
       } else {
         onClose();
       }
@@ -111,6 +114,26 @@ export function CreateTaskOverlay({
     }
   }
 
+  // Retries only the failed uploads against the already-created task -
+  // never a second POST /tasks.
+  async function onRetryUploads() {
+    if (submitting.current || !createdTaskId.current) return;
+    submitting.current = true;
+    setPending(true);
+    const stillFailed: File[] = [];
+    for (const f of failedFiles) {
+      try {
+        await uploadFileToTask({ file: f, task_id: String(createdTaskId.current) });
+      } catch {
+        stillFailed.push(f);
+      }
+    }
+    setFailedFiles(stillFailed);
+    submitting.current = false;
+    setPending(false);
+    if (!stillFailed.length) onClose();
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true" aria-label="Create Task">
       <form
@@ -119,7 +142,9 @@ export function CreateTaskOverlay({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-[25px] font-medium leading-[24px] text-[#000712]">Create Task</h2>
-          <button type="button" onClick={onClose} aria-label="Close" className="text-black">
+          {/* Closing stays blocked while a create or upload is in flight, so
+              reopening can never double-submit a half-finished flow. */}
+          <button type="button" onClick={onClose} disabled={pending} aria-label="Close" className="text-black disabled:opacity-40">
             <svg width="13.15" height="13.15" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
               <path d="m1 1 12 12M13 1 1 13" />
             </svg>
@@ -231,7 +256,7 @@ export function CreateTaskOverlay({
             <button
               type="button"
               onClick={() => fileInput.current?.click()}
-              className="flex w-full flex-1 items-center justify-center gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white px-[36px] text-sm text-[#718096]"
+              className="flex w-full flex-1 items-center justify-start gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white px-[36px] text-sm text-[#718096]"
             >
               <Upload size={14} strokeWidth={1.6} />
               {files.length ? files.map((f) => f.name).join(", ") : "Drag and drop files or click to upload"}
@@ -248,18 +273,28 @@ export function CreateTaskOverlay({
 
         {error ? <p className="text-sm text-[#af2622]">{error}</p> : null}
 
-        {uploadFailures ? (
+        {failedFiles.length ? (
           <div className="flex flex-col gap-4">
             <p className="text-sm text-[#af2622]">
-              Task created, but {uploadFailures} file{uploadFailures > 1 ? "s" : ""} failed to upload. You can attach them again from the task later.
+              Task created, but {failedFiles.length} file{failedFiles.length > 1 ? "s" : ""} failed to upload ({failedFiles.map((f) => f.name).join(", ")}).
             </p>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-10 w-full items-center justify-center rounded-[32px] bg-[#005AFB] px-5 py-[13px] text-sm font-medium text-white"
-            >
-              Close
-            </button>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onRetryUploads}
+                disabled={pending}
+                className="flex h-10 flex-1 items-center justify-center rounded-[32px] bg-[#005AFB] px-5 text-sm font-medium text-white disabled:opacity-60"
+              >
+                {pending ? "Uploading..." : "Retry upload"}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-10 flex-1 items-center justify-center rounded-[32px] border border-[#CBD5E0] px-5 text-sm font-medium text-[#27272B]"
+              >
+                Close
+              </button>
+            </div>
           </div>
         ) : (
           <button

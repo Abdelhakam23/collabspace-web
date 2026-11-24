@@ -339,10 +339,11 @@ Intersection decisions:
 - priority, description and team_id exist in A5.3 but not in the frame, so
   they are not invented into the form; the backend's own response decides.
 - Add Task Files uploads each chosen file after creation via A7.3. A failed
-  upload after a successful create surfaces as a partial success ("Task
-  created, but N file(s) failed to upload") with the submit blocked, so a
-  retry can never create a duplicate task; a ref guard also stops two
-  submits fired in the same render batch.
+  upload after a successful create surfaces as a partial success naming the
+  failed files, with a "Retry upload" button that re-posts only those files
+  against the already-created task id - never a second POST /tasks. The
+  dialog's close control is disabled while a create or upload is in flight,
+  and a ref guard stops two submits fired in the same render batch.
 - Field chrome (notched labels, 56px inputs, dashed dropzone) reuses the New
   Project overlay's measurements, which were read from the same design file.
 - After a successful create the kanban board refetches (A5.2) instead of
