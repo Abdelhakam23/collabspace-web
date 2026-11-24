@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Download, FileIcon, FileText, Image as ImageIcon } from "lucide-react";
+import { saveFileDownload } from "@/lib/api/files";
 import type { FileAttachment } from "@/lib/types";
 
 /**
@@ -7,9 +9,9 @@ import type { FileAttachment } from "@/lib/types";
  * the native nodes: 90px white cards (radius 16, 1px #AEAEB2 border, 16px
  * padding, 14px gaps) with the red PDF artwork (~29x37, #F44336), the name
  * in Inter Medium 16px, the uploader in Inter Regular 13px and the size/time
- * meta in Inter Regular 12px, all #000000, plus an 18px black download
- * affordance that stays inert under the read-only scope
- * (docs/design-api-gaps.md). Recent Files cards are 404px wide with 50px
+ * meta in Inter Regular 12px, all #000000. The 18px black download icon is
+ * wired to A7.5 (a read) and saves the blob. Recent Files cards are 404px
+ * wide with 50px
  * gaps; the All Files grid uses 346px cards with 32px gaps.
  */
 
@@ -42,7 +44,17 @@ function timeAgo(value?: string | null) {
 
 export function FileCard({ file }: { file: FileAttachment }) {
   const { color, Icon } = fileIcon(file);
+  const [downloading, setDownloading] = useState(false);
   const meta = [fileSize(file.size), timeAgo(file.created_at)].filter(Boolean).join(" • ");
+  // A7.5 is a read; the download affordance is wired and saves the blob.
+  async function onDownload() {
+    setDownloading(true);
+    try {
+      await saveFileDownload(file);
+    } finally {
+      setDownloading(false);
+    }
+  }
   return (
     <li className="flex h-[90px] items-center gap-[14px] rounded-2xl bg-white p-4 ring-1 ring-[#AEAEB2]">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center" style={{ color }}>
@@ -57,9 +69,15 @@ export function FileCard({ file }: { file: FileAttachment }) {
         </span>
         <span className={`${SANS} block truncate text-xs leading-tight text-black`}>{meta}</span>
       </span>
-      <span aria-disabled="true" aria-label="Download (not wired yet)" className="shrink-0 text-black">
+      <button
+        type="button"
+        onClick={onDownload}
+        disabled={downloading}
+        aria-label={`Download ${file.original_name || file.name}`}
+        className="shrink-0 text-black disabled:opacity-40"
+      >
         <Download size={18} />
-      </span>
+      </button>
     </li>
   );
 }

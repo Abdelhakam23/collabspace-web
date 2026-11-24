@@ -46,6 +46,17 @@ export async function downloadFile(fileId: number | string) {
   return data;
 }
 
+/** Browser-side save of A7.5's binary response. */
+export async function saveFileDownload(file: FileAttachment) {
+  const res = await apiClient.get(`/api/v1/files/${encodeURIComponent(file.id)}/download`, { responseType: "blob" });
+  const url = URL.createObjectURL(res.data as Blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.original_name || file.name || "download";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 /** DELETE /api/v1/files/1 — Delete File (A7.6) */
 export async function deleteFile(fileId: number | string) {
   const { data } = await apiClient.delete<ApiEnvelope<null>>(`/api/v1/files/${encodeURIComponent(fileId)}`);

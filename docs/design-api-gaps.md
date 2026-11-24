@@ -274,7 +274,7 @@ A5.2 (kanban), A4.4 (teams), A7.1 (files) respectively.
   plan schedules them for Day 3 (3.3 Create Task, 3.4 edit/assign/delete,
   3.7 upload, all with documented POST/PUT/PATCH/DELETE endpoints), so they
   are implementation-supported; they render inert with aria-disabled until
-  that Day 3 work lands. File download stays unwired.
+  that Day 3 work lands. File download (A7.5) is a read and is wired.
 
 ### Native-read corrections (Nov 24, second pass)
 

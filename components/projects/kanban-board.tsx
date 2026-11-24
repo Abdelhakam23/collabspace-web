@@ -75,7 +75,7 @@ function TaskCard({ task }: { task: Task }) {
 
 export function KanbanBoard({ columns }: { columns: KanbanColumn[] }) {
   return (
-    <div className="mt-8 grid items-start gap-8 md:grid-cols-2 xl:grid-cols-4">
+    <div className="mt-8 grid items-stretch gap-8 md:grid-cols-2 xl:grid-cols-4">
       {columns.map((col) => {
         const style = columnStyle(col.status);
         return (

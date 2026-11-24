@@ -55,13 +55,13 @@ function ProjectFilesContent() {
         <div className="mt-8 flex flex-col gap-12">
           {recent.length ? (
             <section className="flex flex-col gap-[31px]">
-              <h2 className={`${SANS} text-[25px] font-medium leading-[150%] text-black`}>Recent Files</h2>
+              <h2 className={`${SANS} -mt-2 text-[25px] font-medium leading-[18px] text-black`}>Recent Files</h2>
               <FileCardGrid files={recent} className="gap-[50px]" />
             </section>
           ) : null}
           <section className="flex flex-col gap-[31px]">
             <div className="flex h-10 items-center justify-between">
-              <h2 className={`${SANS} text-[25px] font-medium leading-[150%] text-black`}>All Files</h2>
+              <h2 className={`${SANS} -mt-2 text-[25px] font-medium leading-[18px] text-black`}>All Files</h2>
               {/* Upload is a write flow outside the current read-only scope;
                   the drawn button stays inert (docs/design-api-gaps.md). */}
               <button

@@ -39,7 +39,7 @@ export function TeamCards({ teams }: { teams: ProjectTeamProgress[] }) {
         return (
           <section
             key={team.id ?? i}
-            className="flex flex-col gap-5 overflow-hidden rounded-2xl bg-white pb-4 ring-1 ring-[#F3F4F6]"
+            className="flex flex-col gap-4 overflow-hidden rounded-2xl bg-white pb-4 ring-1 ring-[#F3F4F6]"
           >
             <header
               className={`${SANS} flex h-[68px] items-center justify-between px-5 text-xl font-medium text-[#000712]`}
@@ -53,11 +53,11 @@ export function TeamCards({ teams }: { teams: ProjectTeamProgress[] }) {
                 {team.completion_percentage}% Completed
               </span>
             </header>
-            <div className={`${SANS} flex items-center justify-between px-4 text-[13px] text-[#4A4A4A]`}>
+            <div className={`${SANS} flex h-7 items-center justify-between px-4 text-[13px] text-[#4A4A4A]`}>
               <span>Name</span>
               <span>Tasks</span>
             </div>
-            <ul className="flex flex-col gap-4 px-4">
+            <ul className="flex flex-col gap-8 px-4">
               {(team.members ?? []).map((m, mi) => (
                 <li key={`${m.id}-${mi}`} className="flex h-10 items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[#E9E9EA] bg-[#F6F8FA] text-[10px] text-[#000712]">
