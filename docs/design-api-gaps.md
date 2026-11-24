@@ -256,3 +256,26 @@ inert (design-only control, no documented filter parameter).
   comparison only.
 - Figma strokes render inside the frame box, so cards use a 1px ring instead
   of a CSS border to land on exact native heights.
+
+## Project sibling tabs (Tasks / Teams / Files) — added Nov 24
+
+Frames: "All Projects / Alpha / Tasks" (node 181-1418), "/ teams" (181-1982),
+"/ Files" (181-2367), all hi-fi 1440x1024 on the UI Design page. Wired to
+A5.2 (kanban), A4.4 (teams), A7.1 (files) respectively.
+
+- Column/team band tints pixel-sampled from 46% captures: To-do #F9FAFB,
+  In Progress #E6EFFF, In Review #FAECF6, Completed #EAF6EA; team bands
+  UI/UX #FAECF6, Frontend #F2EAF2, Backend #E6F8F7, Marketing #E9E9EA.
+- Kanban task cards: the drawn per-task Progress bar/percent and comment
+  count have no fields in the documented Task model (A5.x); omitted, not
+  guessed. Cards show title, priority pill, description, assignee, due date.
+  The frame's avatar stacks collapse to the single documented assignee.
+- "Add Task", column "..." actions and "Upload File" are write flows outside
+  the current read-only scope; rendered inert with aria-disabled, matching
+  the dashboard download-icon decision. File download stays unwired.
+- Native tab frames repeat the member name "Mohand wahib" on every row and
+  draw "42% Completed" on all four team cards (drawn sample data); real
+  values come from A4.4. Recent Files = three newest by created_at.
+- The kanban API statuses map to drawn labels: Pending -> To-do,
+  In Progress -> In Progress, In Review -> In Review, Completed -> Completed
+  Tasks; unknown future statuses fall back to their raw label on a grey band.

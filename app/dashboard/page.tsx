@@ -10,6 +10,7 @@ import { Gauge } from "@/components/dashboard/gauge";
 import { KpiCard } from "@/components/dashboard/kpi";
 import { getDashboardOverview } from "@/lib/api/dashboard";
 import { getProfile } from "@/lib/api/profile";
+import { PRIORITY_TONES } from "@/lib/colors";
 import { PROJECT_COLORS } from "@/lib/colors";
 
 /**
@@ -38,12 +39,6 @@ type DashboardPayload = {
 };
 
 const M = "font-[family-name:var(--font-sans)]";
-
-const PRIORITY_TONES: Record<string, { text: string; bg: string }> = {
-  high: { text: "#DB302A", bg: "#FEE4E2" },
-  medium: { text: "#B54708", bg: "#FEF0C7" },
-  low: { text: "#067647", bg: "#D1FADF" },
-};
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardPayload | null>(null);
