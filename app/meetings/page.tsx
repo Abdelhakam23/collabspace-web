@@ -15,12 +15,11 @@ import type { Meeting, User } from "@/lib/types";
  * at top 120/left 65 with the #005AFB Add Meeting pill, 32px radius), the
  * toolbar row (top 202: month label Inter 500 20px #000712 and the
  * time-filter control), and the week grid (top 281) fed by A6.1 with the
- * documented time_filter=upcoming. Note the scope assumption: the control
- * is labelled "This Week" (the frame's drawing) but the only documented
- * filter value is "upcoming", which the backend may interpret as a wider
- * or narrower window; the grid shows every meeting it receives and says
- * so when some fall outside the drawn days, so nothing is hidden by the
- * mismatch. The frame's month arrows have no
+ * documented time_filter=upcoming. The grid displays exactly the five
+ * days the drawn "This Week" control covers, so the visible label is
+ * true by construction; returned meetings beyond those days are flagged
+ * under the grid as an unresolved reach limitation (no drawn control or
+ * documented API value can page to them). The frame's month arrows have no
  * matching API (the list takes no date range), so they are disabled with an
  * explanation instead of navigating a grid that could never fill; the label
  * shows the real current month. Add Meeting opens the A6.2 overlay.

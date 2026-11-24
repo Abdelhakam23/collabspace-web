@@ -55,7 +55,7 @@ it, not yet implemented; EXCLUDED = one source missing, reason given.
   zero results).
 - Column actions menu: EXCLUDED — no column-level endpoint.
 
-## Meetings (design frames + A6.1-A6.10): page + scheduling DONE; room TODO
+## Meetings (design frames + A6.1-A6.10): page + scheduling DONE (one unresolved limitation); room TODO
 Hi-fi frames: Meetings (screen 114-2597, 1440x1024, #F6F8FA),
 Meetings / Join Meeting (274-12876, 720x502), Add Meeting overlay
 (139-2808, 720xHug595 r16 p24 gap32), Duration overlay (139-1583,
@@ -75,12 +75,11 @@ DONE (/meetings, node-read measurements):
 - This Week control + Duration overlay: only "This Week" is enabled
   (sends the documented time_filter=upcoming); the other four drawn
   options have no documented value and render disabled with a title.
-  ASSUMED MAPPING: "This Week" is the frame's label; the endpoint's
-  actual scope for time_filter=upcoming is not documented and could
-  not be verified without live reads, so the grid renders every
-  meeting it receives and never trims the list to the label. Closed
-  control's border is pixel-estimated as #CBD5E0 (native control too
-  small to sample cleanly).
+  The endpoint's scope for time_filter=upcoming is undocumented, so
+  the page keeps the label true by construction: the grid displays
+  exactly the five days the control covers from whatever the endpoint
+  returns. Closed control's border is pixel-estimated as #CBD5E0
+  (native control too small to sample cleanly).
 - Week grid (114-2617: 1311 at left 64/top 281): six equal 218.5px
   columns (time column + five days), rows with 1px #F3F4F6 row/cell
   borders, day cells p16/12 gap2, time cell p16 gap2. The frame
@@ -94,11 +93,13 @@ DONE (/meetings, node-read measurements):
   with their cards (the first implementation clipped cards at the row
   boundary); and the drawn 9:00-13:00 hour window grows when returned
   meetings start earlier or later, so no appointment loses its cell.
-  Meetings whose day falls outside the five drawn columns are counted
-  in a line under the grid ("N more meetings fall outside the five
-  days the design draws.") instead of disappearing. The native
-  frame's grid (Hug 789) overflows its own 1024 frame, so the web
-  page scrolls naturally instead.
+  Meetings whose day falls outside the five drawn columns CANNOT be
+  reached by any drawn control or documented API value (month
+  navigation and the other Duration options are unsupported): the
+  grid reports the count under it as an explicit UNRESOLVED
+  LIMITATION, not as discoverable data. The native frame's grid
+  (Hug 789) overflows its own 1024 frame, so the web page scrolls
+  naturally instead.
 - Meeting card (114-3050: Fill194.5 x Fixed105, r16, 1px #F3F4F6, p12,
   white; has an on-click interaction to the Join frame): title Inter
   400 14/16 #000, time Inter 400 12/16 #000/75% (native marks center

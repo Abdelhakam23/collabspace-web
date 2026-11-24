@@ -6,10 +6,9 @@ import { useEffect, useRef, useState } from "react";
  * The "This Week" filter control from the Meetings frame plus its open
  * state, the "Duration overlay" (node 139-1583: 210x164 fixed, radius 16,
  * padding 16, white). The meetings list endpoint (A6.1) documents only
- * time_filter=upcoming, which is what "This Week" sends - an assumed
- * mapping, since the endpoint's actual scope for that value is not
- * documented and the label is the frame's drawing, not verified API
- * semantics; the other drawn
+ * time_filter=upcoming, which is what "This Week" sends. The page keeps
+ * the label true by displaying exactly the five days the control covers
+ * from whatever the endpoint returns; the other drawn
  * options have no documented API value, so they render disabled and say why
  * instead of pretending to filter. The closed control's border color is
  * pixel-estimated as the shared input border #CBD5E0 (the native control is

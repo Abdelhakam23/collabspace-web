@@ -16,8 +16,15 @@ import type { Meeting } from "@/lib/types";
  * days with real dates; weekday labels keep the frame's spelling
  * ("Thurs"). The drawn hour rows are 9:00-13:00; the window grows when
  * returned meetings start earlier or later so every returned meeting
- * keeps a cell, and meetings outside the five drawn days are counted
- * below the grid instead of disappearing.
+ * keeps a cell.
+ *
+ * Scope: the list is fetched with the only documented time_filter value
+ * (upcoming) and the grid displays exactly the five days the "This Week"
+ * control covers, which keeps the visible label true by construction.
+ * Meetings the five drawn columns cannot hold CANNOT be reached by any
+ * drawn control or documented API value (month navigation and the other
+ * Duration options are unsupported), so they are reported under the grid
+ * as an explicit unresolved limitation, not claimed as discoverable.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -173,7 +180,7 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
       ))}
       {hiddenCount > 0 ? (
         <p className={`${SANS} mt-4 text-sm text-[#606C80]`}>
-          {hiddenCount} more {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the five days the design draws.
+          {hiddenCount} more upcoming {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the days this screen can show; no drawn control or documented API value can page to {hiddenCount === 1 ? "it" : "them"} yet.
         </p>
       ) : null}
     </div>
