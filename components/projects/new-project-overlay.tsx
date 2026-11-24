@@ -95,8 +95,9 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           </button>
         </div>
 
-        {/* Fields stack: vertical, gap 33 (native). Name + Priority share a
-            row: name Fixed 410, priority Fill 229, row gap 33. */}
+        {/* Fields stack (frame 2147224483): vertical, gap 33. Name + Priority
+            share a row: name Fixed 410, priority Fill 229, row gap 33. */}
+        <div className="flex flex-col gap-[33px]">
         <div className="grid gap-[33px] sm:grid-cols-[410px_1fr]">
           <label className="relative block">
             <span className={fieldLabel}>Project Name</span>
@@ -197,10 +198,11 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
             {!deadline ? <span className={`${SANS} pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#718096]`}>End Date</span> : null}
           </label>
         </div>
+        </div>
 
         {/* Upload block: Fixed 163, vertical, gap 16 (native) */}
         <div className="flex h-[163px] flex-col gap-4">
-          <span className={`${SANS} block text-xs text-[#718096]`}>Add Project Files</span>
+          <span className={`${SANS} block text-xs leading-[18px] text-[#718096]`}>Add Project Files</span>
           <button
             type="button"
             onClick={() => fileInput.current?.click()}
