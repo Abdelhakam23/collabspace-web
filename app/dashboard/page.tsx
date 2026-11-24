@@ -248,18 +248,9 @@ export default function DashboardPage() {
           </Card>
 
           <Card title="Ask AI" className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden">
-            {/* The frame shows a blue robot illustration. Export from the
-                view-only file is being verified separately; until the asset is
-                in the repo a neutral block holds its geometry. POST /ai/ask is
-                wired in the AI milestone - read-only here. */}
-            <div className="flex flex-col items-center gap-3 py-4">
-              <span className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#E5EFFF]" aria-hidden="true">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#005AFB" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="5" y="8" width="14" height="11" rx="3" />
-                  <path d="M12 5v3M9 13h.01M15 13h.01M9 16h6" />
-                  <circle cx="12" cy="4" r="1.4" />
-                </svg>
-              </span>
+            {/* POST /ai/ask is wired in the AI milestone - read-only here. */}
+            <div className="flex flex-col items-center gap-4 py-4">
+              <img src="/ask-ai-robot.png" alt="" width="42.67" height="64" aria-hidden="true" />
               <p className={`${M} text-sm text-[#525256]`}>ask me anything about...</p>
             </div>
             <p className={`${M} flex items-center justify-between rounded-xl bg-[#F6F8FA] px-4 py-3 text-sm text-[#718096]`}>

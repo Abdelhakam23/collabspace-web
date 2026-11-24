@@ -77,6 +77,14 @@ match the source tick cadence, and the y axis uses six divisions (native
 25k/20k/15k/10k/5k/0k). Still unread natively: pill background tints
 (medium/low sampled), Ask AI hint text.
 
+## Ask AI robot asset
+The frame's robot is an image fill ("image 2", 42.67x64px, source
+1024x1536 PNG). The view-only file exposes no export preset, so the
+original was fetched through the properties panel's image download URL
+(read-only) and downscaled to a 128x192 PNG (public/ask-ai-robot.png),
+rendered at the native 42.67x64 geometry without the earlier placeholder
+tile.
+
 ## Native dashboard geometry (read from Figma properties, Nov 24)
 Frame 1440x1024, BG #F6F8FA, page padding 64px, card gap 24px. Cards: white
 fill, 1px border in BG label #F3F4F6, radius 16, padding 20. KPI cards fixed
