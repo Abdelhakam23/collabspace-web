@@ -348,3 +348,36 @@ Intersection decisions:
   Project overlay's measurements, which were read from the same design file.
 - After a successful create the kanban board refetches (A5.2) instead of
   trusting the local state.
+
+## Sign in card native reads (Nov 24, frame 225-9362)
+
+Card: Fixed 601 x Hug 627, vertical, radius 24, padding 64, gap 24, white,
+centered at top 202.5. Children: "Sign In Content" (Fill 473 x Hug 387,
+vertical, gap 24) and "Log In" (Fill 473 x Hug 88, vertical, gap 24: button +
+signup footer). Card math 64+387+24+88+64 = 627. Text colors read: body
+#718096, link #2563EB, primary #005AFB. Implementation currently measures
+661 including the intentional +20 Google-note block, leaving ~14px inside
+Sign In Content item metrics; item-level reads of that block are the next
+step.
+
+## Remaining day-3 write-scope reconciliation (Nov 24)
+
+Status of every designed control against its API, per the intersection rule:
+
+- Add Task -> Create Task overlay: IMPLEMENTED (141-2397 x A5.3, fixture-verified).
+- Column actions (kanban ... button): EXCLUDED - no drawn form and no
+  column-level endpoint; A5.x operations are task-level.
+- Task detail/edit/assign/delete (plan 3.4): the "My task overlay" frame
+  exists in the design and A5.4/A5.5/A5.7/A5.8 exist; which of those actions
+  the frame actually draws is PENDING inspection - only drawn ones will be
+  implemented.
+- Kanban status move (plan 3.5, A5.6): PENDING - drag behaviour with safe
+  failure handling; implemented only to the extent the design draws it.
+- Files tab Upload File (plan 3.7, A7.2): PENDING - the button is drawn;
+  upload goes through the native file picker, no separate overlay frame
+  known yet.
+- File delete (plan 3.8, A7.6): PENDING verification whether any delete
+  affordance is drawn; the file cards show only a download icon, so absent
+  a drawn control it stays excluded.
+- Task filters (plan 3.2): PENDING - limited to what the drawn controls and
+  A5.1 query params jointly support.
