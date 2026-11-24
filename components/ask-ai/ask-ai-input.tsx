@@ -47,11 +47,24 @@ export function AskAiInput({
         className="w-full bg-transparent text-base text-black outline-none placeholder:text-black/60"
       />
       <div className="flex items-center justify-between">
-        <span className="grid h-6 w-6 place-items-center" aria-hidden="true">
+        {/* A10.2 accepts only { query }: no attachment or voice input. */}
+        <button
+          type="button"
+          disabled
+          title="Attachments are not supported by the assistant endpoint"
+          className="grid h-6 w-6 cursor-not-allowed place-items-center opacity-40"
+        >
           <Plus size={12} strokeWidth={1.5} className="text-black" />
-        </span>
+        </button>
         <span className="flex items-center gap-4">
-          <Mic size={24} className="text-black/70" aria-hidden="true" />
+          <button
+            type="button"
+            disabled
+            title="Voice input is not supported by the assistant endpoint"
+            className="cursor-not-allowed opacity-40"
+          >
+            <Mic size={24} className="text-black/70" />
+          </button>
           <button
             type="submit"
             disabled={pending || !value.trim()}
