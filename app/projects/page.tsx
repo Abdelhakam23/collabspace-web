@@ -110,7 +110,7 @@ export default function ProjectsPage() {
                 key={label}
                 aria-disabled="true"
                 title="Filter options are not designed yet"
-                className={`${RUBIK} flex h-10 items-center gap-[10px] rounded-2xl border border-[#27272B] bg-white pl-4 pr-[10px] text-xs text-[#000712]`}
+                className={`${RUBIK} flex h-10 shrink-0 items-center gap-[10px] whitespace-nowrap rounded-2xl border border-[#27272B] bg-white pl-4 pr-[10px] text-xs text-[#000712]`}
               >
                 {label}
                 <span className="text-[#000712]"><TinyChevron /></span>

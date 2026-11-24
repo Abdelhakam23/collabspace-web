@@ -87,7 +87,7 @@ export function AddMeetingOverlay({ onClose, onCreated }: { onClose: () => void;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true" aria-label="New Meeting">
-      <form onSubmit={onSubmit} className="flex w-full max-w-[720px] flex-col gap-8 rounded-2xl bg-white p-6">
+      <form onSubmit={onSubmit} className="flex max-h-[90vh] w-full max-w-[720px] flex-col gap-8 overflow-y-auto rounded-2xl bg-white p-6">
         <div className="flex items-start justify-between">
           <h2 className={`${SANS} text-[25px] font-medium leading-[150%] text-[#000712]`}>New Meeting</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="p-1 text-[#000712]">
