@@ -1,74 +1,207 @@
-# CollabSpace Web
+<div align="center">
 
-Frontend for CollabSpace, a project management workspace: projects, a task board, meetings, team chats, reports and an AI assistant page. It talks to the CollabSpace REST API and is built from the Figma UI design.
+# 🤝 CollabSpace
 
-Live: https://collabspace-web-seven.vercel.app
+**Projects, tasks, meetings and conversations in one workspace for the whole team.**
 
-## Stack
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-149ECA?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white)
+![React Hook Form](https://img.shields.io/badge/React%20Hook%20Form-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white)
+![Recharts](https://img.shields.io/badge/Recharts-8884D8?style=for-the-badge)
 
-Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, TanStack Query, Axios, React Hook Form with Zod, dnd-kit for the task board, Recharts, lucide-react, date-fns.
+The web client for the CollabSpace platform, built screen-by-screen from the Figma UI Design frames and wired to the CollabSpace REST API.
 
-## Running it
+</div>
 
-Node.js 20.9 or newer (the minimum Next.js 16.4.6 requires) and the API base URL.
+---
 
-    git clone https://github.com/Abdelhakam23/collabspace-web.git
-    cd collabspace-web
-    npm install
+## 📖 Table of Contents
 
-Create `.env.local`:
+- [About](#-about)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Design & API Scope](#-design--api-scope)
+- [Workflow](#-workflow)
 
-    NEXT_PUBLIC_API_URL=https://collabspace.huma-volve.com
+---
 
-Then run `npm run dev` and open http://localhost:3000. Other scripts: `npm run build`, `npm start`, `npm run lint`.
+## 📌 About
 
-## Folder structure
+**CollabSpace** is a collaborative project-management platform: a team organizes its work into projects, tracks tasks on a kanban board, schedules and joins meetings, shares files, and talks in built-in chats, with reports, notifications and an AI assistant on top.
 
-    app/
-      page.tsx, layout.tsx, providers.tsx
-      login/page.tsx, register/page.tsx
-      dashboard/page.tsx
-      projects/page.tsx
-      projects/[id]/
-        page.tsx
-        tasks/page.tsx
-        teams/page.tsx
-        files/page.tsx
-      tasks/page.tsx
-      meetings/page.tsx
-      meetings/[id]/page.tsx
-      chats/page.tsx
-      chats/[id]/page.tsx
-      reports/page.tsx
-      profile/page.tsx, profile/settings/page.tsx
-      ask-ai/page.tsx
-    components/
-      auth, dashboard, projects, meetings, chats, reports,
-      profile, tasks, ask-ai, charts
-    lib/
-      api-client.ts
-      api/  (auth, projects, tasks, meetings, messages, files, teams,
-             users, profile, reports, notifications, dashboard, ai)
-      reports-normalize.ts, format.ts, colors.ts
+This repository is the frontend. Every screen is implemented from the product's Figma hi-fi frames. Controls are wired to the backend wherever the API actually serves them; where it does not, they stay visibly disabled with the reason on the control.
 
-Each folder under `components/` holds the pieces for the page of the same name.
+---
 
-## How it works
+## ✨ Features
 
-All requests go through one Axios client in `lib/api-client.ts` that adds the Bearer token. The token is kept in localStorage when "Remember me" is checked and in sessionStorage otherwise. A 401 on any non-auth request clears it and sends the user to /login. Responses are normalized in `lib/api`, so components get plain typed objects.
+| Feature | Description |
+| --- | --- |
+| 🔐 **Authentication** | Sign in and sign up wired to the API; the session token is kept in local or session storage based on "Remember Me", and guarded routes return to `/login` on expiry |
+| 📊 **Dashboard** | The designed overview wired to the dashboard endpoints |
+| 🗂️ **Projects** | All-projects table, create-project overlay, and a project shell with overview, tasks, files and teams tabs |
+| ✅ **Tasks kanban** | Drag-and-drop status moves with optimistic updates, so the board responds instantly |
+| 📅 **Meetings** | A five-day upcoming grid, Add Meeting overlay, and a meeting room with internal join routing |
+| 💬 **Chats** | Channel list and conversation view with attachments, sidebar previews that refresh on send, and retry-safe sending |
+| 🔔 **Notifications** | Overlay with unread state, straight from the notifications endpoint |
+| 🤖 **Ask AI** | The AI assistant card with its external-link handoff |
+| 📈 **Reports** | Stat cards bound to verified API payload paths |
+| 👤 **Profile** | Overview, tasks, files and editable settings |
 
-From 1280px up the app uses the top navigation bar. Below that it switches to a slim top bar with a menu button that opens a side drawer. Wide tables and the meetings grid scroll sideways inside their own container instead of stretching the page.
+---
 
-Controls the API has no endpoint for (calls, search, some report filters) are shown disabled. Report charts show an empty state when the API returns no series.
+## 🧰 Tech Stack
 
-## Recent changes
+| Layer | Technology |
+| --- | --- |
+| Framework | Next.js 16 (App Router), React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Server state | TanStack Query 5 |
+| HTTP client | Axios, with Bearer token handling |
+| Forms | React Hook Form + Zod resolvers |
+| Drag and drop | dnd-kit |
+| Charts | Recharts |
+| Icons | lucide-react |
+| Dates | date-fns |
 
-- Navigation drawer on tablet and phone, with a notification panel that stays inside the screen.
-- Chat composer send button no longer shrinks on 320px phones.
-- New Project and Create Task dialogs: the guest Add button no longer overlaps the input, and New Project scrolls on short screens.
-- Meetings toolbar wraps on narrow screens.
-- Profile tasks and files read the fields the API actually returns.
+---
 
-## Workflow
+## 🏗️ Architecture
 
-Work goes on a feature branch, then a pull request into `development`, then into `main`. Vercel deploys `main`.
+```mermaid
+flowchart LR
+    UI["App Router pages"] --> RQ["TanStack Query"]
+    UI --> F["React Hook Form + Zod"]
+    RQ --> AC["Axios API client"]
+    F --> AC
+    AC -- "Bearer token" --> API[("CollabSpace API")]
+    AC --> TS[("Token storage")]
+    AC -- "401" --> LG["/login"]
+```
+
+**Request flow**
+
+1. Pages read and mutate server data through TanStack Query hooks.
+2. Every call passes through one Axios client, which attaches the Bearer token from web storage.
+3. A `401` outside the auth calls clears the token and routes back to `/login`.
+4. Forms validate with Zod schemas before anything is sent.
+
+---
+
+## 📂 Project Structure
+
+```text
+.
+├── app/                          # Routes (App Router)
+│   ├── page.tsx                  # Redirects to /dashboard or /login
+│   ├── layout.tsx, providers.tsx
+│   ├── login/, register/
+│   ├── dashboard/
+│   ├── projects/
+│   │   └── [id]/                 # Project shell
+│   │       ├── page.tsx          # Overview
+│   │       ├── tasks/
+│   │       ├── teams/
+│   │       └── files/
+│   ├── tasks/
+│   ├── meetings/
+│   │   └── [id]/                 # Meeting room
+│   ├── chats/
+│   │   └── [id]/                 # Conversation
+│   ├── reports/
+│   ├── profile/
+│   │   └── settings/
+│   └── ask-ai/
+├── components/                   # Feature UI, one folder per area: auth,
+│                                 # dashboard, projects, meetings, chats,
+│                                 # reports, profile, tasks, ask-ai, charts
+├── lib/
+│   ├── api-client.ts             # Axios instance, token storage, error envelope
+│   ├── api/                      # Typed API modules, one per backend domain
+│   └── reports-normalize.ts, format.ts, colors.ts
+└── public/                       # Static assets
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** 20.9 or newer
+- **npm**
+- A reachable **CollabSpace API** base URL
+
+### Install and run
+
+```bash
+git clone https://github.com/Abdelhakam23/collabspace-web.git
+cd collabspace-web
+npm install
+```
+
+Create `.env.local` in the project root pointing at your CollabSpace API (see [Environment Variables](#-environment-variables)):
+
+```dotenv
+NEXT_PUBLIC_API_URL=https://your-collabspace-api-host
+```
+
+Then:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+### Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm start` | Serve the production build |
+| `npm run lint` | Run ESLint |
+
+---
+
+## 🔐 Environment Variables
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Base URL of the CollabSpace backend API |
+
+Values prefixed with `NEXT_PUBLIC_` are visible in the browser; never put secrets there.
+
+---
+
+## 🎨 Design & API Scope
+
+Every screen is built from the Figma **UI Design** frames, at the intersection of what the design draws and what the backend serves.
+
+- Where the design draws a control the API does not support (video/voice calls, global and in-chat search, some report filters and extra date-navigation options), the control renders **disabled with its reason** instead of pretending to work.
+- Where an endpoint cannot honestly feed a drawn element (the report charts, for example, would need series the API does not return), the element shows an **explicit empty state** rather than invented numbers.
+
+---
+
+## 🔀 Workflow
+
+- Feature branches are cut from `development` and land back through reviewed pull requests.
+- `main` holds the integrated, reviewed result.
+
+---
+
+<div align="center">
+
+**Built frame by frame, endpoint by endpoint.**
+
+</div>
