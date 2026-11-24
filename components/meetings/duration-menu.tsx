@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { MEETING_FILTER_DEFAULT, MEETING_FILTER_OPTIONS } from "@/constants/meetings";
 
 const SANS = "font-[family-name:var(--font-sans)]";
-const OPTIONS = ["Today", "Upcoming", "This Month", "Last Three Month", "This Year"];
-const SELECTED = "Upcoming";
+
 
 export function DurationMenu() {
   const [open, setOpen] = useState(false);
@@ -28,15 +28,15 @@ export function DurationMenu() {
         aria-haspopup="listbox"
         className={`${SANS} flex h-[30px] items-center gap-1 rounded-full border border-[#CBD5E0] bg-white px-3 text-sm font-normal leading-[150%] text-[#27272B]`}
       >
-        {SELECTED}
+        {MEETING_FILTER_DEFAULT}
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="m6 9 6 6 6-6" />
         </svg>
       </button>
       {open ? (
         <div role="listbox" aria-label="Meeting time filter" className="absolute right-0 z-40 mt-2 flex w-[210px] flex-col rounded-2xl bg-white p-4 shadow-[0_8px_24px_rgba(9,30,66,0.16)]">
-          {OPTIONS.map((option) =>
-            option === SELECTED ? (
+          {MEETING_FILTER_OPTIONS.map((option) =>
+            option === MEETING_FILTER_DEFAULT ? (
               <span key={option} role="option" aria-selected="true" className={`${SANS} flex items-center justify-between py-1 text-sm font-normal text-[#27272B]`}>
                 {option}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2BA52E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
