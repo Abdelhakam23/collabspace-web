@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { ProjectShell } from "@/components/projects/project-shell";
 import { TeamCards } from "@/components/projects/team-cards";
 import { getProjectTeamsTaskProgress } from "@/lib/api/projects";
-import type { ProjectTeamProgress } from "@/lib/types";
+import type { ProjectTeamProgress } from "@/types";
 
 export default function ProjectTeamsPage() {
   return (
