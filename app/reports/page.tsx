@@ -13,7 +13,7 @@ import {
   type ReportMetric,
 } from "@/lib/reports-normalize";
 import { getProfile } from "@/lib/api/profile";
-import type { User } from "@/lib/types";
+import type { User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
