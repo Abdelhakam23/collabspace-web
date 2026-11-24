@@ -187,7 +187,7 @@ export function AddMeetingOverlay({ onClose, onCreated }: { onClose: () => void;
 
         {error ? <p className="text-sm text-[#af2622]" role="alert">{error}</p> : null}
 
-        <button type="submit" disabled={pending} className={`${SANS} flex h-14 w-full items-center justify-center rounded-full bg-[#005AFB] text-sm font-medium text-white disabled:opacity-60`}>
+        <button type="submit" disabled={pending} className={`${SANS} flex h-14 w-full shrink-0 items-center justify-center rounded-full bg-[#005AFB] text-sm font-medium text-white disabled:opacity-60`}>
           {pending ? "Adding..." : "Add Meeting"}
         </button>
       </form>
