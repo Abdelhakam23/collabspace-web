@@ -5,10 +5,14 @@ import type { KanbanColumn, Task } from "@/lib/types";
 
 /**
  * Kanban columns of the "All Projects / Alpha / Tasks" frame (node 181-1418),
- * wired to A5.2 (GET /projects/:id/tasks/kanban). Column band colors are
- * pixel-sampled from the 46% capture (docs/design-api-gaps.md). The drawn
- * per-task Progress bar and comment count have no fields in the documented
- * Task model, so they are omitted; "Add Task" is a write and stays inert.
+ * wired to A5.2 (GET /projects/:id/tasks/kanban). Geometry is read from the
+ * native nodes: white 304px columns (radius 16, 1px #E9E9EA border, 20px
+ * bottom padding), a 62px tinted band with 20px padding, an inner list with
+ * 20px side padding and 18px gaps, and 264x167 task cards (#F6F8FA, 1px
+ * #F3F4F6 border, 16px padding). Band tints and the ~15px band label size
+ * (22px label box) are pixel/node-box estimates (docs/design-api-gaps.md).
+ * "Add Task" is Inter Medium 14px #005AFB; it is a write flow and stays
+ * inert under the read-only scope.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -27,23 +31,25 @@ function columnStyle(status: string) {
 function TaskCard({ task }: { task: Task }) {
   const tone = PRIORITY_TONES[(task.priority ?? "").toLowerCase()];
   return (
-    <li className="flex flex-col gap-2 rounded-[12px] bg-white p-3 ring-1 ring-[#F3F4F6]">
-      <div className="flex items-start justify-between gap-2">
-        <p className={`${SANS} text-sm font-medium text-[#191919]`}>{task.title}</p>
-        {tone ? (
-          <span
-            className={`${SANS} shrink-0 rounded-full px-2 py-1 text-[12px] font-medium leading-[16px]`}
-            style={{ color: tone.text, backgroundColor: tone.bg }}
-          >
-            {task.priority}
-          </span>
-        ) : null}
+    <li className="flex h-[167px] flex-col justify-between rounded-2xl bg-[#F6F8FA] p-4 ring-1 ring-[#F3F4F6]">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-start justify-between gap-2">
+          <p className={`${SANS} text-sm font-medium text-[#191919]`}>{task.title}</p>
+          {tone ? (
+            <span
+              className={`${SANS} shrink-0 rounded-full px-2 py-1 text-[12px] font-medium leading-[16px]`}
+              style={{ color: tone.text, backgroundColor: tone.bg }}
+            >
+              {task.priority}
+            </span>
+          ) : null}
+        </div>
+        {task.description ? <p className={`${SANS} line-clamp-2 text-xs text-[#718096]`}>{task.description}</p> : null}
       </div>
-      {task.description ? <p className={`${SANS} line-clamp-2 text-xs text-[#718096]`}>{task.description}</p> : null}
-      <div className="mt-1 flex items-center justify-between">
+      <div className="flex items-center justify-between">
         {task.assignee ? (
           <span
-            className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#E9E9EA] bg-[#F6F8FA] text-[9px] text-[#000712]"
+            className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#E9E9EA] bg-white text-[9px] text-[#000712]"
             title={task.assignee.name}
           >
             {task.assignee.avatar_url ? (
@@ -69,13 +75,16 @@ function TaskCard({ task }: { task: Task }) {
 
 export function KanbanBoard({ columns }: { columns: KanbanColumn[] }) {
   return (
-    <div className="mt-8 grid items-start gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <div className="mt-8 grid items-start gap-8 md:grid-cols-2 xl:grid-cols-4">
       {columns.map((col) => {
         const style = columnStyle(col.status);
         return (
-          <section key={col.status} className="flex flex-col gap-3">
+          <section
+            key={col.status}
+            className="flex flex-col overflow-hidden rounded-2xl bg-white pb-5 ring-1 ring-[#E9E9EA]"
+          >
             <header
-              className={`${SANS} flex items-center justify-between rounded-[8px] px-3 py-2 text-[13px] font-medium text-[#191919]`}
+              className={`${SANS} flex h-[62px] items-center justify-between px-5 text-[15px] font-medium text-[#191919]`}
               style={{ backgroundColor: style.bg }}
             >
               {style.label}
@@ -84,17 +93,19 @@ export function KanbanBoard({ columns }: { columns: KanbanColumn[] }) {
                 <MoreHorizontal size={16} />
               </span>
             </header>
-            {/* Task creation is a write flow outside the current read-only
-                scope; the drawn button stays inert (docs/design-api-gaps.md). */}
-            <button
-              type="button"
-              aria-disabled="true"
-              title="Task creation is not wired yet"
-              className={`${SANS} flex items-center justify-center gap-1 rounded-[8px] border border-dashed border-[#005AFB] px-3 py-2 text-[13px] text-[#005AFB]`}
-            >
-              Add Task <Plus size={14} />
-            </button>
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-[18px] px-5 pt-5">
+              {/* Task creation is a write flow outside the current read-only
+                  scope; the drawn control stays inert (docs/design-api-gaps.md). */}
+              <li>
+                <button
+                  type="button"
+                  aria-disabled="true"
+                  title="Task creation is not wired yet"
+                  className={`${SANS} flex w-full items-center justify-center gap-1 rounded-[10px] border border-dashed border-[#005AFB] py-2.5 text-sm font-medium leading-none text-[#005AFB]`}
+                >
+                  Add Task <Plus size={14} />
+                </button>
+              </li>
               {(col.tasks ?? []).map((task) => (
                 <TaskCard key={task.id} task={task} />
               ))}

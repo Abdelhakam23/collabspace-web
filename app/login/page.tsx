@@ -11,7 +11,7 @@ export default function LoginPage() {
         <GoogleButton />
         <OrDivider />
         <LoginForm />
-        <p className="pt-3 text-center text-base text-[#718096]">
+        <p className="text-center text-base text-[#718096]">
           Don&apos;t have an account yet?{" "}
           <Link href="/register" className="font-semibold text-primary-500 hover:underline">
             Sign Up

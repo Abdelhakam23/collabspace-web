@@ -270,9 +270,46 @@ A5.2 (kanban), A4.4 (teams), A7.1 (files) respectively.
   count have no fields in the documented Task model (A5.x); omitted, not
   guessed. Cards show title, priority pill, description, assignee, due date.
   The frame's avatar stacks collapse to the single documented assignee.
-- "Add Task", column "..." actions and "Upload File" are write flows outside
-  the current read-only scope; rendered inert with aria-disabled, matching
-  the dashboard download-icon decision. File download stays unwired.
+- "Add Task", column "..." actions and "Upload File" are write flows. The
+  plan schedules them for Day 3 (3.3 Create Task, 3.4 edit/assign/delete,
+  3.7 upload, all with documented POST/PUT/PATCH/DELETE endpoints), so they
+  are implementation-supported; they render inert with aria-disabled until
+  that Day 3 work lands. File download stays unwired.
+
+### Native-read corrections (Nov 24, second pass)
+
+Geometry/type below is read from the Figma nodes directly; earlier values
+were 46% pixel estimates.
+
+- Tasks: column = white container, radius 16, 1px #E9E9EA border, 20px
+  bottom padding; band 62px tall with 20px padding; list 20px side padding,
+  18px gaps; task card 264x167, #F6F8FA fill, 1px #F3F4F6 border, 16px
+  padding, space-between. Add Task = Inter Medium 14px #005AFB dashed-border
+  button at the top of the column list. Band label ~15px Medium is inferred
+  from the 22px label node box (no direct text read).
+- Teams: card white, radius 16, 1px #F3F4F6 border, 16px bottom padding,
+  20px internal gap; band 68px, 20px padding; team name Inter Medium 20px
+  #000712. Completion text sits in a transparent 28px pill (radius 100,
+  8px padding), Inter Regular 13px colored per team: UI/UX #A43782,
+  Frontend #7D2D7E, Backend #04B5AE, Marketing #27272B. Member rows 40px
+  tall, 16px gaps, 16px side padding; avatar 40px; name Inter Regular 14px
+  #000712; role Inter Regular 12px #4A4A4A; progress 172x4 radius 100,
+  #E6EFFF track with #005AFB fill; count Inter Regular 12px #000712.
+- Files: Recent cards 404px wide with 50px gaps; All Files grid 346px cards,
+  32px gaps; card 90px tall, radius 16, 1px #AEAEB2 border, 16px padding,
+  14px gaps, white; PDF artwork ~29x37 #F44336 (lucide FileText stands in);
+  name Inter Medium 16px black, uploader Inter Regular 13px black, size/time
+  Inter Regular 12px black; download icon 18px black. Section titles Inter
+  Medium 25px; section-to-cards gap 31px; sections 48px apart. Upload File
+  button 40px tall, fully rounded (radius 32), #005AFB, 20/12px side padding.
+  The All Files grid's vertical row gap was not node-read; it is matched by
+  eye from the capture.
+- Auth card height: the card measures ~661px against the native Hug 627.
+  +20px is the intentional "Google sign-in isn't available yet" disclosure
+  line (text + its 4px gap, required because the control is inert); a 12px
+  footer-gap error (extra pt-3 on top of the 24px stack gap) was fixed.
+  The remaining ~14px sits inside heading/field metrics and needs native
+  item-level reads; documented here rather than claimed as parity.
 - Native tab frames repeat the member name "Mohand wahib" on every row and
   draw "42% Completed" on all four team cards (drawn sample data); real
   values come from A4.4. Recent Files = three newest by created_at.

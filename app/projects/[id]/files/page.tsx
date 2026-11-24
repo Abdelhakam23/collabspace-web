@@ -52,23 +52,23 @@ function ProjectFilesContent() {
   return (
     <ProjectShell projectId={id}>
       {loaded ? (
-        <div className="mt-8 flex flex-col gap-8">
+        <div className="mt-8 flex flex-col gap-12">
           {recent.length ? (
-            <section>
-              <h2 className={`${SANS} mb-4 text-[18px] font-semibold text-[#191919]`}>Recent Files</h2>
-              <FileCardGrid files={recent} />
+            <section className="flex flex-col gap-[31px]">
+              <h2 className={`${SANS} text-[25px] font-medium leading-[150%] text-black`}>Recent Files</h2>
+              <FileCardGrid files={recent} className="gap-[50px]" />
             </section>
           ) : null}
-          <section>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className={`${SANS} text-[18px] font-semibold text-[#191919]`}>All Files</h2>
+          <section className="flex flex-col gap-[31px]">
+            <div className="flex h-10 items-center justify-between">
+              <h2 className={`${SANS} text-[25px] font-medium leading-[150%] text-black`}>All Files</h2>
               {/* Upload is a write flow outside the current read-only scope;
                   the drawn button stays inert (docs/design-api-gaps.md). */}
               <button
                 type="button"
                 aria-disabled="true"
                 title="File upload is not wired yet"
-                className={`${SANS} flex items-center gap-2 rounded-[10px] bg-[#005AFB] px-4 py-2 text-sm font-medium text-white`}
+                className={`${SANS} flex h-10 items-center gap-2 rounded-full bg-[#005AFB] py-3 pl-5 pr-3 text-sm font-medium text-white`}
               >
                 Upload File <Plus size={16} />
               </button>
