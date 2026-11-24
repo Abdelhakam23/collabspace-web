@@ -247,15 +247,15 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Ask AI" className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden">
+          <Card title="Ask AI" className="!bg-[#F0F6FC] xl:col-span-3 xl:flex xl:h-[414px] xl:flex-col xl:overflow-hidden">
             {/* POST /ai/ask is wired in the AI milestone - read-only here. */}
             <div className="flex flex-col items-center gap-4 py-4">
               <img src="/ask-ai-robot.png" alt="" width="42.67" height="64" aria-hidden="true" />
               <p className={`${M} text-sm text-[#525256]`}>ask me anything about...</p>
             </div>
-            <p className={`${M} flex items-center justify-between rounded-xl bg-[#F6F8FA] px-4 py-3 text-sm text-[#718096]`}>
+            <p className={`${M} flex flex-1 flex-col rounded-xl bg-[#F6F8FA] p-3 text-sm text-[#718096]`}>
               ask me anything about...
-              <span className="text-[#005AFB]" aria-hidden="true" aria-disabled="true">
+              <span className="mt-auto self-end text-[#27272B]" aria-hidden="true" aria-disabled="true">
                 <Send size={16} />
               </span>
             </p>
