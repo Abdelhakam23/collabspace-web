@@ -161,3 +161,40 @@ Details), right column Fixed 416 (Statistics details gauge, Team Members),
 32px column separation. The header is implemented in-flow at these
 measurements; the chart card remains omitted pending the undocumented
 A4.3/A4.4 response shapes (see above).
+
+## Observed live response shapes (2026-11-24, seed Admin read-only)
+
+Read via the backend-team seed Admin account supplied in the original Postman
+collection (Login (Admin) request body), with the project owner's approval for
+read-only schema verification. No mutations were made.
+
+### A4.3 GET /projects/:id/overview
+`data`: id, name, description, status, priority, progress_percentage,
+due_date_indicator { start_date, deadline, total_days, days_remaining,
+is_overdue }, tasks_statistics { total, pending, in_progress, in_review,
+completed, completion_rate, pending_percentage, in_progress_percentage,
+in_review_percentage, completed_percentage }, counts { files, meetings,
+messages, teams, direct_members }, teams[], direct_members[], created_by,
+creator, created_at, updated_at, chart { period, year, group_by, data[12] {
+month, month_number, year, label, created_tasks, completed_tasks,
+progress_percentage, is_future } }.
+
+The Alpha screen consumes this end-to-end: gauge = progress_percentage, status
+legend and Total Tasks = tasks_statistics (pending / in_progress / completed
+over total), chart card = chart.data created_tasks. The frame draws a single
+line while the payload also carries completed_tasks; only created_tasks is
+plotted since the frame gives no second series style. The "All Projects" /
+"This Year" filters stay inert: the collection documents no query parameters
+for this endpoint.
+
+### A4.4 GET /projects/:id/teams
+`data` is the team array itself: { id, name, completion_percentage,
+total_tasks, completed_tasks, members[] { id, name, avatar_url, role_in_team,
+is_leader, tasks_completed, tasks_total, tasks_ratio, progress_percentage } }.
+The Team Members card lists these members; the "UI/UX" filter pill stays
+inert (design-only control, no documented filter parameter).
+
+### Sampled colors this round
+- Status legend dots: Pending #191919, In Progress #005AFB, Completed #2BA52E
+  (pixel-sampled from the 46% capture).
+- Projects list file glyph: #F8B040 orange document icon (pixel-sampled).
