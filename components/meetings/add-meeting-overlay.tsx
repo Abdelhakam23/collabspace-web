@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { scheduleMeeting } from "@/lib/api/meetings";
+import { listProjects } from "@/lib/api/projects";
 import { listUsers } from "@/lib/api/users";
 import { initials } from "@/lib/format";
-import type { User } from "@/lib/types";
+import type { Project, User } from "@/lib/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
@@ -25,6 +26,9 @@ export function AddMeetingOverlay({ onClose, onCreated }: { onClose: () => void;
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState(30);
   const [note, setNote] = useState("");
+  const [link, setLink] = useState("");
+  const [projectId, setProjectId] = useState("");
+  const [projects, setProjects] = useState<Project[]>([]);
   const [guests, setGuests] = useState<User[]>([]);
   const [guess, setGuess] = useState("");
   const [users, setUsers] = useState<User[]>([]);
@@ -37,6 +41,11 @@ export function AddMeetingOverlay({ onClose, onCreated }: { onClose: () => void;
     listUsers({ per_page: 15 })
       .then((res) => {
         if (!cancelled) setUsers((res.data as { data?: User[] }).data ?? []);
+      })
+      .catch(() => {});
+    listProjects({ page: 1, per_page: 50, sort: "newest" })
+      .then((res) => {
+        if (!cancelled) setProjects(res.data.data ?? []);
       })
       .catch(() => {});
     return () => {
@@ -69,6 +78,8 @@ export function AddMeetingOverlay({ onClose, onCreated }: { onClose: () => void;
         meeting_date: date,
         start_time: hhmm(start),
         end_time: hhmm(end),
+        meeting_link: link,
+        project_id: Number(projectId),
         participants: guests.map((g) => g.id),
       });
       onCreated();
@@ -114,6 +125,22 @@ export function AddMeetingOverlay({ onClose, onCreated }: { onClose: () => void;
                 <option key={d.minutes} value={d.minutes}>{d.label}</option>
               ))}
             </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="relative">
+            <label htmlFor="meeting-project" className={fieldLabel}>Select Project</label>
+            <select id="meeting-project" value={projectId} onChange={(e) => setProjectId(e.target.value)} required className={fieldBox}>
+              <option value="" disabled>Select a project</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>{project.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="relative">
+            <label htmlFor="meeting-link" className={fieldLabel}>Meeting Link</label>
+            <input id="meeting-link" type="url" value={link} onChange={(e) => setLink(e.target.value)} required placeholder="https://..." className={fieldBox} />
           </div>
         </div>
 
