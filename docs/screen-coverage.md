@@ -189,7 +189,12 @@ border #D7E3FA pixel-sampled; CB badge text color, timestamp size/color
 pixel-estimated; the design's speaker/thumbs feedback icons have no API
 and are omitted while copy stays (works client-side); no AI error surface
 exists in the design, so send failures restore the draft with one plain
-note. The external-link card and project-scoped asks (A10.3) remain open.
+note. The drawn external-link card is implemented: any URL in a message
+renders as the drawn blue link card showing only what the URL carries
+(host as title, URL as body; the drawn placeholder description is
+omitted). Project-scoped asks (A10.3) are excluded: the collection
+documents no field names for the extra parameter and no drawn screen
+offers a project selector, so wiring it would invent both.
 ## Profile (Profile, /overview, /tasks, /files, /Settomgs + A2.x): TODO
 Profile/overview (A2.1), Profile / tasks (A2.5), Profile / files (A2.6),
 Profile/Settings (A2.2 avatar, A2.3 remove avatar, A2.4 password) are all
@@ -367,6 +372,9 @@ Implemented:
   progress field. Done rows keep the drawn check marker.
 - Files: three-column card grid from A2.6 (name, uploader, size, relative
   time, download link to the file URL).
+- Header stats note: Completed Tasks / Hours Worked come from A11.4 and
+  inherit the Reports INTEGRATION UNVERIFIED status until an authorized
+  live payload read confirms the real shapes.
 - Settings: avatar picker (A2.2 avatar), Full Name, Phone Number, Job
   Title and Years Of Experience wired to A2.2 with double-submit guard,
   success and error states. Email Address, Availability Status and Current

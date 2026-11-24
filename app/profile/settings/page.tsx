@@ -151,7 +151,7 @@ export default function ProfileSettingsPage() {
                 </div>
                 <div>
                   <label className={labelClass}>Availability Status</label>
-                  <input value={me.available_status || "Available"} disabled title={DISABLED_REASONS.availability} className={disabledClass} aria-label="Availability Status (read only)" />
+                  <input value={me.available_status ?? ""} disabled title={DISABLED_REASONS.availability} className={disabledClass} aria-label="Availability Status (read only)" />
                 </div>
               </div>
             </div>

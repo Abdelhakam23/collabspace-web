@@ -11,6 +11,53 @@ export interface ChatMessage {
   time: string;
 }
 
+const URL_PATTERN = /(https?:\/\/[^\s]+)/g;
+const URL_TEST = /^https?:\/\/\S+$/;
+
+/**
+ * Renders message text, turning any URL it contains into the frame's drawn
+ * external-link card (blue card, link icon, title row, URL row). The card
+ * shows only what the URL itself carries: the host as the title and the
+ * URL as the body; the drawn placeholder description is omitted rather
+ * than fabricated.
+ */
+function MessageContent({ text }: { text: string }) {
+  const parts = text.split(URL_PATTERN).filter(Boolean);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (!URL_TEST.test(part)) {
+          return <span key={i}>{part}</span>;
+        }
+        let host = part;
+        try {
+          host = new URL(part).host;
+        } catch {
+          // keep the raw text
+        }
+        return (
+          <a
+            key={i}
+            href={part}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 flex flex-col gap-1 rounded-xl bg-gradient-to-br from-[#005AFB] to-[#003db0] p-3 text-white"
+          >
+            <span className="flex items-center justify-between gap-2 text-[13px] font-semibold">
+              {host}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </span>
+            <span className="break-all text-[11px] opacity-80">{part}</span>
+          </a>
+        );
+      })}
+    </>
+  );
+}
+
 /**
  * Message bubbles of the "Ask Ai/ chat" frame (229-5948).
  * Bubble: white, radius 16, 1px #E2E8F0 border, padding 12, gap 4 to the
@@ -35,7 +82,7 @@ export function MessageList({ messages, pending }: { messages: ChatMessage[]; pe
             </span>
             <span className="flex max-w-[412px] flex-col gap-1 rounded-2xl border border-[#E2E8F0] bg-white p-3">
               <span className={`${jakarta.className} text-sm font-medium leading-5 tracking-[-0.6%] text-[#1E293B]`}>
-                {message.text}
+                <MessageContent text={message.text} />
               </span>
               <span className="flex items-center justify-between">
                 <Copy
@@ -56,7 +103,7 @@ export function MessageList({ messages, pending }: { messages: ChatMessage[]; pe
           <div key={index} className="flex items-start justify-end gap-2">
             <span className="flex max-w-[320px] flex-col gap-1 rounded-2xl border border-[#E2E8F0] bg-white p-3">
               <span className={`${jakarta.className} text-sm font-medium leading-5 tracking-[-0.6%] text-[#1E293B]`}>
-                {message.text}
+                <MessageContent text={message.text} />
               </span>
               <span className="flex items-center justify-end gap-1 text-[10px] text-slate-400">
                 {message.time}

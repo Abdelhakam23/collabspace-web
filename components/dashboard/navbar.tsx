@@ -50,24 +50,34 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
           </div>
         </nav>
         <div className="ml-auto flex items-center gap-6">
-          <label className={`hidden h-8 w-[206px] items-center gap-1 rounded-full bg-[#F6F8FA] p-1 pl-3 text-xs text-[#718096] lg:flex ${M}`}>
+          {/* The collection has no global search endpoint, so the drawn
+              search box stays disabled with a reason instead of accepting
+              input it could never serve. */}
+          <label
+            title="Global search is not documented in the API"
+            className={`hidden h-8 w-[206px] cursor-not-allowed items-center gap-1 rounded-full bg-[#F6F8FA] p-1 pl-3 text-xs text-[#718096] opacity-60 lg:flex ${M}`}
+          >
             <Search size={14} />
             <input
               type="search"
               placeholder="Search"
-              className="w-full min-w-0 bg-transparent outline-none"
-              aria-label="Search"
+              disabled
+              className="w-full min-w-0 cursor-not-allowed bg-transparent outline-none"
+              aria-label="Search (unavailable)"
             />
           </label>
           <span className="flex items-center gap-5">
             <NotificationBell />
-            <span className="flex items-center gap-2">
+            {/* The profile screens have no drawn prototype entry point;
+                the navbar user chip is the only drawn element that can
+                reach them, so it links to /profile (see coverage docs). */}
+            <Link href="/profile" title="Open your profile" className="flex items-center gap-2">
               <span className={`${M} text-right text-xs leading-tight`}>
                 <span className="block font-medium text-[#000712]">{userName}</span>
                 {userRole ? <span className="block font-normal text-[#718096]">{userRole}</span> : null}
               </span>
               <span className="h-10 w-10 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
-            </span>
+            </Link>
           </span>
         </div>
       </div>
