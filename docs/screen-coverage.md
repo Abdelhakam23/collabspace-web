@@ -127,3 +127,36 @@ Reads render live data; every write flow (schedule meeting, send message,
 mark read, update profile, AI asks that create tasks) is implemented but
 verified only against local fixtures — zero live mutations without a
 separate user decision.
+
+## Layer-panel windows (2026-11-24, UI Design page, top-level rows as read)
+Window A: ... Search Bar overlay, Profile / files, Profile / tasks,
+Profile/Settomgs, Profile/overview, Frame, Notification overlay,
+Ask Ai/ chat, Frame, Navbar, Profile, Report, Meetings, Chats, Tasks,
+Projects, Ask AI, Sing in/ Up, Dashboard, My task overlay x2,
+Frame 2147224499, Component 3, Frame 2147224506, Component 1,
+Project overlay x2, Files, Wireframe-21/16/24/19/22/20, Chats, Slack,
+Select Files, Meeting room.
+Window B: Rectangle 40094, Rectangle 40093, Frame 2147224473,
+Create Task Overlay, Ask AI, Sign up, Frame 2147224287, Sign in,
+Tasks Page, Meetings / join Meeting, Meetings, image 1,
+All Projects / Alpha / Files, / teams, / Tasks, All Projects / Alpha,
+Add Meeting overlay, New Project overlya (sic), All Projects,
+Language overlay, My task overlay, Duration overlay, Project overlay,
+Teams overlay, Frame 2147224297, image 1838, Dashboard, Reports.
+Notes: the two windows come from different panel scroll regions and
+overlap partially; "Report"/"Reports", "Meeting room", "Select Files",
+"Slack", the second "Chats", and "Files" need classification (screen,
+section, or asset). Screen node ids still to harvest via find box +
+size check: Meetings, Chats, Reports/Report, Profile/overview,
+Profile / tasks, Profile / files, Profile/Settomgs, Meeting room.
+Known ids: Ask AI 225-9992 (1440x1024, vertical, gap 40, fill #F8FAFC),
+Ask Ai/ chat 229-5948, Sign in 225-9362, Dashboard 285-12895,
+Tasks Page 107-11473, All Projects 114-1915, project tabs
+181-1418/181-1982/181-2367, Create Task Overlay 141-2397,
+Meetings / join Meeting 274-12876, Notification overlay 209-6425,
+Add Meeting overlay 139-2808, Duration overlay 139-1583,
+Teams overlay 139-1513, Language overlay 139-2996,
+Search Bar overlay 225-10323, project picker 139-1571,
+report-type picker 163-1089, period picker 163-995,
+New Project overlay = "New Project overlya" (id recorded in
+implementation notes).
