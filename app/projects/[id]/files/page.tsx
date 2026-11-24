@@ -73,7 +73,7 @@ function ProjectFilesContent() {
                 Upload File <Plus size={16} />
               </button>
             </div>
-            {files.length ? <FileCardGrid files={files} /> : <p className={`${SANS} text-sm text-[#718096]`}>No files yet.</p>}
+            {files.length ? <FileCardGrid files={files} className="gap-x-8 gap-y-4" /> : <p className={`${SANS} text-sm text-[#718096]`}>No files yet.</p>}
           </section>
         </div>
       ) : null}
