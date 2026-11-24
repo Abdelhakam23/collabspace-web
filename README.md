@@ -71,4 +71,122 @@ Controls the API has no endpoint for (calls, search, some report filters) are sh
 
 ## Workflow
 
+<<<<<<< feature/responsive-fixes
+1. Pages read and mutate server data through TanStack Query hooks.
+2. Every call passes through one Axios client, which attaches the Bearer token from web storage.
+3. A `401` outside the auth calls clears the token and routes back to `/login`.
+4. Forms validate with Zod schemas before anything is sent.
+
+---
+
+## 📂 Project Structure
+
+```text
+.
+├── app/                          # Routes (App Router)
+│   ├── page.tsx                  # Redirects to /dashboard or /login
+│   ├── layout.tsx, providers.tsx
+│   ├── login/, register/
+│   ├── dashboard/
+│   ├── projects/
+│   │   └── [id]/                 # Project shell
+│   │       ├── page.tsx          # Overview
+│   │       ├── tasks/
+│   │       ├── teams/
+│   │       └── files/
+│   ├── tasks/
+│   ├── meetings/
+│   │   └── [id]/                 # Meeting room
+│   ├── chats/
+│   │   └── [id]/                 # Conversation
+│   ├── reports/
+│   ├── profile/
+│   │   └── settings/
+│   └── ask-ai/
+├── components/                   # Feature UI, one folder per area: auth,
+│                                 # dashboard, projects, meetings, chats,
+│                                 # reports, profile, tasks, ask-ai, charts
+├── lib/
+│   ├── api-client.ts             # Axios instance, token storage, error envelope
+│   ├── api/                      # Typed API modules, one per backend domain
+│   └── reports-normalize.ts, format.ts, colors.ts
+└── public/                       # Static assets
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** 20.9 or newer
+- **npm**
+- A reachable **CollabSpace API** base URL
+
+### Install and run
+
+```bash
+git clone https://github.com/Abdelhakam23/collabspace-web.git
+cd collabspace-web
+npm install
+```
+
+Create `.env.local` in the project root pointing at your CollabSpace API (see [Environment Variables](#-environment-variables)):
+
+```dotenv
+NEXT_PUBLIC_API_URL=https://your-collabspace-api-host
+```
+
+Then:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+### Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm start` | Serve the production build |
+| `npm run lint` | Run ESLint |
+
+---
+
+## 🔐 Environment Variables
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Base URL of the CollabSpace backend API |
+
+Values prefixed with `NEXT_PUBLIC_` are visible in the browser; never put secrets there.
+
+---
+
+## 🎨 Design & API Scope
+
+Every screen is built from the Figma **UI Design** frames, at the intersection of what the design draws and what the backend serves.
+
+- Where the design draws a control the API does not support (video/voice calls, global and in-chat search, some report filters and extra date-navigation options), the control renders **disabled with its reason** instead of pretending to work.
+- Where an endpoint cannot honestly feed a drawn element (the report charts, for example, would need series the API does not return), the element shows an **explicit empty state** rather than invented numbers.
+
+---
+
+## 🔀 Workflow
+
+- Feature branches are cut from `development` and land back through reviewed pull requests.
+- `main` holds the integrated, reviewed result.
+
+---
+
+<div align="center">
+
+**Built frame by frame, endpoint by endpoint.**
+
+</div>
+=======
 Work goes on a feature branch, then a pull request into `development`, then into `main`. Vercel deploys `main`.
+>>>>>>> development
