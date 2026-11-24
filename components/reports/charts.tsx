@@ -22,8 +22,6 @@ interface ReportPoint {
 const SANS = "font-[family-name:var(--font-sans)]";
 const AXIS_TICK = { fontSize: 11, fill: "#606C80" };
 
-/** Shared chart wrappers for the Reports cards (recharts, already installed). */
-
 function EmptyChart() {
   return (
     <div className="flex h-[220px] items-center justify-center">
