@@ -119,7 +119,7 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-                <div className="mt-5 overflow-x-auto"><div className="flex min-w-[1312px] flex-col gap-4">
+                <div className="mt-5 overflow-x-auto xl:overflow-visible"><div className="flex min-w-[1312px] flex-col xl:min-w-0 gap-4">
           <div className="flex items-center border-b border-[#BCBCBD] pb-2 pt-1">
             {["Project Name", "Start Date", "Deadline", "Status", "Files", "Teams", "Priority"].map((h) => (
               <span key={h} className={`${SANS} flex-1 p-[10px] text-left text-[18px] font-medium leading-[150%] text-[#000712]`}>
@@ -129,7 +129,7 @@ export default function ProjectsPage() {
           </div>
           {(projects ?? []).filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase())).map((p, idx) => {
             const members = (p.teams ?? []).flatMap((t) => t.members ?? []);
-            const cell = "flex w-[184px] items-center p-[10px]";
+            const cell = "flex w-[184px] items-center xl:w-auto xl:min-w-0 xl:flex-1 p-[10px]";
             return (
               <Link
                 key={p.id}
@@ -153,7 +153,7 @@ export default function ProjectsPage() {
                     {p.status === "Completed" ? "Done" : p.status.toLowerCase()}
                   </span>
                 </span>
-                <span className="flex w-[184px] items-center gap-[8px] py-[10px]">
+                <span className="flex w-[184px] items-center gap-[8px] xl:w-auto xl:min-w-0 xl:flex-1 py-[10px]">
                   <FileIcon />
                   <span className={`${SANS} text-sm text-[#000712]`}>{p.files_count ?? 0} Files</span>
                 </span>
