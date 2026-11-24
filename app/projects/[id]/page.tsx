@@ -184,7 +184,7 @@ function ProjectDetailContent() {
               {series.length ? (
                 <div className="flex h-[241px] items-stretch gap-3">
                   <div className="flex h-[218px] flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
-                    {[yMax, Math.round((yMax * 2) / 3), Math.round(yMax / 3), 0].map((v, i) => (
+                    {[yMax, Math.round((yMax * 4) / 5), Math.round((yMax * 3) / 5), Math.round((yMax * 2) / 5), Math.round(yMax / 5), 0].map((v, i) => (
                       <span key={i}>{v >= 1000 ? `${Math.round(v / 100) / 10}k` : v}</span>
                     ))}
                   </div>
