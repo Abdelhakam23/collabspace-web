@@ -1,4 +1,4 @@
-import type { FileAttachment, Task, User } from "@/lib/types";
+import type { FileAttachment, Task, User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
