@@ -154,7 +154,7 @@ export function TasksToolbar({
             onClick={() => setOpenMenu(openMenu === "scope" ? null : "scope")}
             className={`${SANS} flex h-11 items-center gap-[10px] rounded-2xl border border-[#27272B] bg-[#F6F8FA] p-[10px] text-[13px] text-[#000712]`}
           >
-            {scope === "mine" ? "My Tasks" : "My Task"}
+            {scope === "mine" ? "My Tasks" : "All Tasks"}
             <TinyChevron />
           </button>
           <Menu open={openMenu === "scope"} onClose={close}>
