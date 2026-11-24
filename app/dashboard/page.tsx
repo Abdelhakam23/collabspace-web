@@ -25,11 +25,11 @@ type Overview = {
 type DashboardPayload = {
   overview: Overview;
   project_overview: { data: { label: string; projects: number; created_tasks: number; completed_tasks: number }[] };
-  active_projects: { items: { id: number; name: string; tasks_done?: number; tasks_total?: number; color?: string }[] };
-  tasks: { items: { id: number; title: string; priority?: string; due_date?: string; progress?: number }[] };
+  active_projects: { items: { id: number; name: string; tasks_done?: number; tasks_completed?: number; tasks_total?: number; color?: string }[] };
+  tasks: { items: { id: number; title?: string; name?: string; priority?: string; due_date?: string; progress?: number }[] };
   teams: { items: { id: number; name: string; members_count?: number; tasks_count?: number }[] };
-  upcoming_meetings: { items: { id: number; title: string; starts_at?: string; time?: string; date_label?: string; attendees_count?: number }[] };
-  recent_files: { items: { id: number; name: string; owner?: string; type?: string; updated_at?: string }[] };
+  upcoming_meetings: { items: { id: number; title: string; date?: string; start_time?: string; starts_at?: string; time?: string; date_label?: string; attendees_count?: number }[] };
+  recent_files: { items: { id: number; name: string; owner?: string; uploaded_by?: { name?: string }; type?: string; updated_at?: string }[] };
 };
 
 const M = "font-[family-name:var(--font-sans)]";
@@ -113,7 +113,7 @@ export default function DashboardPage() {
             <ul className="space-y-4">
               {(data?.active_projects.items ?? []).map((p, idx) => {
                 const color = PROJECT_COLORS[idx % PROJECT_COLORS.length];
-                const done = p.tasks_done ?? 0;
+                const done = p.tasks_done ?? p.tasks_completed ?? 0;
                 const totalTasks = p.tasks_total ?? 0;
                 return (
                   <li key={p.id} className="flex items-start gap-3 rounded-xl border border-[#eef1f5] p-3">
@@ -142,7 +142,7 @@ export default function DashboardPage() {
                     </span>
                     <span className="min-w-0">
                       <p className={`${M} truncate text-sm font-normal text-[#27272B]`}>{f.name}</p>
-                      <p className={`${M} text-xs text-[#525256]`}>By {[f.owner, f.updated_at].filter(Boolean).join(" • ")}</p>
+                      <p className={`${M} text-xs text-[#525256]`}>By {[f.owner ?? f.uploaded_by?.name, f.updated_at].filter(Boolean).join(" • ")}</p>
                     </span>
                   </span>
                                     <span aria-disabled="true" aria-label="Download (not wired yet)"><Download size={16} /></span>
@@ -161,7 +161,7 @@ export default function DashboardPage() {
                 return (
                   <li key={task.id} className="rounded-xl border border-[#eef1f5] p-3">
                     <div className="flex items-start justify-between gap-2">
-                      <p className={`${M} text-sm font-normal text-[#252525]`}>{task.title}</p>
+                      <p className={`${M} text-sm font-normal text-[#252525]`}>{task.title ?? task.name}</p>
                       {task.priority && tone ? (
                         <span className={`${M} shrink-0 rounded-md px-2 py-1 text-xs font-medium leading-4`} style={{ color: tone.text, backgroundColor: tone.bg }}>{task.priority}</span>
                       ) : null}
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                       <span>{task.due_date ?? ""}</span>
                       {typeof task.progress === "number" ? <span>{task.progress}%</span> : null}
                     </div>
-                    <Bar ratio={(task.progress ?? 0) / 100} color="#2692FF" className="mt-1.5" />
+                    {typeof task.progress === "number" ? <Bar ratio={task.progress / 100} color="#2692FF" className="mt-1.5" /> : null}
                   </li>
                 );
               })}
@@ -193,9 +193,9 @@ export default function DashboardPage() {
                   <span className="h-8 w-8 shrink-0 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
                   <span className="w-full min-w-0">
                     <span className={`${M} block truncate text-xs font-medium leading-4 text-[#525256]`}>{team.name}</span>
-                    <Bar ratio={(team.tasks_count ?? 0) / maxTeamTasks} color="#2692FF" className="mt-1.5" />
+                    {typeof team.tasks_count === "number" ? <Bar ratio={team.tasks_count / maxTeamTasks} color="#2692FF" className="mt-1.5" /> : null}
                   </span>
-                  <span className={`${M} shrink-0 text-xs leading-4 text-[#525256]`}>{team.tasks_count ?? 0}/{team.members_count ?? 0}</span>
+                  <span className={`${M} shrink-0 text-xs leading-4 text-[#525256]`}>{typeof team.tasks_count === "number" ? team.tasks_count : "Unavailable"} / {team.members_count ?? "Unavailable"}</span>
                 </li>
               ))}
               {data && teams.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No teams yet.</li> : null}
@@ -223,7 +223,7 @@ export default function DashboardPage() {
                         <span className={`${M} flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#eef0f4] text-[9px] text-[#525256]`}>+{m.attendees_count - 2}</span>
                       ) : null}
                     </span>
-                    <span className={`${M} text-xs text-[#718096]`}>{m.time ?? m.starts_at ?? ""}</span>
+                    <span className={`${M} text-xs text-[#718096]`}>{m.time ?? m.starts_at ?? [m.date, m.start_time?.slice(0, 5)].filter(Boolean).join(" ")}</span>
                   </div>
                 </li>
               ))}

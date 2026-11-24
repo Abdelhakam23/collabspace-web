@@ -16,12 +16,24 @@ export default function MeetingsPage() {
   const [meetings, setMeetings] = useState<Meeting[] | null>(null);
   const [error, setError] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [dayOffset, setDayOffset] = useState(0);
 
   const load = useCallback(
     () =>
-      Promise.all([listMeetings({ time_filter: "upcoming", per_page: 15 }), getProfile()]).then(
+      Promise.all([(async () => {
+        const all: Meeting[] = [];
+        let page = 1;
+        let lastPage = 1;
+        do {
+          const result = await listMeetings({ time_filter: "upcoming", per_page: 100, page });
+          all.push(...(result.data.data ?? []));
+          lastPage = result.data.meta?.last_page ?? page;
+          page += 1;
+        } while (page <= lastPage);
+        return all;
+      })(), getProfile()]).then(
         ([list, profile]) => {
-          setMeetings(list.data.data ?? []);
+          setMeetings(list);
           setMe(profile.data.user);
         },
         () => setError(true),
@@ -33,9 +45,15 @@ export default function MeetingsPage() {
     load();
   }, [load]);
 
-  const monthLabel = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
-  const arrowClass = "cursor-not-allowed p-1 text-[#000712] opacity-40";
-  const arrowTitle = "Month navigation is not documented in the meetings API";
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() + dayOffset);
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 4);
+  const sameMonth = startDate.getMonth() === endDate.getMonth() && startDate.getFullYear() === endDate.getFullYear();
+  const monthLabel = sameMonth
+    ? startDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : `${startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${endDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+  const arrowClass = "p-1 text-[#000712] hover:text-[#005AFB]";
 
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
@@ -56,13 +74,13 @@ export default function MeetingsPage() {
         </div>
         <div className="mt-[42px] flex max-w-[1311px] items-center justify-between gap-8">
           <div className="flex items-center gap-4">
-            <button type="button" disabled title={arrowTitle} aria-label="Previous month" className={arrowClass}>
+            <button type="button" onClick={() => setDayOffset((offset) => offset - 5)} aria-label="Previous five days" className={arrowClass}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="m15 18-6-6 6-6" />
               </svg>
             </button>
             <span className={`${SANS} text-[20px] font-medium leading-[150%] text-[#000712]`}>{monthLabel}</span>
-            <button type="button" disabled title={arrowTitle} aria-label="Next month" className={arrowClass}>
+            <button type="button" onClick={() => setDayOffset((offset) => offset + 5)} aria-label="Next five days" className={arrowClass}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="m9 18 6-6-6-6" />
               </svg>
@@ -74,7 +92,7 @@ export default function MeetingsPage() {
         {error ? (
           <p className="mt-8 text-sm text-[#af2622]" role="alert">Could not load meetings. Please try again.</p>
         ) : meetings ? (
-          <WeekGrid meetings={meetings} />
+          <WeekGrid meetings={meetings} startDate={startDate} />
         ) : (
           <p className={`${SANS} mt-8 text-sm text-[#718096]`}>Loading meetings...</p>
         )}
