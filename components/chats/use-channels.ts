@@ -6,12 +6,6 @@ import { listProjectMessages } from "@/lib/api/messages";
 import type { Message } from "@/lib/types";
 import type { ChannelPreview } from "@/components/chats/sidebar";
 
-/**
- * Loads the sidebar channels: every project is one conversation (the API has
- * no channel concept), and each row shows its latest message (A8.1,
- * per_page=1) as the drawn preview line. Preview failures degrade to a
- * "No messages yet" row instead of breaking the list.
- */
 export function useChannels(): {
   channels: ChannelPreview[] | null;
   error: boolean;
@@ -46,7 +40,6 @@ export function useChannels(): {
     };
   }, []);
 
-  // Keeps the sidebar preview in sync when a message is sent locally.
   const updatePreview = useCallback((projectId: number, message: Message) => {
     setChannels((prev) =>
       prev ? prev.map((c) => (c.project.id === projectId ? { ...c, latest: message } : c)) : prev,
