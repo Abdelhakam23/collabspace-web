@@ -17,7 +17,7 @@ export interface CreateProjectPayload {
 
 export async function createProject(payload: CreateProjectPayload) {
   const { data } = await apiClient.post<ApiEnvelope<{ project: Project }>>(`/api/v1/projects`, payload);
-  return data;
+  return { ...data, data: { project: data.data.project ?? (data.data as unknown as Project) } };
 }
 
 export async function getProjectOverview(projectId: number | string) {

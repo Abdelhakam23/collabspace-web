@@ -16,7 +16,7 @@ export async function uploadFileToProject(payload: UploadFileToProjectPayload) {
   const form = new FormData();
   Object.entries(payload).forEach(([k, v]) => { if (v !== undefined && v !== null) form.append(k, v as string | Blob); });
   const { data } = await apiClient.post<ApiEnvelope<{ file: FileAttachment }>>(`/api/v1/files`, form, { headers: { "Content-Type": "multipart/form-data" } });
-  return data;
+  return { ...data, data: { file: data.data.file ?? (data.data as unknown as FileAttachment) } };
 }
 
 export interface UploadFileToTaskPayload {
@@ -28,7 +28,7 @@ export async function uploadFileToTask(payload: UploadFileToTaskPayload) {
   const form = new FormData();
   Object.entries(payload).forEach(([k, v]) => { if (v !== undefined && v !== null) form.append(k, v as string | Blob); });
   const { data } = await apiClient.post<ApiEnvelope<{ file: FileAttachment }>>(`/api/v1/files`, form, { headers: { "Content-Type": "multipart/form-data" } });
-  return data;
+  return { ...data, data: { file: data.data.file ?? (data.data as unknown as FileAttachment) } };
 }
 
 export async function getFileDetails(fileId: number | string) {

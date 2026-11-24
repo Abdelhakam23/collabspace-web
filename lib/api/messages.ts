@@ -1,9 +1,14 @@
 import { apiClient } from "@/lib/api-client";
 import type { ApiEnvelope, Message, Paginated } from "@/lib/types";
 
+function normalizeMessage(value: Message): Message {
+  const raw = value as Message & { message?: string; sender?: Message["user"] };
+  return { ...raw, body: raw.body ?? raw.message ?? "", user: raw.user ?? raw.sender };
+}
+
 export async function listProjectMessages(projectId: number | string, query?: { per_page: string | number }) {
   const { data } = await apiClient.get<ApiEnvelope<Paginated<Message>>>(`/api/v1/projects/${encodeURIComponent(projectId)}/messages`, { params: query });
-  return data;
+  return { ...data, data: { ...data.data, data: (data.data.data ?? []).map(normalizeMessage) } };
 }
 
 export interface SendMessagePayload {
@@ -15,7 +20,7 @@ export interface SendMessagePayload {
 
 export async function sendMessage(projectId: number | string, payload: SendMessagePayload) {
   const { data } = await apiClient.post<ApiEnvelope<{ message: Message }>>(`/api/v1/projects/${encodeURIComponent(projectId)}/messages`, payload);
-  return data;
+  return { ...data, data: { message: normalizeMessage(typeof data.data.message === "object" ? data.data.message : (data.data as unknown as Message)) } };
 }
 
 export interface SendThreadReplyPayload {
