@@ -85,9 +85,11 @@ overlay frame has not been extracted yet, so the button is rendered inert
 for this pass; POST /projects (A4.2) is documented for when it ships.
 
 ## All Projects icon glyphs and avatar images
-The violet project glyph and the file/folder glyph cannot be exported from
-the view-only file, so inline SVG approximations hold their geometry
-(approximate, not native). Team avatars are data images: with no
+The layer names identify the icon assets as public icon-set vectors, and the
+exact paths are used: project badge "Bag-Suitcase-1--Streamline-Core"
+(16x16 in a 32px tile), files glyph "mdi-light:file" (20x20), and the
+trailing row affordance "pepicons-pencil:dots-y" (24x24, fill #000712 read
+from the vector's native properties). Team avatars are data images: with no
 avatar_url they render as initials circles in the design's avatar
 geometry (23.73px, 1.48px #C2C2C2 border).
 
@@ -198,7 +200,8 @@ inert (design-only control, no documented filter parameter).
 ### Sampled colors this round
 - Status legend dots: Pending #191919, In Progress #005AFB, Completed #2BA52E
   (pixel-sampled from the 46% capture).
-- Projects list file glyph: #F8B040 orange document icon (pixel-sampled).
+- Projects list file glyph: mdi-light:file with #F8B040 orange fill
+  (fill pixel-sampled; the vector itself is the exact public asset).
 
 ## Alpha frame native geometry (reconciled 2026-11-24, frame 181-1158)
 

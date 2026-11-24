@@ -58,25 +58,36 @@ function initials(name: string) {
 }
 
 function ProjectIcon() {
-  // Approximation of the frame's violet project glyph (Support colors/Violet 2
-  // #7D2D7E strokes); the original vector is not exportable from a view-only file.
+  // The frame's project badge is the "Bag-Suitcase-1" glyph from the public
+  // Streamline Core set (layer name Bag-Suitcase-1--Streamline-Core), drawn
+  // 16x16 centered in a 32px tile; stroke color sampled from the frame
+  // (Support colors/Violet 2, #7D2D7E).
   return (
     <span className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] bg-[#F7EFF7]">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7D2D7E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="#7D2D7E" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12.5 3.5h-11a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1M5 .5h4a1 1 0 0 1 1 1v2H4v-2a1 1 0 0 1 1-1M3.5 7h7m-7 3h7" />
       </svg>
     </span>
   );
 }
 
 function FileIcon() {
-  // Orange document glyph; color pixel-sampled from the frame capture
+  // The frame's files glyph is "mdi-light:file" (layer name mdi-light:file),
+  // a 20x20 vector; orange fill pixel-sampled from the frame capture
   // (~#F8B040, disclosed in docs/design-api-gaps.md).
   return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F8B040" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M6 3h8l4 4v13a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 5 20V4.5A1.5 1.5 0 0 1 6.5 3z" />
-      <path d="M14 3v4h4" />
-      <path d="M9 12h6M9 16h6" />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#F8B040" aria-hidden="true">
+      <path d="M14 11a3 3 0 0 1-3-3V4H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-8zm-2-3a2 2 0 0 0 2 2h3.59L12 4.41zM7 3h5l7 7v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3" />
+    </svg>
+  );
+}
+
+function DotsIcon() {
+  // Trailing row affordance: "pepicons-pencil:dots-y", 24x24, fill #000712
+  // (fill read from the vector's native properties).
+  return (
+    <svg width="24" height="24" viewBox="0 0 20 20" fill="#000712" aria-hidden="true">
+      <path d="M9 15.25a1.25 1.25 0 1 1 2.5 0a1.25 1.25 0 0 1-2.5 0m0-5a1.25 1.25 0 1 1 2.5 0a1.25 1.25 0 0 1-2.5 0m0-5a1.249 1.249 0 1 1 2.5 0a1.25 1.25 0 0 1-2.5 0" />
     </svg>
   );
 }
@@ -211,11 +222,9 @@ export default function ProjectsPage() {
                     {p.status === "Completed" ? "Done" : p.status.toLowerCase()}
                   </span>
                 </span>
-                <span className={cell}>
-                  <span className="flex items-center gap-[8px]">
-                    <FileIcon />
-                    <span className={`${SANS} text-sm text-[#000712]`}>{p.files_count ?? 0} Files</span>
-                  </span>
+                <span className="flex w-[184px] items-center gap-[8px] py-[10px]">
+                  <FileIcon />
+                  <span className={`${SANS} text-sm text-[#000712]`}>{p.files_count ?? 0} Files</span>
                 </span>
                 <span className={cell}>
                   <span className="flex items-center">
@@ -240,6 +249,7 @@ export default function ProjectsPage() {
                     {p.priority}
                   </span>
                 </span>
+                <DotsIcon />
               </Link>
             );
           })}
