@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { listProjects } from "@/lib/api/projects";
 import { listProjectMessages } from "@/lib/api/messages";
+import type { Message } from "@/lib/types";
 import type { ChannelPreview } from "@/components/chats/sidebar";
 
 /**
@@ -11,7 +12,11 @@ import type { ChannelPreview } from "@/components/chats/sidebar";
  * per_page=1) as the drawn preview line. Preview failures degrade to a
  * "No messages yet" row instead of breaking the list.
  */
-export function useChannels(): { channels: ChannelPreview[] | null; error: boolean } {
+export function useChannels(): {
+  channels: ChannelPreview[] | null;
+  error: boolean;
+  updatePreview: (projectId: number, message: Message) => void;
+} {
   const [channels, setChannels] = useState<ChannelPreview[] | null>(null);
   const [error, setError] = useState(false);
 
@@ -41,5 +46,12 @@ export function useChannels(): { channels: ChannelPreview[] | null; error: boole
     };
   }, []);
 
-  return { channels, error };
+  // Keeps the sidebar preview in sync when a message is sent locally.
+  const updatePreview = useCallback((projectId: number, message: Message) => {
+    setChannels((prev) =>
+      prev ? prev.map((c) => (c.project.id === projectId ? { ...c, latest: message } : c)) : prev,
+    );
+  }, []);
+
+  return { channels, error, updatePreview };
 }

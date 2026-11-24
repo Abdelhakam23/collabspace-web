@@ -295,12 +295,17 @@ Omissions and disabled controls:
 - Direct messages (inbox tab): no DM endpoint, tab disabled.
 - Message search, voice/video call, chat settings icons: no endpoints,
   disabled with reasons.
-- Message attachments: the paperclip is drawn and A8.2 accepts
-  file_attachment_id, but the upload-then-send composer flow is not wired
-  yet (deferred; attachment chips on received messages do render).
+- Message attachments: the paperclip uploads through A7.2, then the
+  message sends through A8.2 with file_attachment_id. A picked file shows
+  as a small removable chip above the input (the source draws no
+  pending-attachment state; minimal affordance). Upload failure keeps the
+  file and text for retry; a send failure after a successful upload
+  retries the send only, so an attachment is never stored twice. Received
+  attachment chips link to the file URL.
 - Thread replies (A8.3), edit (A8.4), delete (A8.5), mark-read (A8.6) and
   unread count (A8.7): no drawn controls, omitted.
 - Unread badges drawn on rows have no per-channel unread source, omitted.
+- The sidebar preview refreshes locally after a successful send.
 
 Estimated values (unmeasured in the source): tab text styles, active-tab
 treatment, channel row name/preview/time text styles, "Select Chat" style,

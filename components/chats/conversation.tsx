@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { listProjectMessages, sendMessage } from "@/lib/api/messages";
+import { uploadFileToProject } from "@/lib/api/files";
 import type { Message, Project } from "@/lib/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -18,8 +19,7 @@ function messageTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true }).toLowerCase();
 }
 
-const DISABLED_ICON =
-  "cursor-not-allowed text-[#000712] opacity-40";
+const DISABLED_ICON = "cursor-not-allowed text-[#000712] opacity-40";
 
 /**
  * Conversation pane (drawn open-chat state, 864px wide): a white header card
@@ -32,16 +32,24 @@ const DISABLED_ICON =
  *   ("Public Channel") has no API counterpart.
  * - Header search, phone, video and menu icons have no API endpoints, so
  *   they are disabled with reasons.
- * - The paperclip stays disabled: message attachments need an upload-then-
- *   send flow that is not wired yet (tracked in docs/screen-coverage.md).
- * - Send posts A8.2 with the message text only.
+ * - The paperclip uploads through A7.2, then the message sends through A8.2
+ *   with file_attachment_id. A picked file shows as a small removable chip
+ *   above the input (the source draws no pending-attachment state; this is
+ *   the minimal affordance the drawn paperclip needs).
+ * - Failure handling: an upload failure keeps the file and text for retry;
+ *   a send failure after a successful upload retries the send only, never
+ *   re-uploading, so one attachment cannot be stored twice.
  */
-export function Conversation({ project }: { project: Project }) {
+export function Conversation({ project, onSent }: { project: Project; onSent?: (message: Message) => void }) {
   const [messages, setMessages] = useState<Message[] | null>(null);
   const [error, setError] = useState(false);
   const [draft, setDraft] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadedId, setUploadedId] = useState<string | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     try {
@@ -59,21 +67,43 @@ export function Conversation({ project }: { project: Project }) {
 
   const send = async () => {
     const text = draft.trim();
-    if (!text || sendingRef.current) return;
+    if ((!text && !file) || sendingRef.current) return;
     sendingRef.current = true;
     setSending(true);
+    setSendError(null);
     try {
-      const res = await sendMessage(project.id, { message: text });
-      const created = res.data.message;
-      setMessages((prev) => (prev ? [...prev, created] : [created]));
-      setDraft("");
-    } catch {
-      // Keep the draft so the user can retry.
+      let attachmentId = uploadedId;
+      if (file && !attachmentId) {
+        try {
+          const uploaded = await uploadFileToProject({ file, project_id: String(project.id), name: file.name });
+          attachmentId = String(uploaded.data.file.id);
+          setUploadedId(attachmentId);
+        } catch {
+          setSendError("The attachment could not be uploaded. Try again.");
+          return;
+        }
+      }
+      try {
+        const res = await sendMessage(project.id, {
+          message: text,
+          ...(attachmentId ? { file_attachment_id: attachmentId } : {}),
+        });
+        const created = res.data.message;
+        setMessages((prev) => (prev ? [...prev, created] : [created]));
+        setDraft("");
+        setFile(null);
+        setUploadedId(null);
+        onSent?.(created);
+      } catch {
+        setSendError(attachmentId ? "The message could not be sent. Try again (the attachment is kept)." : "The message could not be sent. Try again.");
+      }
     } finally {
       sendingRef.current = false;
       setSending(false);
     }
   };
+
+  const busy = sending;
 
   return (
     <section className="flex w-full max-w-[864px] flex-1 flex-col gap-6">
@@ -125,11 +155,18 @@ export function Conversation({ project }: { project: Project }) {
                   <span className={`${SANS} text-[13px] font-semibold text-[#000712]`}>{msg.user?.name ?? "Unknown"}</span>
                   <span className={`${SANS} text-[11px] text-[#606C80]`}>{messageTime(msg.created_at)}</span>
                 </div>
-                <p className={`${SANS} whitespace-pre-wrap text-[14px] leading-[150%] text-[#222222]`}>{msg.body}</p>
+                {msg.body ? (
+                  <p className={`${SANS} whitespace-pre-wrap text-[14px] leading-[150%] text-[#222222]`}>{msg.body}</p>
+                ) : null}
                 {msg.attachment ? (
-                  <span className={`${SANS} mt-1 inline-flex w-fit items-center rounded-md bg-[#005AFB] px-2 py-0.5 text-[12px] text-white`}>
+                  <a
+                    href={msg.attachment.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`${SANS} mt-1 inline-flex w-fit items-center rounded-md bg-[#005AFB] px-2 py-0.5 text-[12px] text-white`}
+                  >
                     {msg.attachment.original_name ?? msg.attachment.name ?? "Attachment"}
-                  </span>
+                  </a>
                 ) : null}
               </div>
             </div>
@@ -137,37 +174,78 @@ export function Conversation({ project }: { project: Project }) {
         )}
       </div>
 
-      <div className="flex items-center gap-3 rounded-2xl bg-white px-6 py-4">
-        <input
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              send();
-            }
-          }}
-          placeholder="Write a message"
-          className={`${SANS} h-8 flex-1 bg-transparent text-[14px] text-[#222222] outline-none placeholder:text-[#606C80]`}
-          aria-label="Write a message"
-        />
-        <button type="button" disabled title="Message attachments are not wired yet" className={DISABLED_ICON} aria-label="Attach a file (unavailable)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={send}
-          disabled={sending || draft.trim().length === 0}
-          title="Send message"
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#005AFB] text-white disabled:cursor-not-allowed disabled:opacity-40"
-          aria-label="Send message"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3.4 20.4 21.85 12 3.4 3.6l-.01 6.53L14 12 3.39 13.87z" />
-          </svg>
-        </button>
+      <div className="flex flex-col gap-2 rounded-2xl bg-white px-6 py-4">
+        {file ? (
+          <div className="flex items-center gap-2">
+            <span className={`${SANS} inline-flex items-center gap-2 rounded-md bg-[#F6F8FA] px-2 py-1 text-[12px] text-[#222222]`}>
+              {file.name}
+              {uploadedId ? <span className="text-[#606C80]">(uploaded)</span> : null}
+              <button
+                type="button"
+                onClick={() => {
+                  setFile(null);
+                  setUploadedId(null);
+                }}
+                disabled={busy}
+                className="text-[#606C80] hover:text-[#000712] disabled:opacity-40"
+                aria-label="Remove attachment"
+              >
+                x
+              </button>
+            </span>
+          </div>
+        ) : null}
+        <div className="flex items-center gap-3">
+          <input
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                send();
+              }
+            }}
+            placeholder="Write a message"
+            className={`${SANS} h-8 flex-1 bg-transparent text-[14px] text-[#222222] outline-none placeholder:text-[#606C80]`}
+            aria-label="Write a message"
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            onChange={(event) => {
+              const picked = event.target.files?.[0] ?? null;
+              setFile(picked);
+              setUploadedId(null);
+              event.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={busy}
+            title="Attach a file"
+            className="text-[#000712] hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Attach a file"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={send}
+            disabled={busy || (draft.trim().length === 0 && !file)}
+            title="Send message"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#005AFB] text-white disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Send message"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3.4 20.4 21.85 12 3.4 3.6l-.01 6.53L14 12 3.39 13.87z" />
+            </svg>
+          </button>
+        </div>
+        {sendError ? <p className={`${SANS} text-[12px] text-[#E5484D]`}>{sendError}</p> : null}
       </div>
     </section>
   );

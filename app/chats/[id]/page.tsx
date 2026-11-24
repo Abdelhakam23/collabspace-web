@@ -20,7 +20,7 @@ export default function ChatConversationPage() {
   const params = useParams();
   const projectId = Number(params.id);
   const [me, setMe] = useState<User | null>(null);
-  const { channels } = useChannels();
+  const { channels, updatePreview } = useChannels();
 
   useEffect(() => {
     getProfile()
@@ -38,7 +38,7 @@ export default function ChatConversationPage() {
         {channels === null ? (
           <p className={`${SANS} flex-1 py-8 text-center text-sm text-[#606C80]`}>Loading...</p>
         ) : project ? (
-          <Conversation project={project} />
+          <Conversation project={project} onSent={(message) => updatePreview(project.id, message)} />
         ) : (
           <p className={`${SANS} flex-1 py-8 text-center text-sm text-[#606C80]`}>This project conversation is not available.</p>
         )}
