@@ -1,12 +1,24 @@
 /**
- * Tolerant readers for the A11 report endpoints. api.json documents no
- * response fields for them, so each reader walks the payload for the metric
- * the drawn Reports screen shows. Binding fails closed: when more than one
- * candidate key matches, the metric is ambiguous and returns null, which
- * renders as "Not available" (never as zero, never as a guessed binding).
- * A unique match is still schema-unverified (see docs/screen-coverage.md);
- * live payload grounding has not been possible, so these bindings are a
- * documented integration debt.
+ * Extractors for the A11 report endpoints. api.json documents no response
+ * fields; the shapes below were grounded by authorized read-only live
+ * captures against the real backend, first from an empty test account
+ * (2026-11-23) and then re-verified with non-zero data under the admin
+ * account the user granted read-only access to (2026-11-24):
+ *
+ *   reports/tasks:    data.summary.completion_rate,
+ *                     data.chart.data[] = { label, created_tasks, completed_tasks }
+ *   reports/projects: data.summary.average_completion_rate,
+ *                     data.chart.data[] = { label, projects, completed_tasks }
+ *   reports/teams:    data.summary = { total_teams, total_members,
+ *                     total_assigned_tasks } (no rate key exists)
+ *   reports/users:    data.tasks/meetings/files/productivity,
+ *                     data.chart.data[] = { label, created_tasks, completed_tasks }
+ *
+ * Binding is by exact observed path, never by recursive key search, so a
+ * renamed or moved field cannot silently bind the wrong metric. Anything
+ * outside the observed shape returns null and renders as "Not available"
+ * (never as zero). No delta field exists in any observed payload, so the
+ * "from last month" line renders only if a real delta ever appears.
  */
 
 export interface ReportMetric {
@@ -23,65 +35,82 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/**
- * Collects every numeric field whose key matches, walking nested objects.
- * More than one distinct matching key means the schema is ambiguous for the
- * metric the screen wants, so the caller fails closed instead of guessing.
- */
-function findNumbers(payload: unknown, keyPattern: RegExp, hits: { key: string; value: number }[]): void {
-  if (!isRecord(payload)) return;
-  for (const [key, value] of Object.entries(payload)) {
-    if (keyPattern.test(key) && typeof value === "number" && Number.isFinite(value)) hits.push({ key, value });
-  }
-  for (const value of Object.values(payload)) {
-    if (isRecord(value)) findNumbers(value, keyPattern, hits);
-  }
+function envelopeData(payload: unknown): Record<string, unknown> | null {
+  if (!isRecord(payload)) return null;
+  const data = payload.data;
+  return isRecord(data) ? data : null;
 }
 
-function findUniqueNumber(payload: unknown, keyPattern: RegExp): number | null {
-  const hits: { key: string; value: number }[] = [];
-  findNumbers(payload, keyPattern, hits);
-  const keys = new Set(hits.map((h) => h.key));
-  if (keys.size !== 1) return null;
-  return hits[0].value;
+function numberAt(scope: Record<string, unknown> | null, ...path: string[]): number | null {
+  let current: unknown = scope;
+  for (const key of path) {
+    if (!isRecord(current)) return null;
+    current = current[key];
+  }
+  return typeof current === "number" && Number.isFinite(current) ? current : null;
 }
 
-export function extractMetric(payload: unknown, valuePattern: RegExp): ReportMetric | null {
-  const value = findUniqueNumber(payload, valuePattern);
+/** A metric is the number at an exact observed path; anything else is null. */
+function metricAt(payload: unknown, ...path: string[]): ReportMetric | null {
+  const value = numberAt(envelopeData(payload), ...path);
   if (value === null) return null;
-  // A delta is rendered only when uniquely present; a missing delta is never
-  // shown as zero.
-  const delta = findUniqueNumber(payload, /delta|change|growth|from_last/i);
-  return { value, delta };
+  return { value, delta: null };
+}
+
+/** Task Completion Rate card: reports/tasks -> data.summary.completion_rate */
+export function taskCompletionMetric(payload: unknown): ReportMetric | null {
+  return metricAt(payload, "summary", "completion_rate");
+}
+
+/** Projects Completion Rate card: reports/projects -> data.summary.average_completion_rate */
+export function projectCompletionMetric(payload: unknown): ReportMetric | null {
+  return metricAt(payload, "summary", "average_completion_rate");
 }
 
 /**
- * Finds arrays of { label-ish, number } points in the payload. More than one
- * candidate array means the schema is ambiguous for the chart, so the result
- * is null and the chart renders its empty state instead of guessed data.
+ * Teams Activity Rate card: the observed reports/teams summary carries
+ * counts only (total_teams, total_members, total_assigned_tasks); no rate
+ * key exists, so this stays "Not available" unless the backend adds one.
  */
-export function extractSeries(payload: unknown): ReportPoint[] | null {
-  const candidates: ReportPoint[][] = [];
-  collectSeries(payload, candidates);
-  if (candidates.length !== 1) return null;
-  return candidates[0];
+export function teamActivityMetric(payload: unknown): ReportMetric | null {
+  const summary = envelopeData(payload)?.summary;
+  if (!isRecord(summary)) return null;
+  const rateKey = Object.keys(summary).find((k) => /rate|percent/i.test(k) && typeof summary[k] === "number");
+  return rateKey ? { value: summary[rateKey] as number, delta: null } : null;
 }
 
-function collectSeries(payload: unknown, out: ReportPoint[][]): void {
-  if (!isRecord(payload)) return;
-  for (const value of Object.values(payload)) {
-    if (Array.isArray(value) && value.length > 0 && isRecord(value[0])) {
-      const points: ReportPoint[] = [];
-      for (const item of value) {
-        if (!isRecord(item)) break;
-        const labelKey = Object.keys(item).find((k) => /label|month|name|date|day|period/i.test(k));
-        const valueKey = Object.keys(item).find((k) => /value|count|total|rate|amount|percent/i.test(k) && typeof item[k] === "number");
-        if (!labelKey || !valueKey) break;
-        points.push({ label: String(item[labelKey]), value: item[valueKey] as number });
-      }
-      if (points.length === value.length && points.length > 0) out.push(points);
-    } else if (isRecord(value)) {
-      collectSeries(value, out);
-    }
+/**
+ * A chart series is data.chart.data[] with the observed { label, <seriesKey> }
+ * points. The observed payloads carry two task series (created_tasks,
+ * completed_tasks); the drawn charts are single-series, so each chart binds
+ * the one named series that matches its title and the other stays unused.
+ */
+function chartSeries(payload: unknown, seriesKey: string): ReportPoint[] | null {
+  const chart = envelopeData(payload)?.chart;
+  if (!isRecord(chart)) return null;
+  const rows = chart.data;
+  if (!Array.isArray(rows) || rows.length === 0) return null;
+  const points: ReportPoint[] = [];
+  for (const row of rows) {
+    if (!isRecord(row) || typeof row.label !== "string") return null;
+    const value = row[seriesKey];
+    if (typeof value !== "number" || !Number.isFinite(value)) return null;
+    points.push({ label: row.label, value });
   }
+  return points;
+}
+
+/** Task Completion Time vs Deadline: reports/tasks chart, completed tasks per month */
+export function taskCompletionSeries(payload: unknown): ReportPoint[] | null {
+  return chartSeries(payload, "completed_tasks");
+}
+
+/** Projects Progress: reports/projects chart, projects per month */
+export function projectProgressSeries(payload: unknown): ReportPoint[] | null {
+  return chartSeries(payload, "projects");
+}
+
+/** Worker Activity Rate: reports/users chart, completed tasks per month */
+export function workerActivitySeries(payload: unknown): ReportPoint[] | null {
+  return chartSeries(payload, "completed_tasks");
 }

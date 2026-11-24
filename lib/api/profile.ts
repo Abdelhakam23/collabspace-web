@@ -1,9 +1,16 @@
 import { apiClient } from "@/lib/api-client";
 import type { ApiEnvelope, User, Task, FileAttachment, Paginated } from "@/lib/types";
 
+/** Observed auth/me stats block (live capture 2026-11-23); all keys optional so a missing block fails closed. */
+export interface ProfileStats {
+  completed_tasks?: number;
+  total_tasks?: number;
+  hours_worked?: number;
+}
+
 /** GET /api/v1/auth/me — Get Profile (/me) (A2.1) */
 export async function getProfile() {
-  const { data } = await apiClient.get<ApiEnvelope<{ user: User }>>(`/api/v1/auth/me`);
+  const { data } = await apiClient.get<ApiEnvelope<{ user: User; stats?: ProfileStats }>>(`/api/v1/auth/me`);
   return data;
 }
 

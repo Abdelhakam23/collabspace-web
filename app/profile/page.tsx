@@ -5,8 +5,6 @@ import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { ProfileHeader, type ProfileTab } from "@/components/profile/header";
 import { FilesTab, OverviewTab, TasksTab } from "@/components/profile/tabs";
 import { getProfile, getUserFiles, getUserTasks } from "@/lib/api/profile";
-import { personalProductivityReport } from "@/lib/api/reports";
-import { extractMetric } from "@/lib/reports-normalize";
 import type { FileAttachment, Task, User } from "@/lib/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -14,10 +12,10 @@ const SANS = "font-[family-name:var(--font-sans)]";
 /**
  * Profile screens (nodes 214-8454 overview, 214-8743 tasks, 214-8536
  * files; 1440x1024, #F6F8FA): shared header card + tabs fed by A2.1, A2.5
- * and A2.6. The header stats come from A11.4 through the fail-closed
- * extractor and show "Not available" when the payload does not carry them
- * unambiguously. The drawn Recent Activities section is omitted (no
- * activity endpoint). The navbar pill keeps its drawn state.
+ * and A2.6. The header stats bind the observed auth/me stats block
+ * (completed_tasks, hours_worked) by exact path and show "Not available"
+ * when the block is absent. The drawn Recent Activities section is
+ * omitted (no activity endpoint). The navbar pill keeps its drawn state.
  */
 export default function ProfilePage() {
   const [me, setMe] = useState<User | null>(null);
@@ -33,6 +31,11 @@ export default function ProfilePage() {
       try {
         const profile = await getProfile();
         setMe(profile.data.user);
+        // Exact observed paths only (auth/me capture 2026-11-23): a missing
+        // stats block or key stays "Not available", never a guessed zero.
+        const stats = profile.data.stats;
+        setCompletedTasks(typeof stats?.completed_tasks === "number" ? stats.completed_tasks : null);
+        setHoursWorked(typeof stats?.hours_worked === "number" ? stats.hours_worked : null);
       } catch {
         setError(true);
       }
@@ -42,12 +45,6 @@ export default function ProfilePage() {
       getUserFiles()
         .then((res) => setFiles(res.data.data ?? []))
         .catch(() => setFiles([]));
-      personalProductivityReport()
-        .then((res) => {
-          setCompletedTasks(extractMetric(res, /completed.*task|tasks.*completed/i)?.value ?? null);
-          setHoursWorked(extractMetric(res, /hours/i)?.value ?? null);
-        })
-        .catch(() => {});
     })();
   }, []);
 

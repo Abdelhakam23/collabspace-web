@@ -6,7 +6,16 @@ import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { ReportAreaChart, ReportBarChart, ReportLineChart } from "@/components/reports/charts";
 import { projectReports, taskReportsProductivity, teamPerformanceReports, personalProductivityReport } from "@/lib/api/reports";
 import { ApiError } from "@/lib/api-client";
-import { extractMetric, extractSeries, type ReportMetric, type ReportPoint } from "@/lib/reports-normalize";
+import {
+  projectCompletionMetric,
+  projectProgressSeries,
+  taskCompletionMetric,
+  taskCompletionSeries,
+  teamActivityMetric,
+  workerActivitySeries,
+  type ReportMetric,
+  type ReportPoint,
+} from "@/lib/reports-normalize";
 import { getProfile } from "@/lib/api/profile";
 import type { User } from "@/lib/types";
 
@@ -18,9 +27,13 @@ const SANS = "font-[family-name:var(--font-sans)]";
  * a worker-activity chart card, and the "Submit a detailed report" form.
  *
  * Scope notes:
- * - The A11 endpoints document no response fields, so metrics and series are
- *   read tolerantly (lib/reports-normalize.ts) and render as "Not available"
- *   when absent, never as zero. The drawn percentages imply a 0-100 scale.
+ * - The A11 endpoints document no response fields in the collection;
+ *   their shapes were grounded by authorized read-only live captures
+ *   (2026-11-23 test account, re-verified 2026-11-24 under the granted
+ *   admin read-only account with non-zero data). lib/reports-normalize.ts
+ *   binds exact observed paths only; anything outside the observed shape
+ *   renders as "Not available", never as zero. The drawn percentages
+ *   imply a 0-100 scale.
  * - The drawn "All Projects" and "Monthly" dropdowns have no documented
  *   filter parameters, so they are disabled with reasons.
  * - The "Submit a detailed report" form has no POST endpoint in the API, so
@@ -120,12 +133,12 @@ export default function ReportsPage() {
         teamPerformanceReports(),
         personalProductivityReport(),
       ]);
-      setTaskMetric(metricState(tasks, (p) => extractMetric(p, /completion.*rate|rate/i)));
-      setProjectMetric(metricState(projects, (p) => extractMetric(p, /completion.*rate|rate/i)));
-      setTeamMetric(metricState(teams, (p) => extractMetric(p, /activ.*rate|rate/i)));
-      setTaskSeries(metricState(tasks, extractSeries));
-      setProjectSeries(metricState(projects, extractSeries));
-      setWorkerSeries(metricState(users, extractSeries));
+      setTaskMetric(metricState(tasks, taskCompletionMetric));
+      setProjectMetric(metricState(projects, projectCompletionMetric));
+      setTeamMetric(metricState(teams, teamActivityMetric));
+      setTaskSeries(metricState(tasks, taskCompletionSeries));
+      setProjectSeries(metricState(projects, projectProgressSeries));
+      setWorkerSeries(metricState(users, workerActivitySeries));
     })();
   }, []);
 

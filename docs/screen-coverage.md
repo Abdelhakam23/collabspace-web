@@ -172,13 +172,20 @@ mark-all or delete control, so A9.5/A9.6 stay unused. Row title/message/
 time text sizes are pixel-estimated from the 100% frame read (only the
 overlay title typography is node-read: Inter 500 16px #000712); time
 labels follow the drawn samples (HH:MM today, Yesterday, else date).
-## Reports (Reports screen + pickers + A11.1-A11.5): DONE, INTEGRATION UNVERIFIED (2026-11-24)
-Screen, pickers, charts and zero-delta handling implemented and
-fixture-verified. The A11.x response fields are undocumented, so data
-semantics fail closed: no guessed metric or axis renders as real data
-and missing deltas never render as zero. Semantics stay UNVERIFIED until
-an authorized live payload read grounds them. Print/Save uses the
-browser's own print (client concern; no API exists).
+## Reports (Reports screen + pickers + A11.1-A11.5): DONE, INTEGRATION VERIFIED (2026-11-24)
+Screen, pickers and charts implemented; bindings verified against
+authorized read-only live captures (2026-11-23 test account, re-verified
+2026-11-24 under the granted admin read-only account with non-zero
+data). Metrics bind exact observed paths: Task Completion Rate =
+reports/tasks data.summary.completion_rate (live 38.4%), Projects
+Completion Rate = reports/projects data.summary.average_completion_rate
+(live 37.1%). The observed reports/teams summary carries counts only
+(no rate key exists), so the drawn Teams Activity Rate card correctly
+reads "Not available". Charts bind the named monthly series
+(completed_tasks / projects); the payload's second series (created_tasks)
+has no drawn home and stays unused. No delta field exists in any
+observed payload, so "from last month" never renders. Print/Save uses
+the browser's own print (client concern; no API exists).
 
 ## Ask AI (frames 225-9992 + 229-5948, A10.2): DONE (2026-11-24)
 /ask-ai implements the empty state and the chat surface, entered from the
@@ -198,8 +205,9 @@ offers a project selector, so wiring it would invent both.
 ## Profile (Profile, /overview, /tasks, /files, /Settomgs + A2.x): DONE (2026-11-24)
 Overview, tasks, files and settings implemented and fixture-verified.
 The settings availability field binds only the payload value (no default
-status is fabricated). The stats cards inherit the Reports data-semantics
-uncertainty (same A11 family) and stay marked UNVERIFIED. Reachability:
+status is fabricated). The stats cards bind the observed auth/me stats block
+(completed_tasks, hours_worked) by exact path; absent keys read
+"Not available". Reachability:
 the profile screens have no drawn prototype entry point, so the navbar
 user chip links to /profile as the only drawn affordance (judgment call,
 disclosed; the Navbar instance shows no Prototype interactions).
@@ -337,15 +345,15 @@ Implemented:
 
 Limitations:
 
-- INTEGRATION UNVERIFIED: the A11 endpoints document no response fields
-  (api.json lists none) and no authorized live payload read has been
-  possible, so the data semantics of every metric/series binding are
-  unverified, not just the key names. lib/reports-normalize.ts fails
-  closed: a metric binds only on a UNIQUE candidate key, an ambiguous
-  schema renders "Not available", a missing delta never renders as zero,
-  and a chart with more than one candidate series renders its empty
-  state. No guessed metric, series or axis appears as real data. Resolving
-  this debt needs one authorized read of each live A11 payload.
+- INTEGRATION VERIFIED (2026-11-24): the A11 endpoints document no
+  response fields (api.json lists none), so their shapes were grounded by
+  authorized read-only live captures (2026-11-23 test account;
+  re-verified 2026-11-24 under the granted admin read-only account with
+  non-zero data). lib/reports-normalize.ts binds exact observed paths
+  only: any deviation (renamed/moved key, missing block) still fails
+  closed to "Not available", and no delta field exists in any observed
+  payload, so "from last month" never renders as a guessed zero. No
+  guessed metric, series or axis appears as real data.
 - The drawn "All Projects" and "Monthly" dropdowns have no documented
   filter parameters and are disabled with reasons.
 - The "Submit a detailed report" form has no POST endpoint; every control
@@ -375,9 +383,9 @@ Implemented:
   progress field. Done rows keep the drawn check marker.
 - Files: three-column card grid from A2.6 (name, uploader, size, relative
   time, download link to the file URL).
-- Header stats note: Completed Tasks / Hours Worked come from A11.4 and
-  inherit the Reports INTEGRATION UNVERIFIED status until an authorized
-  live payload read confirms the real shapes.
+- Header stats: Completed Tasks / Hours Worked bind the observed auth/me
+  (A2.1) stats block by exact path (completed_tasks, hours_worked); a
+  missing block or key reads "Not available", never a guessed zero.
 - Settings: avatar picker (A2.2 avatar), Full Name, Phone Number, Job
   Title and Years Of Experience wired to A2.2 with double-submit guard,
   success and error states. Email Address, Availability Status and Current
