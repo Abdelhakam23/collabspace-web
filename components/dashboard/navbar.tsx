@@ -53,13 +53,14 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
           <div className="flex max-w-full flex-nowrap items-center gap-3 overflow-x-auto rounded-full bg-[#F6F8FA] p-1 pr-2 [scrollbar-width:none] sm:gap-[19px] [&>*]:shrink-0">
             {NAV_ITEMS.map((item) =>
               item === active ? (
-                <span
+                <Link
                   key={item}
+                  href={ROUTES[item] ?? "#"}
                   aria-current="page"
                   className={`${M} flex h-9 items-center rounded-full bg-[#005AFB] p-2.5 text-xs font-normal text-white`}
                 >
                   {item}
-                </span>
+                </Link>
               ) : ROUTES[item] ? (
                 <Link key={item} href={ROUTES[item]} className={`${M} flex h-9 items-center rounded-full p-2.5 text-xs font-normal text-[#000712]`}>
                   {item}
