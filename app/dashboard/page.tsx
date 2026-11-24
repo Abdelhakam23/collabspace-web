@@ -10,6 +10,7 @@ import { Gauge } from "@/components/dashboard/gauge";
 import { KpiCard } from "@/components/dashboard/kpi";
 import { getDashboardOverview } from "@/lib/api/dashboard";
 import { getProfile } from "@/lib/api/profile";
+import { PROJECT_COLORS } from "@/lib/colors";
 
 /**
  * Dashboard from the "Dashboard" frame (UI Design page, node 285-12895),
@@ -43,8 +44,6 @@ const PRIORITY_TONES: Record<string, { text: string; bg: string }> = {
   medium: { text: "#B54708", bg: "#FEF0C7" },
   low: { text: "#067647", bg: "#D1FADF" },
 };
-
-const PROJECT_COLORS = ["#7B2C7E", "#0DB0A8", "#005AFB", "#FF9226"];
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardPayload | null>(null);
@@ -80,7 +79,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} />
-      <main className="space-y-6 px-4 py-6 sm:px-8 xl:px-16 xl:py-10">
+      <main className="space-y-6 px-4 py-6 sm:px-8 xl:px-16 xl:pb-10 xl:pt-5">
         {error ? <p className="rounded-lg bg-[#fdecea] px-4 py-2 text-sm text-[#af2622]" role="alert">{error}</p> : null}
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">

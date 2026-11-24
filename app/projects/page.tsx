@@ -8,6 +8,7 @@ import { TinyChevron } from "@/components/projects/tiny-chevron";
 import { listProjects } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
 import { initials } from "@/lib/format";
+import { PROJECT_COLORS } from "@/lib/colors";
 import type { Project } from "@/lib/types";
 
 /**
@@ -22,14 +23,14 @@ const RUBIK = "font-[family-name:var(--font-rubik)]";
 const STATUS_COLORS: Record<string, string> = { Active: "#FA2B75", Completed: "#2BA52E" };
 const PRIORITY_COLORS: Record<string, string> = { High: "#DB302A", Medium: "#E6BA0E" };
 
-function ProjectIcon() {
+function ProjectIcon({ color }: { color: string }) {
   // The frame's project badge is the "Bag-Suitcase-1" glyph from the public
   // Streamline Core set (layer name Bag-Suitcase-1--Streamline-Core), drawn
-  // 16x16 centered in a 32px tile; stroke color sampled from the frame
-  // (Support colors/Violet 2, #7D2D7E).
+  // 16x16 centered in a 32px tile tinted with the project's accent color
+  // (docs/design-api-gaps.md palette; the list payload has no color field).
   return (
-    <span className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] bg-[#F7EFF7]">
-      <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="#7D2D7E" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <span className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px]" style={{ backgroundColor: `${color}1A`, color }}>
+      <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M12.5 3.5h-11a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1M5 .5h4a1 1 0 0 1 1 1v2H4v-2a1 1 0 0 1 1-1M3.5 7h7m-7 3h7" />
       </svg>
     </span>
@@ -142,8 +143,7 @@ export default function ProjectsPage() {
         {/* Table per native reads: vertical list, gap 16, header Hug 59
             (border-bottom 1px #BCBCBD, padding T4 B8) and rows Hug 60 (white,
             padding T4 B4, justify space-between, no horizontal padding; the seven 184px cells pack from the left at 184px pitch) each
-            holding seven equal Fill cells (header 181.71px, rows 184px) with 10px cell padding, plus the
-            header's trailing 40x40 bordered box. Because header and row cell
+            holding seven equal Fill cells (header 181.71px, rows 184px) with 10px cell padding, Because header and row cell
             widths differ by design, header labels and row values sit a few
             pixels apart - that offset is drawn, not a defect. */}
         <div className="mt-5 flex flex-col gap-4">
@@ -153,9 +153,8 @@ export default function ProjectsPage() {
                 {h}
               </span>
             ))}
-            <span aria-hidden="true" className="h-10 w-10 shrink-0 rounded-lg border border-[#27272B]" />
           </div>
-          {(projects ?? []).filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase())).map((p) => {
+          {(projects ?? []).filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase())).map((p, idx) => {
             const members = (p.teams ?? []).flatMap((t) => t.members ?? []);
             const cell = "flex w-[184px] items-center p-[10px]";
             return (
@@ -166,7 +165,7 @@ export default function ProjectsPage() {
               >
                 <span className={cell}>
                   <span className="flex items-center gap-[8px]">
-                    <ProjectIcon />
+                    <ProjectIcon color={PROJECT_COLORS[idx % PROJECT_COLORS.length]} />
                     <span className={`${SANS} text-sm text-[#000712]`}>{p.name}</span>
                   </span>
                 </span>
