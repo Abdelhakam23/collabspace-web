@@ -102,12 +102,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
         className={`${SANS} flex max-h-[90vh] min-h-[661px] w-full max-w-[720px] flex-col gap-8 overflow-y-auto rounded-2xl bg-white p-6 shadow-[0_8px_16px_rgba(0,0,0,0.16)]`}
       >
         <div className="flex items-center justify-between">
-          <h2
-            className="text-[25px] font-medium leading-[150%] text-[#000712]"
-            style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as React.CSSProperties}
-          >
-            New Project
-          </h2>
+          <h2 className="text-[25px] font-medium leading-[24px] text-[#000712]">New Project</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="text-black">
             <svg width="13.15" height="13.15" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
               <path d="m1 1 12 12M13 1 1 13" />
@@ -163,7 +158,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
                   setGuess("");
                 }
               }}
-              className="absolute right-4 top-1/2 flex h-[30px] -translate-y-1/2 items-center gap-1.5 rounded-full bg-[#27272B] px-[22px] text-sm font-medium text-white"
+              className="absolute right-4 top-1/2 flex h-[30px] w-[113px] -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-[#27272B] text-sm font-medium text-white"
             >
               Add
               <svg width="9.33" height="9.33" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
@@ -195,8 +190,14 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
               aria-label="Start Date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className={`${fieldBox} ${startDate ? "" : "text-transparent"}`}
+              className={`${fieldBox} pr-10 [&::-webkit-calendar-picker-indicator]:opacity-0 ${startDate ? "" : "text-transparent"}`}
             />
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#4A4A4A]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M3 10h18M8 3v4M16 3v4" />
+              </svg>
+            </span>
             {!startDate ? <span className={`${SANS} pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#718096]`}>Start Date</span> : null}
           </label>
           <label className="relative block">
@@ -206,8 +207,14 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
               aria-label="End Date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className={`${fieldBox} ${deadline ? "" : "text-transparent"}`}
+              className={`${fieldBox} pr-10 [&::-webkit-calendar-picker-indicator]:opacity-0 ${deadline ? "" : "text-transparent"}`}
             />
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#4A4A4A]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M3 10h18M8 3v4M16 3v4" />
+              </svg>
+            </span>
             {!deadline ? <span className={`${SANS} pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#718096]`}>End Date</span> : null}
           </label>
         </div>
@@ -218,7 +225,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           <button
             type="button"
             onClick={() => fileInput.current?.click()}
-            className="flex w-full flex-1 items-center justify-center gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white text-sm text-[#718096]"
+            className="flex w-full flex-1 items-center justify-start gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white px-[36px] text-sm text-[#718096]"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 16V4m0 0 4 4m-4-4L8 8" />

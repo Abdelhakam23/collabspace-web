@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, Project, Paginated } from "@/lib/types";
+import type { ApiEnvelope, Project, Paginated, ProjectOverview, ProjectTeamProgress } from "@/lib/types";
 
 /** GET /api/v1/projects — List Projects (A4.1) */
 export async function listProjects(query?: { page: string | number; per_page: string | number; sort: string | number }) {
@@ -24,13 +24,13 @@ export async function createProject(payload: CreateProjectPayload) {
 
 /** GET /api/v1/projects/1/overview — Get Project Overview (A4.3) */
 export async function getProjectOverview(projectId: number | string) {
-  const { data } = await apiClient.get<ApiEnvelope<unknown>>(`/api/v1/projects/${encodeURIComponent(projectId)}/overview`);
+  const { data } = await apiClient.get<ApiEnvelope<ProjectOverview>>(`/api/v1/projects/${encodeURIComponent(projectId)}/overview`);
   return data;
 }
 
 /** GET /api/v1/projects/1/teams — Get Project Teams & Task Progress (Figma Screen) (A4.4) */
 export async function getProjectTeamsTaskProgress(projectId: number | string) {
-  const { data } = await apiClient.get<ApiEnvelope<unknown>>(`/api/v1/projects/${encodeURIComponent(projectId)}/teams`);
+  const { data } = await apiClient.get<ApiEnvelope<ProjectTeamProgress[]>>(`/api/v1/projects/${encodeURIComponent(projectId)}/teams`);
   return data;
 }
 

@@ -69,10 +69,14 @@ function ProjectIcon() {
   );
 }
 
-function FolderIcon() {
+function FileIcon() {
+  // Orange document glyph; color pixel-sampled from the frame capture
+  // (~#F8B040, disclosed in docs/design-api-gaps.md).
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000712" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8B040" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M6 3h8l4 4v13a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 5 20V4.5A1.5 1.5 0 0 1 6.5 3z" />
+      <path d="M14 3v4h4" />
+      <path d="M9 12h6M9 16h6" />
     </svg>
   );
 }
@@ -117,7 +121,7 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} active="Projects" />
-      <main className="px-4 pt-10 sm:px-8 lg:px-16 lg:pt-[36px]">
+      <main className="px-4 pt-10 sm:px-8 lg:px-16 lg:pt-[41px]">
         <div className="flex items-center justify-between gap-4">
           <h1
             className={`${SANS} text-[31px] font-semibold leading-[150%] text-[#000712]`}
@@ -137,7 +141,7 @@ export default function ProjectsPage() {
           </button>
         </div>
 
-        <div className="mt-[36px] flex items-center justify-between gap-4">
+        <div className="mt-[31px] flex items-center justify-between gap-4">
           {/* Search and filters: drawn in the frame, but A4.1 documents no
               search parameter and the dropdown contents are not designed, so
               both stay inert (docs/design-api-gaps.md). */}
@@ -206,7 +210,7 @@ export default function ProjectsPage() {
                   </span>
                 </span>
                 <span className={`${cell} gap-2`}>
-                  <FolderIcon />
+                  <FileIcon />
                   <span className={`${SANS} text-sm text-[#000712]`}>{p.files_count ?? 0} Files</span>
                 </span>
                 <span className={cell}>

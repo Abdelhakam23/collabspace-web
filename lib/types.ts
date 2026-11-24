@@ -200,3 +200,67 @@ export interface AuditLog {
   properties: Record<string, unknown> | null;
   created_at: string;
 }
+
+/** A4.3 Get Project Overview - shape observed from the live backend
+ *  (sanitized capture in docs/design-api-gaps.md). */
+export interface ProjectOverview {
+  id: number;
+  name: string;
+  description: string | null;
+  status: string;
+  priority: string;
+  progress_percentage: number;
+  due_date_indicator: {
+    start_date: string;
+    deadline: string;
+    total_days: number;
+    days_remaining: number;
+    is_overdue: boolean;
+  };
+  tasks_statistics: {
+    total: number;
+    pending: number;
+    in_progress: number;
+    in_review: number;
+    completed: number;
+    completion_rate: number;
+    pending_percentage: number;
+    in_progress_percentage: number;
+    in_review_percentage: number;
+    completed_percentage: number;
+  };
+  counts: { files: number; meetings: number; messages: number; teams: number; direct_members: number };
+  teams: { id: number; name: string; description: string | null; created_by: number; members_count: number; active_projects_count: number; created_at: string; updated_at: string }[];
+  direct_members: { id: number; name: string; email: string; avatar_url: string | null; job_title: string | null; role: string }[];
+  created_by: number;
+  creator: { id: number; name: string; email: string };
+  created_at: string;
+  updated_at: string;
+  chart: {
+    period: string;
+    year: number;
+    group_by: string;
+    data: { month: string; month_number: number; year: number; label: string; created_tasks: number; completed_tasks: number; progress_percentage: number; is_future: boolean }[];
+  };
+}
+
+/** A4.4 Get Project Teams & Task Progress - shape observed from the live
+ *  backend; the envelope's data is the team array itself. */
+export interface ProjectTeamProgress {
+  id: number;
+  name: string;
+  completion_percentage: number;
+  total_tasks: number;
+  completed_tasks: number;
+  members: {
+    id: number;
+    name: string;
+    avatar_url: string | null;
+    role_in_team: string;
+    is_leader: boolean;
+    tasks_completed: number;
+    tasks_total: number;
+    tasks_ratio: string;
+    progress_percentage: number;
+  }[];
+}

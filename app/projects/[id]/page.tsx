@@ -4,10 +4,9 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
-import { listProjects } from "@/lib/api/projects";
+import { getProjectOverview, getProjectTeamsTaskProgress } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
-import { apiClient } from "@/lib/api-client";
-import type { Project } from "@/lib/types";
+import type { ProjectOverview, ProjectTeamProgress } from "@/lib/types";
 
 /**
  * Project detail "All Projects / Alpha" frame (UI Design page, node 181-1158,
@@ -26,13 +25,19 @@ import type { Project } from "@/lib/types";
  * total; the collection documents no response shape for A5.1, so the item
  * renders only when the response actually carries a numeric total
  * (docs/design-api-gaps.md). The pending/in-progress/completed fractions and
- * the Project overview chart card depend on A4.3/A4.4 whose response shapes
+ * the Project overview chart card consumes the A4.3 chart array; earlier
  * are undocumented, so they are omitted rather than parsed with guessed
  * keys. Tasks/Teams/Files tabs stay inert until their sibling frames ship.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const TABS = ["Overview", "Tasks", "Teams", "Files"];
+// Dot colors are pixel-sampled from the 46% capture (docs/design-api-gaps.md).
+const STATUS_LEGEND = [
+  { status: "Pending", label: "Pending tasks", color: "#191919" },
+  { status: "In Progress", label: "In progress tasks", color: "#005AFB" },
+  { status: "Completed", label: "Completed tasks", color: "#2BA52E" },
+];
 
 // Short "Mon D" presentation of an ISO date as drawn in the frame.
 function shortDate(value?: string | null) {
@@ -42,37 +47,75 @@ function shortDate(value?: string | null) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function Card({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
+function Card({ title, children, className = "", gap = 20, aside }: { title: string; children: React.ReactNode; className?: string; gap?: number; aside?: React.ReactNode }) {
   return (
     <section className={`rounded-2xl border border-[#F3F4F6] bg-white p-5 ${className}`}>
-      <h2 className={`${SANS} mb-5 text-[20px] font-medium leading-[150%] text-[#191919]`}>{title}</h2>
+      <div className="flex items-start justify-between" style={{ marginBottom: gap }}>
+        <h2 className={`${SANS} text-[20px] font-medium leading-[15px] text-[#191919]`}>{title}</h2>
+        {aside}
+      </div>
       {children}
     </section>
   );
 }
 
-/** Needle gauge: the frame draws the dark arc as a 177.61px ellipse #27272B
- *  (native read); remainder #E9E9EA and the 6px track are pixel-sampled and
- *  remain disclosed as sampled in docs/design-api-gaps.md. */
+/** Needle gauge (Group 1171275875, 178x178 native): track is a 225-degree
+ *  arc starting at 155deg (screen coords, clockwise from 3 o'clock) so the
+ *  135-degree gap sits centered at the bottom; the dark progress arc starts
+ *  at the track start. Ellipse 177.61px, stroke 11px (#27272B on #E9E9EA).
+ *  Needle pivot ~29.5px below ring center with a white ring dot (1.89px
+ *  #27272B border). Geometry from native ellipse reads plus pixel analysis
+ *  of the zoomed capture (docs/design-api-gaps.md). */
 function Gauge({ pct }: { pct: number }) {
-  // 270-degree ring (gap at the bottom), 177.61px ellipse, ~11px stroke
-  // #27272B on a light track - geometry per native ellipse read plus the
-  // zoomed capture; the needle maps the same fraction as the arc.
   const clamped = Math.min(100, Math.max(0, pct));
-  const cx = 95, cy = 95, r = 83.3;
-  const start = (225 * Math.PI) / 180; // lower-left, math angle
-  const sweep = (270 * Math.PI) / 180;
-  const pt = (a: number) => `${(cx + r * Math.cos(a)).toFixed(1)} ${(cy - r * Math.sin(a)).toFixed(1)}`;
-  const end = start - sweep;
-  const frac = start - (sweep * clamped) / 100;
+  const c = 89, r = 83.3, C = 2 * Math.PI * r;
+  const trackLen = (225 / 360) * C;
+  const pivotY = c + 29.5;
+  const angle = ((155 + (225 * clamped) / 100) * Math.PI) / 180;
+  const tipX = c + (r - 5.5) * Math.cos(angle);
+  const tipY = c + (r - 5.5) * Math.sin(angle);
   return (
-    <svg viewBox="0 0 190 190" className="mx-auto w-[177.61px]">
-      <path d={`M${pt(start)} A${r} ${r} 0 1 1 ${pt(end)}`} fill="none" stroke="#E9E9EA" strokeWidth="11" strokeLinecap="round" />
+    <svg viewBox="0 0 178 178" className="absolute inset-0 h-full w-full">
+      <circle cx={c} cy={c} r={r} fill="none" stroke="#E9E9EA" strokeWidth="11"
+        strokeDasharray={`${trackLen} ${C}`} transform={`rotate(155 ${c} ${c})`} />
       {clamped > 0 ? (
-        <path d={`M${pt(start)} A${r} ${r} 0 ${clamped > 50 ? 1 : 0} 1 ${pt(frac)}`} fill="none" stroke="#27272B" strokeWidth="11" strokeLinecap="round" />
+        <circle cx={c} cy={c} r={r} fill="none" stroke="#27272B" strokeWidth="11"
+          strokeDasharray={`${(trackLen * clamped) / 100} ${C}`} transform={`rotate(155 ${c} ${c})`} />
       ) : null}
-      <line x1={cx} y1={cy} x2={cx + 52 * Math.cos(frac)} y2={cy - 52 * Math.sin(frac)} stroke="#27272B" strokeWidth="5" strokeLinecap="round" />
-      <circle cx={cx} cy={cy} r="6" fill="#FFFFFF" stroke="#27272B" strokeWidth="3.5" />
+      <line x1={c} y1={pivotY} x2={tipX} y2={tipY} stroke="#27272B" strokeWidth="4" strokeLinecap="round" />
+      <circle cx={c} cy={pivotY} r="7.5" fill="#FFFFFF" stroke="#27272B" strokeWidth="1.89" />
+    </svg>
+  );
+}
+
+/** Monthly area chart for the Project overview card: same smoothing and
+ *  visual language as the dashboard chart (Catmull-Rom curve, blue gradient
+ *  area). Series is the A4.3 chart array's created_tasks; the frame draws a
+ *  single line and the response carries no second style for completed_tasks,
+ *  so only created_tasks is plotted (docs/design-api-gaps.md). */
+function AreaChart({ points, maxChart }: { points: number[]; maxChart: number }) {
+  const w = 560, h = 180, pad = 4;
+  const n = Math.max(2, points.length);
+  const xs = points.map((_, i) => pad + (i * (w - pad * 2)) / (n - 1));
+  const ys = points.map((v) => h - pad - (v / maxChart) * (h - pad * 2));
+  const seg = (i: number) => {
+    const p0 = i > 0 ? i - 1 : 0, p1 = i, p2 = i + 1 < n ? i + 1 : n - 1, p3 = i + 2 < n ? i + 2 : n - 1;
+    const c1x = xs[p1] + (xs[p2] - xs[p0]) / 6, c1y = ys[p1] + (ys[p2] - ys[p0]) / 6;
+    const c2x = xs[p2] - (xs[p3] - xs[p1]) / 6, c2y = ys[p2] - (ys[p3] - ys[p1]) / 6;
+    return `C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${xs[p2].toFixed(1)},${ys[p2].toFixed(1)}`;
+  };
+  const path = `M${xs[0].toFixed(1)},${ys[0].toFixed(1)} ${Array.from({ length: n - 1 }, (_, i) => seg(i)).join(" ")}`;
+  const area = `${path} L${xs[n - 1].toFixed(1)},${h} L${xs[0].toFixed(1)},${h} Z`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="h-44 w-full" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="alphaOverviewArea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#2692FF" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#2692FF" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill="url(#alphaOverviewArea)" />
+      <path d={path} fill="none" stroke="#2692FF" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -128,53 +171,59 @@ export default function ProjectDetailPage() {
 
 function ProjectDetailContent() {
   const { id } = useParams<{ id: string }>();
-  const [project, setProject] = useState<Project | null>(null);
-  const [totalTasks, setTotalTasks] = useState<number | null>(null);
+  const [overview, setOverview] = useState<ProjectOverview | null>(null);
+  const [teamsProgress, setTeamsProgress] = useState<ProjectTeamProgress[]>([]);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState<string | undefined>();
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      // A4.3 overview + A4.4 teams drive the whole screen: header, dates,
+      // priority, gauge, status legend and member list all come from their
+      // observed response shapes (docs/design-api-gaps.md).
       try {
-        const [list, profile] = await Promise.all([
-          listProjects({ page: 1, per_page: 50, sort: "newest" }),
+        const [ov, tp, profile] = await Promise.all([
+          getProjectOverview(id),
+          getProjectTeamsTaskProgress(id),
           getProfile(),
         ]);
         if (cancelled) return;
-        setProject(list.data.data.find((p) => String(p.id) === String(id)) ?? null);
+        setOverview(ov.data ?? null);
+        setTeamsProgress(Array.isArray(tp.data) ? tp.data : []);
         const u = (profile.data as { user?: { name?: string; roles?: string[] } }).user;
         setUserName(u?.name ?? "");
         setUserRole(u?.roles?.[0]);
       } catch {
-        if (!cancelled) setProject(null);
+        if (!cancelled) {
+          setOverview(null);
+          setTeamsProgress([]);
+        }
       }
-      // Total Tasks from A5.1 (project_id filter documented). The collection
-      // documents no response shape for A5.1; the value is picked up only
-      // when the response actually carries a numeric pagination total, never
-      // invented (docs/design-api-gaps.md).
-      try {
-        const { data } = await apiClient.get(`/api/v1/tasks`, { params: { project_id: id, per_page: 1 } });
-        const body = data as { meta?: { total?: unknown }; data?: { meta?: { total?: unknown } } };
-        const total = body?.data?.meta?.total ?? body?.meta?.total;
-        if (!cancelled && typeof total === "number") setTotalTasks(total);
-      } catch {}
     })();
     return () => {
       cancelled = true;
     };
   }, [id]);
 
-  const members = (project?.teams ?? []).flatMap((t) => t.members ?? []);
-  const pct = project?.progress ?? 0;
+  const members = teamsProgress.flatMap((tm) => tm.members ?? []);
+  const stats = overview?.tasks_statistics;
+  const totalTasks = stats?.total ?? null;
+  const statusTotals = stats ? [stats.pending, stats.in_progress, stats.completed] : STATUS_LEGEND.map(() => null);
+  const pct = overview?.progress_percentage ?? 0;
+  const startDate = overview?.due_date_indicator?.start_date;
+  const deadline = overview?.due_date_indicator?.deadline;
+  const chartData = overview?.chart?.data ?? [];
+  const series = chartData.map((d) => d.created_tasks);
+  const yMax = Math.max(1, Math.ceil(Math.max(1, ...series) / 5) * 5);
 
   // Due Date track fill: elapsed fraction between the documented start and
   // deadline dates, clamped; the frame draws the track without stating its
   // semantics (docs/design-api-gaps.md).
   let elapsed = 0;
-  if (project?.start_date && project?.deadline) {
-    const s = new Date(project.start_date).getTime();
-    const e = new Date(project.deadline).getTime();
+  if (startDate && deadline) {
+    const s = new Date(startDate).getTime();
+    const e = new Date(deadline).getTime();
     if (e > s) elapsed = Math.min(1, Math.max(0, (Date.now() - s) / (e - s)));
   }
 
@@ -193,16 +242,16 @@ function ProjectDetailContent() {
             <p className={`${SANS} text-sm text-black/60`}>
               <Link href="/projects" className="hover:underline">Projects</Link>
               <span className="px-1">&gt;</span>
-              {project?.name ?? "…"}
+              {overview?.name ?? "…"}
             </p>
             <div className="flex items-baseline gap-3">
               <h1
                 className={`${SANS} text-[31px] font-semibold leading-[150%] text-black`}
                 style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as React.CSSProperties}
               >
-                {project?.name ?? "…"}
+                {overview?.name ?? "…"}
               </h1>
-              {project ? <span className={`${SANS} text-xs text-[#2BA52E]`}>{pct}% Completed</span> : null}
+              {overview ? <span className={`${SANS} text-xs text-[#2BA52E]`}>{pct}% Completed</span> : null}
             </div>
           </div>
 
@@ -213,38 +262,75 @@ function ProjectDetailContent() {
             </div>
             <div className="flex items-center justify-between">
               <p className={`${SANS} text-[11px] text-[#383838]`}>
-                Start Date: <span className="font-medium">{shortDate(project?.start_date)}</span>
+                Start Date: <span className="font-medium">{shortDate(startDate)}</span>
               </p>
               <p className={`${SANS} text-[11px] text-[#383838]`}>
-                Deadline: <span className="font-medium">{shortDate(project?.deadline)}</span>
+                Deadline: <span className="font-medium">{shortDate(deadline)}</span>
               </p>
             </div>
           </section>
         </div>
 
-        <nav className="mt-8 flex h-7 items-center gap-[30px]">
-          {TABS.map((t, i) =>
-            i === 0 ? (
-              <span key={t} aria-current="page" className={`${SANS} border-b-2 border-[#005AFB] pb-1 text-base font-medium text-[#005AFB]`}>
-                {t}
-              </span>
-            ) : (
-              <span key={t} aria-disabled="true" title="This tab is not built yet" className={`${SANS} pb-1 text-base font-medium text-[#000712]`}>
-                {t}
-              </span>
-            ),
-          )}
+        <nav className="mt-8 flex h-[28px] items-start gap-[30px]">
+          {TABS.map((t, i) => (
+            <span
+              key={t}
+              {...(i === 0 ? { "aria-current": "page" as const } : { "aria-disabled": "true" as const, title: "This tab is not built yet" })}
+              className={`${SANS} flex h-[28px] items-start gap-[10px] px-4 pb-4 text-[16px] font-normal leading-[12px] ${
+                i === 0 ? "border-b-[1.5px] border-[#005AFB] text-[#005AFB]" : "text-[#4A4A4A]"
+              }`}
+            >
+              {t}
+            </span>
+          ))}
         </nav>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[864px_416px] lg:justify-between">
+        <div className="mt-8 grid gap-8 lg:grid-cols-[864px_416px] lg:justify-between">
           <div className="flex flex-col gap-8">
             <Card title="Description">
-              <p className={`${SANS} text-base leading-[150%] text-[#525256]`}>
-                {project?.description ?? ""}
+              <p className={`${SANS} -my-[6px] text-[16px] leading-6 text-[#525256]`}>
+                {overview?.description ?? ""}
               </p>
             </Card>
 
-            <Card title="Product Details">
+            <Card
+              title="Project overview"
+              aside={
+                <span className={`${SANS} flex items-center gap-4 text-xs font-medium text-[#000712]`}>
+                  {/* Period/grouping filters: the collection documents no query
+                      parameters for A4.3, so both stay inert
+                      (docs/design-api-gaps.md). */}
+                  <span aria-disabled="true" title="Filtering is not available from the API" className="flex items-center gap-1">
+                    <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
+                    All Projects
+                  </span>
+                  <span aria-disabled="true" title="Filtering is not available from the API" className="flex items-center gap-1">
+                    <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
+                    This Year
+                  </span>
+                </span>
+              }
+            >
+              {series.length ? (
+                <div className="flex items-stretch gap-2">
+                  <div className="flex h-44 flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
+                    {[yMax, Math.round((yMax * 2) / 3), Math.round(yMax / 3), 0].map((v, i) => (
+                      <span key={i}>{v >= 1000 ? `${Math.round(v / 100) / 10}k` : v}</span>
+                    ))}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <AreaChart points={series} maxChart={yMax} />
+                    <div className="mt-1 flex justify-between text-[10px] text-[#718096]">
+                      {chartData.map((d) => <span key={d.label}>{d.month}</span>)}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className={`${SANS} text-sm text-[#718096]`}>No chart data yet.</p>
+              )}
+            </Card>
+
+            <Card title="Product Details" gap={24}>
               <div className="grid grid-cols-3 gap-x-6 gap-y-8">
                 {/* Project Type: no field in the documented Project model; its
                     cell stays empty so the supported items keep their drawn
@@ -254,21 +340,21 @@ function ProjectDetailContent() {
                   <DetailIcon bg="#F2EAF2" color="#BF75A9"><CalendarIcon /></DetailIcon>
                   <div>
                     <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Start Date</p>
-                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(project?.start_date)}</p>
+                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(startDate)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <DetailIcon bg="#FFEDE6" color="#FB743A"><CalendarIcon /></DetailIcon>
                   <div>
                     <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Deadline</p>
-                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(project?.deadline)}</p>
+                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(deadline)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <DetailIcon bg="#FBEAEA" color="#DB302A"><TargetIcon /></DetailIcon>
                   <div>
                     <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Priority</p>
-                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{project?.priority ?? ""}</p>
+                    <p className={`${SANS} text-base font-medium text-[#000712]`}>{overview?.priority ?? ""}</p>
                   </div>
                 </div>
                 {totalTasks !== null ? (
@@ -285,30 +371,56 @@ function ProjectDetailContent() {
           </div>
 
           <div className="flex flex-col gap-8">
-            <Card title="Project Progress">
-              <Gauge pct={pct} />
-              <p className={`${SANS} mt-1 text-center text-base font-medium text-black`}>{pct}%</p>
-              <p className={`${SANS} text-center text-xs text-black`}>Project Completed</p>
-              {/* The pending / in progress / completed fractions drawn below the
-                  gauge depend on A4.3/A4.4, whose response shapes the collection
-                  does not document; omitted rather than parsed with guessed keys
-                  (docs/design-api-gaps.md). */}
+            <Card title="Project Progress" gap={43}>
+              <div className="relative mx-auto h-[178px] w-[178px]">
+                <Gauge pct={pct} />
+                <div className="absolute left-[36px] top-[133px] w-[106px] text-center">
+                  <p className={`${SANS} text-[16px] font-medium leading-[12px] text-black`}>{pct}%</p>
+                  <p className={`${SANS} mt-[9px] whitespace-nowrap text-[12px] leading-[9px] text-black`}>Project Completed</p>
+                </div>
+              </div>
+              {/* Legend row (native: Hug 407 x 37, gap 43, centered; items are
+                  value over dot+label with gap 16). Counts come from A5.1 with
+                  its documented status filter, shown only when the response
+                  actually carries a numeric pagination total; a dash marks a
+                  count the API did not supply - never an invented number. */}
+              <div className="mx-auto flex w-fit items-start gap-[43px]">
+                {STATUS_LEGEND.map((item, i) => (
+                  <div key={item.label} className="flex flex-col items-center gap-4">
+                    <span className={`${SANS} text-[16px] font-medium leading-[12px] text-black`}>
+                      {statusTotals[i] !== null && totalTasks !== null ? `${statusTotals[i]}/${totalTasks}` : "\u2013"}
+                    </span>
+                    <span className="flex items-center gap-[6px]">
+                      <span className="h-[6px] w-[6px] rounded-full" style={{ backgroundColor: item.color }} />
+                      <span className={`${SANS} text-[12px] leading-[9px] text-[#4A4A4A]`}>{item.label}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </Card>
 
-            <Card title="Team Members">
+            <Card
+              title="Team Members"
+              aside={
+                <span aria-disabled="true" title="Team filtering is not built yet" className={`${SANS} flex items-center gap-[6px] text-[12px] leading-[9px] text-[#4A4A4A]`}>
+                  UI/UX
+                  <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="#4A4A4A" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
+                </span>
+              }
+            >
               {members.length ? (
                 <ul className="flex flex-col gap-[12.5px]">
-                  {members.map((m) => (
-                    <li key={m.id} className="flex items-center gap-3">
+                  {members.map((m, mi) => (
+                    <li key={`${m.id}-${mi}`} className="flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-full border-[2.5px] border-[#E9E9EA] bg-[#F6F8FA] text-xs text-[#000712]">
-                        {m.user.avatar_url ? (
+                        {m.avatar_url ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={m.user.avatar_url} alt={m.user.name} className="h-full w-full rounded-full object-cover" />
+                          <img src={m.avatar_url} alt={m.name} className="h-full w-full rounded-full object-cover" />
                         ) : (
-                          m.user.name.split(" ").map((p) => p[0]).filter(Boolean).slice(0, 2).join("").toUpperCase()
+                          m.name.split(" ").map((x) => x[0]).filter(Boolean).slice(0, 2).join("").toUpperCase()
                         )}
                       </span>
-                      <span className={`${SANS} text-sm text-[#525256]`}>{m.user.name}</span>
+                      <span className={`${SANS} text-sm text-[#525256]`}>{m.name}</span>
                       {m.is_leader ? <span className={`${SANS} text-[10px] text-[#27272B]`}>Leader</span> : null}
                     </li>
                   ))}
