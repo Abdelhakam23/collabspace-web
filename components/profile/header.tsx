@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { User } from "@/lib/types";
+import type { User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
