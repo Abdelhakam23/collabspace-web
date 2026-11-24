@@ -72,7 +72,7 @@ export default function MeetingsPage() {
             </svg>
           </button>
         </div>
-        <div className="mt-[42px] flex max-w-[1311px] items-center justify-between gap-8">
+        <div className="mt-[42px] flex max-w-[1311px] flex-wrap items-center justify-between gap-x-8 gap-y-3">
           <div className="flex items-center gap-4">
             <button type="button" onClick={() => setDayOffset((offset) => offset - 5)} aria-label="Previous five days" className={arrowClass}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
