@@ -15,7 +15,9 @@ import { CreateTaskOverlay } from "@/components/projects/create-task-overlay";
  * (22px label box) are pixel/node-box estimates (docs/design-api-gaps.md).
  * "Add Task" is Inter Medium 14px #005AFB and opens the Create Task overlay
  * (frame 141-2397) posting to A5.3 with the column's status, then the board
- * refetches.
+ * refetches. Cards move between columns by drag and drop (A5.6, named for
+ * kanban drag & drop): the move is optimistic, one at a time, and rolls
+ * back with a visible notice when the update fails.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -31,10 +33,17 @@ function columnStyle(status: string) {
   return COLUMN_STYLES[status.toLowerCase()] ?? { label: status, bg: "#F9FAFB" };
 }
 
-function TaskCard({ task }: { task: Task }) {
+function TaskCard({ task, pending }: { task: Task; pending: boolean }) {
   const tone = PRIORITY_TONES[(task.priority ?? "").toLowerCase()];
   return (
-    <li className="flex h-[167px] flex-col justify-between rounded-2xl bg-[#F6F8FA] p-4 ring-1 ring-[#F3F4F6]">
+    <li
+      draggable={!pending}
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/plain", JSON.stringify({ id: task.id, status: task.status }));
+        e.dataTransfer.effectAllowed = "move";
+      }}
+      className={`flex h-[167px] flex-col justify-between rounded-2xl bg-[#F6F8FA] p-4 ring-1 ring-[#F3F4F6] ${pending ? "opacity-50" : "cursor-grab"}`}
+    >
       <div className="flex flex-col gap-2">
         <div className="flex items-start justify-between gap-2">
           <p className={`${SANS} text-sm font-medium text-[#191919]`}>{task.title}</p>
@@ -76,7 +85,19 @@ function TaskCard({ task }: { task: Task }) {
   );
 }
 
-export function KanbanBoard({ columns, projectId, onChanged }: { columns: KanbanColumn[]; projectId: string; onChanged: () => void }) {
+export function KanbanBoard({
+  columns,
+  projectId,
+  onChanged,
+  onMoveTask,
+  pendingMove,
+}: {
+  columns: KanbanColumn[];
+  projectId: string;
+  onChanged: () => void;
+  onMoveTask: (taskId: number, toStatus: string) => void;
+  pendingMove: number | null;
+}) {
   const [creatingIn, setCreatingIn] = useState<string | null>(null);
   return (
     <>
@@ -86,6 +107,20 @@ export function KanbanBoard({ columns, projectId, onChanged }: { columns: Kanban
           return (
             <section
               key={col.status}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                try {
+                  const raw = e.dataTransfer.getData("text/plain");
+                  const payload = JSON.parse(raw) as { id?: number; status?: string };
+                  if (payload.id != null && payload.status !== col.status) onMoveTask(payload.id, col.status);
+                } catch {
+                  // Not a task drag; ignore.
+                }
+              }}
               className="flex flex-col overflow-hidden rounded-2xl bg-white pb-5 ring-1 ring-[#E9E9EA]"
             >
               <header
@@ -109,7 +144,7 @@ export function KanbanBoard({ columns, projectId, onChanged }: { columns: Kanban
                   </button>
                 </li>
                 {(col.tasks ?? []).map((task) => (
-                  <TaskCard key={task.id} task={task} />
+                  <TaskCard key={task.id} task={task} pending={pendingMove === task.id} />
                 ))}
               </ul>
             </section>

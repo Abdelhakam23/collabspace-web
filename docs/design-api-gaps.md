@@ -367,15 +367,24 @@ Status of every designed control against its API, per the intersection rule:
 - Add Task -> Create Task overlay: IMPLEMENTED (141-2397 x A5.3, fixture-verified).
 - Column actions (kanban ... button): EXCLUDED - no drawn form and no
   column-level endpoint; A5.x operations are task-level.
-- Task detail/edit/assign/delete (plan 3.4): the "My task overlay" frame
-  exists in the design and A5.4/A5.5/A5.7/A5.8 exist; which of those actions
-  the frame actually draws is PENDING inspection - only drawn ones will be
-  implemented.
-- Kanban status move (plan 3.5, A5.6): PENDING - drag behaviour with safe
-  failure handling; implemented only to the extent the design draws it.
-- Files tab Upload File (plan 3.7, A7.2): PENDING - the button is drawn;
-  upload goes through the native file picker, no separate overlay frame
-  known yet.
+- Task detail/edit/assign/delete (plan 3.4): EXCLUDED - a layer-tree
+  search shows no task-detail or task-edit surface anywhere in the design
+  (only "Tasks Page", "Create Task Overlay" and the "My task overlay"
+  filter menu), and the kanban cards draw no per-card actions, so
+  A5.4/A5.5/A5.7/A5.8 stay unwired.
+- "My task overlay" (210 x Hug 172, radius 16, padding 16, white) is a
+  filter menu (My Tasks / UI/UX / Front End / Back End / All Tasks) for the
+  global "Tasks Page" frame, not a task view. A5.1 documents only
+  project_id, status and per_page, so the team entries exceed the contract;
+  the global page is pending implementation of the supported slice.
+- Kanban status move (plan 3.5, A5.6): IMPLEMENTED - cards drag between
+  columns, the move is optimistic with one move at a time (a ref guard
+  stops same-batch drops), and a failed PATCH rolls the card back with a
+  visible notice ("Couldn't move the task. It was moved back.").
+- Files tab Upload File (plan 3.7, A7.2): IMPLEMENTED - the drawn button
+  opens the native file picker, posts file + project_id + name, refetches
+  the list, and shows "Couldn't upload the file. Please try again." on
+  failure without adding a card.
 - File delete (plan 3.8, A7.6): PENDING verification whether any delete
   affordance is drawn; the file cards show only a download icon, so absent
   a drawn control it stays excluded.
