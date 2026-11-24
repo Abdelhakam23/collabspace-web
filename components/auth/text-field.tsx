@@ -6,10 +6,6 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-/**
- * Field from the design: 54px tall, 10px radius, 1px #CBD5E0 border,
- * #F9FAFB fill, label notched over the top border, leading icon in #718096.
- */
 export function TextField({ label, icon, error, id, ...props }: TextFieldProps) {
   return (
     <div>
