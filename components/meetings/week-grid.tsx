@@ -22,8 +22,8 @@ import type { Meeting } from "@/lib/types";
  * (upcoming) and the grid displays exactly the five days the "This Week"
  * control covers, which keeps the visible label true by construction.
  * Meetings the five drawn columns cannot hold CANNOT be reached by any
- * drawn control or documented API value (month navigation and the other
- * Duration options are unsupported), so they are reported under the grid
+ * supported control (month navigation and the other Duration options
+ * have no documented API backing), so they are reported under the grid
  * as an explicit unresolved limitation, not claimed as discoverable.
  */
 
@@ -180,7 +180,7 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
       ))}
       {hiddenCount > 0 ? (
         <p className={`${SANS} mt-4 text-sm text-[#606C80]`}>
-          {hiddenCount} more upcoming {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the days this screen can show; no drawn control or documented API value can page to {hiddenCount === 1 ? "it" : "them"} yet.
+          {hiddenCount} more upcoming {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the days this screen can show; the drawn month navigation has no API support, so there is no way to page to {hiddenCount === 1 ? "it" : "them"} yet.
         </p>
       ) : null}
     </div>
