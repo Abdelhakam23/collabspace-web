@@ -47,14 +47,16 @@ function shortDate(value?: string | null) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function Card({ title, children, className = "", gap = 20, aside }: { title: string; children: React.ReactNode; className?: string; gap?: number; aside?: React.ReactNode }) {
+function Card({ title, children, className = "", gap = 20, aside, asideInline = false }: { title: string; children: React.ReactNode; className?: string; gap?: number; aside?: React.ReactNode; asideInline?: boolean }) {
   return (
-    <section className={`rounded-2xl border border-[#F3F4F6] bg-white p-5 ${className}`}>
-      <div className="flex items-start justify-between" style={{ marginBottom: gap }}>
-        <h2 className={`${SANS} text-[20px] font-medium leading-[15px] text-[#191919]`}>{title}</h2>
-        {aside}
+    <section className={`rounded-2xl bg-white p-5 ring-1 ring-[#F3F4F6] ${className}`}>
+      <div className="flex flex-col" style={{ gap }}>
+        <div className={asideInline ? "flex items-center gap-4" : "flex items-start justify-between"}>
+          <h2 className={`${SANS} text-[20px] font-medium leading-[15px] text-[#191919]`}>{title}</h2>
+          {aside}
+        </div>
+        {children}
       </div>
-      {children}
     </section>
   );
 }
@@ -71,9 +73,12 @@ function Gauge({ pct }: { pct: number }) {
   const c = 89, r = 83.3, C = 2 * Math.PI * r;
   const trackLen = (225 / 360) * C;
   const pivotY = c + 29.5;
-  const angle = ((155 + (225 * clamped) / 100) * Math.PI) / 180;
-  const tipX = c + (r - 5.5) * Math.cos(angle);
-  const tipY = c + (r - 5.5) * Math.sin(angle);
+  // Needle angle: degrees clockwise from straight up, anchored to the drawn
+  // sample (78% -> 22.09deg, Rectangle 40109) sweeping 2.25deg per point.
+  const deg = 22.09 + 2.25 * (clamped - 78);
+  const rad = (deg * Math.PI) / 180;
+  const tipX = c + 54.32 * Math.sin(rad);
+  const tipY = pivotY - 54.32 * Math.cos(rad);
   return (
     <svg viewBox="0 0 178 178" className="absolute inset-0 h-full w-full">
       <circle cx={c} cy={c} r={r} fill="none" stroke="#E9E9EA" strokeWidth="11"
@@ -82,7 +87,7 @@ function Gauge({ pct }: { pct: number }) {
         <circle cx={c} cy={c} r={r} fill="none" stroke="#27272B" strokeWidth="11"
           strokeDasharray={`${(trackLen * clamped) / 100} ${C}`} transform={`rotate(155 ${c} ${c})`} />
       ) : null}
-      <line x1={c} y1={pivotY} x2={tipX} y2={tipY} stroke="#27272B" strokeWidth="4" strokeLinecap="round" />
+      <line x1={c} y1={pivotY} x2={tipX} y2={tipY} stroke="#27272B" strokeWidth="9.45" strokeLinecap="round" />
       <circle cx={c} cy={pivotY} r="7.5" fill="#FFFFFF" stroke="#27272B" strokeWidth="1.89" />
     </svg>
   );
@@ -107,7 +112,7 @@ function AreaChart({ points, maxChart }: { points: number[]; maxChart: number })
   const path = `M${xs[0].toFixed(1)},${ys[0].toFixed(1)} ${Array.from({ length: n - 1 }, (_, i) => seg(i)).join(" ")}`;
   const area = `${path} L${xs[n - 1].toFixed(1)},${h} L${xs[0].toFixed(1)},${h} Z`;
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-44 w-full" preserveAspectRatio="none" aria-hidden="true">
+    <svg viewBox={`0 0 ${w} ${h}`} className="h-[218px] w-full" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id="alphaOverviewArea" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#2692FF" stopOpacity="0.22" />
@@ -236,18 +241,17 @@ function ProjectDetailContent() {
           radius 12, border #F3F4F6, padding 12, gap 16). Content frame top
           207: tabs row (Hug 28, gap 30), gap 32, cards grid (707 tall): left
           column Fixed 864, right column Fixed 416, separated 32. */}
-      <main className="px-4 pt-7 sm:px-8 lg:px-16 lg:pt-[28px]">
+      <main className="px-4 pt-7 sm:px-8 lg:px-16 lg:pt-[32px]">
         <div className="flex items-start justify-between gap-8">
           <div className="flex flex-col gap-4">
-            <p className={`${SANS} text-sm text-black/60`}>
+            <p className={`${SANS} text-sm leading-[16px] text-black/60`}>
               <Link href="/projects" className="hover:underline">Projects</Link>
               <span className="px-1">&gt;</span>
               {overview?.name ?? "…"}
             </p>
-            <div className="flex items-baseline gap-3">
+            <div className="flex h-[28px] items-center gap-4">
               <h1
-                className={`${SANS} text-[31px] font-semibold leading-[150%] text-black`}
-                style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as React.CSSProperties}
+                className={`${SANS} text-[31px] font-semibold leading-[28px] text-black`}
               >
                 {overview?.name ?? "…"}
               </h1>
@@ -255,16 +259,16 @@ function ProjectDetailContent() {
             </div>
           </div>
 
-          <section className="hidden w-[324px] shrink-0 flex-col gap-2 rounded-[12px] border border-[#F3F4F6] bg-white p-3 lg:flex">
-            <h2 className={`${SANS} text-sm font-medium leading-[150%] text-[#191919]`}>Due Date</h2>
+          <section className="hidden w-[324px] shrink-0 flex-col gap-2 rounded-[12px] bg-white p-3 ring-1 ring-[#F3F4F6] lg:flex">
+            <h2 className={`${SANS} text-[12px] font-medium leading-[15px] text-[#191919]`}>Due Date</h2>
             <div className="h-[3px] w-full overflow-hidden rounded-full bg-[#E6EFFF]">
               <div className="h-full rounded-full bg-[#005AFB]" style={{ width: `${Math.round(elapsed * 100)}%` }} />
             </div>
             <div className="flex items-center justify-between">
-              <p className={`${SANS} text-[11px] text-[#383838]`}>
+              <p className={`${SANS} text-[11px] leading-[13px] text-[#383838]`}>
                 Start Date: <span className="font-medium">{shortDate(startDate)}</span>
               </p>
-              <p className={`${SANS} text-[11px] text-[#383838]`}>
+              <p className={`${SANS} text-[11px] leading-[13px] text-[#383838]`}>
                 Deadline: <span className="font-medium">{shortDate(deadline)}</span>
               </p>
             </div>
@@ -300,11 +304,11 @@ function ProjectDetailContent() {
                   {/* Period/grouping filters: the collection documents no query
                       parameters for A4.3, so both stay inert
                       (docs/design-api-gaps.md). */}
-                  <span aria-disabled="true" title="Filtering is not available from the API" className="flex items-center gap-1">
+                  <span aria-disabled="true" title="Filtering is not available from the API" className="flex h-6 items-center gap-1">
                     <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
                     All Projects
                   </span>
-                  <span aria-disabled="true" title="Filtering is not available from the API" className="flex items-center gap-1">
+                  <span aria-disabled="true" title="Filtering is not available from the API" className="flex h-6 items-center gap-1">
                     <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
                     This Year
                   </span>
@@ -312,15 +316,15 @@ function ProjectDetailContent() {
               }
             >
               {series.length ? (
-                <div className="flex items-stretch gap-2">
-                  <div className="flex h-44 flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
+                <div className="flex h-[241px] items-stretch gap-3">
+                  <div className="flex h-[218px] flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
                     {[yMax, Math.round((yMax * 2) / 3), Math.round(yMax / 3), 0].map((v, i) => (
                       <span key={i}>{v >= 1000 ? `${Math.round(v / 100) / 10}k` : v}</span>
                     ))}
                   </div>
                   <div className="min-w-0 flex-1">
                     <AreaChart points={series} maxChart={yMax} />
-                    <div className="mt-1 flex justify-between text-[10px] text-[#718096]">
+                    <div className="mt-[11px] flex h-3 justify-between text-[10px] leading-[12px] text-[#718096]">
                       {chartData.map((d) => <span key={d.label}>{d.month}</span>)}
                     </div>
                   </div>
@@ -331,7 +335,7 @@ function ProjectDetailContent() {
             </Card>
 
             <Card title="Product Details" gap={24}>
-              <div className="grid grid-cols-3 gap-x-6 gap-y-8">
+              <div className="grid grid-cols-3 gap-x-6 gap-y-6">
                 {/* Project Type: no field in the documented Project model; its
                     cell stays empty so the supported items keep their drawn
                     positions (docs/design-api-gaps.md). */}
@@ -370,7 +374,7 @@ function ProjectDetailContent() {
             </Card>
           </div>
 
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 lg:h-[707px]">
             <Card title="Project Progress" gap={43}>
               <div className="relative mx-auto h-[178px] w-[178px]">
                 <Gauge pct={pct} />
@@ -392,7 +396,7 @@ function ProjectDetailContent() {
                     </span>
                     <span className="flex items-center gap-[6px]">
                       <span className="h-[6px] w-[6px] rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className={`${SANS} text-[12px] leading-[9px] text-[#4A4A4A]`}>{item.label}</span>
+                      <span className={`${SANS} whitespace-nowrap text-[12px] leading-[9px] text-[#4A4A4A]`}>{item.label}</span>
                     </span>
                   </div>
                 ))}
@@ -401,6 +405,8 @@ function ProjectDetailContent() {
 
             <Card
               title="Team Members"
+              className="lg:flex-1"
+              asideInline
               aside={
                 <span aria-disabled="true" title="Team filtering is not built yet" className={`${SANS} flex h-[15px] items-center gap-[12px] text-[12px] leading-[9px] text-[#4A4A4A]`}>
                   UI/UX

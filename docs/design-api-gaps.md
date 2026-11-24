@@ -198,3 +198,26 @@ inert (design-only control, no documented filter parameter).
 - Status legend dots: Pending #191919, In Progress #005AFB, Completed #2BA52E
   (pixel-sampled from the 46% capture).
 - Projects list file glyph: #F8B040 orange document icon (pixel-sampled).
+
+## Alpha frame native geometry (reconciled 2026-11-24, frame 181-1158)
+
+- Header: title column (2147224404) Hug 60 = breadcrumb 16 + gap 16 + title
+  row 28 (2147224510, gap 16). Due Date card Fixed 324x71 (padding 12, ring
+  equivalent; title 12px/15, track 3, date rows 13).
+- Content frame top 207: tabs row 28, then cards at y267. Columns are Fixed
+  707 tall: left = Description 111 + 32 + chart 325 + 32 + Product Details
+  207; right = Project Progress 356 + 32 + Team Members fill 319.
+- Chart card ("Graphs / Monthly Flow"): padding 20, gap 20, header row 24
+  (filter pills), graph row 241 (horizontal gap 12: y-axis column + plot
+  column 792x241; plot 218, month labels row 12, gap 11).
+- Project Progress card: padding 20, gap 43, gauge group 178x178, legend row
+  items vertical (value 16px/12 + gap 16 + dot+label 12px/9).
+- Needle (Rectangle 40109): rounded bar 9.45x54.32, radius 7.56, #27272B,
+  drawn rotated -22.09deg at the sample's 78%. The drawing is decorative:
+  the needle does NOT sit at the dark arc's tip. Implementation anchors the
+  drawn measurement (78% -> 22.09deg clockwise from vertical) and sweeps
+  2.25deg per percentage point (the track's own 225deg sweep); endpoints are
+  extrapolated from that anchor, so extreme values are honest but not drawn
+  from a second sample.
+- Figma strokes render inside the frame box, so cards use a 1px ring instead
+  of a CSS border to land on exact native heights.
