@@ -287,7 +287,7 @@ function ProjectDetailContent() {
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[864px_416px] lg:justify-between">
           <div className="flex flex-col gap-8">
-            <Card title="Description">
+            <Card title="Description" gap={20}>
               <p className={`${SANS} -my-[6px] text-[16px] leading-6 text-[#525256]`}>
                 {overview?.description ?? ""}
               </p>
@@ -402,7 +402,7 @@ function ProjectDetailContent() {
             <Card
               title="Team Members"
               aside={
-                <span aria-disabled="true" title="Team filtering is not built yet" className={`${SANS} flex items-center gap-[6px] text-[12px] leading-[9px] text-[#4A4A4A]`}>
+                <span aria-disabled="true" title="Team filtering is not built yet" className={`${SANS} flex h-[15px] items-center gap-[12px] text-[12px] leading-[9px] text-[#4A4A4A]`}>
                   UI/UX
                   <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="#4A4A4A" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
                 </span>
