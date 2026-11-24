@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Briefcase, Calendar, ChevronDown, Download, File, Send } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { AreaChart } from "@/components/charts/area-chart";
@@ -243,17 +244,19 @@ export default function DashboardPage() {
           </Card>
 
           <Card title="Ask AI" className="!bg-[#F0F6FC] xl:col-span-3 xl:flex xl:h-[414px] xl:flex-col xl:overflow-hidden">
-            {/* POST /ai/ask is wired in the AI milestone - read-only here. */}
-            <div className="flex flex-col items-center gap-4 py-4">
-              <img src="/ask-ai-robot.png" alt="" width="42.67" height="64" aria-hidden="true" />
-              <p className={`${M} text-sm text-[#525256]`}>ask me anything about...</p>
-            </div>
-            <p className={`${M} flex flex-1 flex-col rounded-xl bg-[#F6F8FA] p-3 text-sm text-[#718096]`}>
-              ask me anything about...
-              <span className="mt-auto self-end text-[#27272B]" aria-hidden="true" aria-disabled="true">
-                <Send size={16} />
-              </span>
-            </p>
+            {/* The card is the design's entry to the Ask AI page (/ask-ai). */}
+            <Link href="/ask-ai" className="flex flex-1 flex-col" aria-label="Open the Collabspace AI assistant">
+              <div className="flex flex-col items-center gap-4 py-4">
+                <img src="/ask-ai-robot.png" alt="" width="42.67" height="64" aria-hidden="true" />
+                <p className={`${M} text-sm text-[#525256]`}>ask me anything about...</p>
+              </div>
+              <p className={`${M} flex flex-1 flex-col rounded-xl bg-[#F6F8FA] p-3 text-sm text-[#718096]`}>
+                ask me anything about...
+                <span className="mt-auto self-end text-[#27272B]" aria-hidden="true">
+                  <Send size={16} />
+                </span>
+              </p>
+            </Link>
           </Card>
         </div>
       </main>

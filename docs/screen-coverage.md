@@ -82,17 +82,16 @@ Save Report", "KPI's", "Personal", "Project progress" are in-screen
 labels (find-box type evidence); print/save has no API (browser print
 is a client concern — review during implementation).
 
-## Ask AI (Ask AI + Ask Ai/ chat frames + A10.2-A10.4): TODO
-Frames: Ask AI empty state 225-9992 (1440x1024, BG #F6F8FA, "Collabspace
-AI" heading, sparkle badge, "Hi There" greeting, input card "ask me
-anything about...." with + / mic / Submit), chat surface 229-5948
-(1440x1024 Hug, AI/user bubbles with CB badge and avatar, external-link
-card, feedback icon row, typing indicator, "Message to ChatBot...."
-input). No robot artwork exists on these frames (layer search "robot":
-zero results); the center badge is a sparkle icon from the icon set.
-Entry point from the navbar or dashboard to be confirmed during
-implementation.
-
+## Ask AI (frames 225-9992 + 229-5948, A10.2): DONE (2026-11-24)
+/ask-ai implements the empty state and the chat surface, entered from the
+dashboard Ask AI card (now a link). Sends A10.2 { query }; the reply body
+is undocumented in the collection, so the answer is read tolerantly from
+common envelope fields (documented in code). Disclosed estimates: badge
+border #D7E3FA pixel-sampled; CB badge text color, timestamp size/color
+pixel-estimated; the design's speaker/thumbs feedback icons have no API
+and are omitted while copy stays (works client-side); no AI error surface
+exists in the design, so send failures restore the draft with one plain
+note. The external-link card and project-scoped asks (A10.3) remain open.
 ## Profile (Profile, /overview, /tasks, /files, /Settomgs + A2.x): TODO
 Profile/overview (A2.1), Profile / tasks (A2.5), Profile / files (A2.6),
 Profile/Settings (A2.2 avatar, A2.3 remove avatar, A2.4 password) are all
