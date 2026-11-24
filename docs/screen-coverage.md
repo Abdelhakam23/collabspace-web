@@ -223,7 +223,10 @@ gets a one-line classification before the final sweep.
 Reads render live data; every write flow (schedule meeting, send message,
 mark read, update profile, AI asks that create tasks) is implemented but
 verified only against local fixtures — zero live mutations without a
-separate user decision.
+separate user decision. The fixture harness fails closed: any request to
+the live host that is not an explicitly stubbed endpoint is aborted,
+recorded, and fails the render run (caught a mis-routed handler once
+already).
 
 ## Layer-panel windows (2026-11-24, UI Design page, top-level rows as read)
 Window A: ... Search Bar overlay, Profile / files, Profile / tasks,

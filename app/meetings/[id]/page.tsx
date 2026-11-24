@@ -193,14 +193,15 @@ export default function MeetingRoomPage() {
                 </span>
               ) : null}
             </div>
-            <div
-              role="img"
-              aria-label="Video call placeholder"
+            <button
+              type="button"
+              disabled
               title="Live video is not embedded in this app"
-              className="mt-5 flex h-[323px] w-full items-center justify-center rounded-[28px] bg-[#D9D9D9]"
+              aria-label="Video call placeholder, not available"
+              className="mt-5 flex h-[323px] w-full cursor-not-allowed items-center justify-center rounded-[28px] bg-[#D9D9D9]"
             >
-              <Play size={64} className="fill-[#005AFB] text-[#005AFB]" aria-hidden="true" />
-            </div>
+              <Play size={64} className="fill-[#005AFB] text-[#005AFB] opacity-60" aria-hidden="true" />
+            </button>
             <div className="mt-6 flex flex-col">
               <div className="flex items-end">
                 <span className={`${SANS} rounded-tl-lg rounded-tr-[7px] bg-white px-2.5 py-2.5 text-sm font-medium leading-4 text-[#000712]`}>
