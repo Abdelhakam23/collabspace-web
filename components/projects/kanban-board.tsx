@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Calendar, MoreHorizontal, Plus } from "lucide-react";
 import { PRIORITY_TONES } from "@/lib/colors";
 import { initials, shortDate } from "@/lib/format";
-import type { KanbanColumn, Task } from "@/lib/types";
+import type { KanbanColumn, Task } from "@/types";
 import { CreateTaskOverlay } from "@/components/projects/create-task-overlay";
 
 const SANS = "font-[family-name:var(--font-sans)]";
