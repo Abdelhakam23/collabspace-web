@@ -64,39 +64,43 @@ function Card({ title, children, className = "", gap = 20, aside, asideInline = 
 /** Needle gauge (Group 1171275875, 178x178 native; ring box 177.61 at
  *  card-relative (119,78), so the ring center is (88.8,88.8) in the box).
  *  Measured from the 1:1 native capture plus ellipse/rectangle node reads:
- *  - Track #E9E9EA: 198deg arc from 168deg (screen coords, clockwise from
- *    3 o'clock), r 83.3, stroke 11, round caps. The ~162deg gap spans the
- *    bottom from 3 o'clock to ~8:45; it does not wrap the bottom.
- *  - Progress #27272B starts at the track start (168deg).
+ *  - Track #E9E9EA: ~192deg vector arc from 172.5deg (screen coords,
+ *    clockwise from 3 o'clock), r 82.5, stroke 9, round caps; visible
+ *    span 169 -> ~7.5deg, so the ~162deg gap spans the bottom and does
+ *    not wrap it.
+ *  - Progress #27272B starts at the track start; drawn arc 120deg
+ *    (visible 169 -> ~295.5).
  *  - Pivot dot: 17.01 white, 1.89 #27272B border, center (88.06,97.51),
  *    8.7px below ring center.
  *  - Needle (Rectangle 40109): 9.45x54.32 #27272B bar with fully rounded
  *    ends, drawn tilted 22.09deg clockwise from vertical, tip ending at
  *    the dark arc end (~292deg).
- *  Drawn-vs-truthful: the drawn dark arc (126deg) is ~64% of the track,
- *  not the labeled 78%, so the design arc is decorative (same pattern as
- *  the drawn 36+62+42>94 legend). Runtime mode maps pct truthfully over
- *  the 198deg track and rotates the needle to the arc end around the
- *  pivot; the visual fixture (localStorage collabspace_visual_fixture=1)
- *  reproduces the drawn 126deg arc and 22.09deg needle verbatim
- *  (docs/design-api-gaps.md). */
+ *  Drawn-vs-truthful: the drawn dark arc (120deg) covers ~63% of the
+ *  track, not the labeled 78%, so the design arc is decorative (same
+ *  pattern as the drawn 36+62+42>94 legend). Runtime mode maps pct
+ *  truthfully over the ~192deg track and rotates the needle to the arc
+ *  end around the pivot; the visual fixture (localStorage
+ *  collabspace_visual_fixture=1) reproduces the drawn 120deg arc and
+ *  22.09deg needle verbatim (docs/design-api-gaps.md). */
 function Gauge({ pct, drawn = false }: { pct: number; drawn?: boolean }) {
   const clamped = Math.min(100, Math.max(0, pct));
-  const c = 89, r = 83.3, C = 2 * Math.PI * r;
-  const trackLen = (198 / 360) * C;
+  const c = 89, r = 82.5, C = 2 * Math.PI * r;
+  // Vector endpoints include the 4.5px round caps (~3.1deg at r 82.5):
+  // measured visible dark arc 169.1 -> 294 deg, light track to ~7.5 deg.
+  const trackLen = (192 / 360) * C;
   const pivotX = 88.06, pivotY = 97.51;
-  // Truthful mapping: arc end and needle sit at 168 + 1.98 * pct degrees,
-  // i.e. (1.98 * pct - 102) degrees clockwise from straight up.
-  const trueDeg = 1.98 * clamped - 102;
+  // Truthful mapping: arc end and needle sit at 172.5 + 1.91 * pct degrees,
+  // i.e. (1.91 * pct - 97.5) degrees clockwise from straight up.
+  const trueDeg = 1.92 * clamped - 97.5;
   const needleDeg = drawn ? 22.09 : trueDeg;
-  const progLen = drawn ? (126 / 360) * C : (trackLen * clamped) / 100;
+  const progLen = drawn ? (120 / 360) * C : (trackLen * clamped) / 100;
   return (
     <svg viewBox="0 0 178 178" className="absolute inset-0 h-full w-full">
-      <circle cx={c} cy={c} r={r} fill="none" stroke="#E9E9EA" strokeWidth="11"
-        strokeLinecap="round" strokeDasharray={`${trackLen} ${C}`} transform={`rotate(168 ${c} ${c})`} />
+      <circle cx={c} cy={c} r={r} fill="none" stroke="#E9E9EA" strokeWidth="9"
+        strokeLinecap="round" strokeDasharray={`${trackLen} ${C}`} transform={`rotate(172.5 ${c} ${c})`} />
       {progLen > 0 ? (
-        <circle cx={c} cy={c} r={r} fill="none" stroke="#27272B" strokeWidth="11"
-          strokeLinecap="round" strokeDasharray={`${progLen} ${C}`} transform={`rotate(168 ${c} ${c})`} />
+        <circle cx={c} cy={c} r={r} fill="none" stroke="#27272B" strokeWidth="9"
+          strokeLinecap="round" strokeDasharray={`${progLen} ${C}`} transform={`rotate(172.5 ${c} ${c})`} />
       ) : null}
       <g transform={`rotate(${needleDeg - 22.09} ${pivotX} ${pivotY})`}>
         {/* Figma reports the rotated bounding box for the needle, so place
@@ -403,9 +407,9 @@ function ProjectDetailContent() {
             <Card title="Project Progress" gap={43}>
               <div className="relative mx-auto h-[178px] w-[178px]">
                 <Gauge pct={pct} drawn={visualFixture} />
-                <div className="absolute left-[36px] top-[133px] w-[106px] text-center">
+                <div className="absolute left-[35px] top-[129px] w-[106px] text-center">
                   <p className={`${SANS} text-[16px] font-medium leading-[12px] text-black`}>{pct}%</p>
-                  <p className={`${SANS} mt-[9px] whitespace-nowrap text-[12px] leading-[9px] text-black`}>Project Completed</p>
+                  <p className={`${SANS} mt-[12px] whitespace-nowrap text-[12px] leading-[9px] text-black`}>Project Completed</p>
                 </div>
               </div>
               {/* Legend row (native: Hug 407 x 37, gap 43, centered; items are

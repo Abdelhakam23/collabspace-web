@@ -141,7 +141,7 @@ pixel-sampled from the 46% capture (#F2E9F1/#BF75A9 start date,
 #FFEDE6/#FB743A deadline, #FBEAEA/#DB302A priority, #F3F4F6/#191919 total
 tasks). Native reads since replaced the pixel estimates: the gauge ring is
 a 177.61px ellipse pair, #27272B on #E9E9EA, stroke ~11 with round caps;
-the exact arc geometry (198deg track from 168deg, drawn 126deg dark arc,
+the exact arc geometry (~192deg track from 172.5deg, drawn 120deg dark arc,
 pivot 8.7px below ring center) is documented in the gauge section below. Header block:
 Fixed 1311 x Hug 71 at top 104 / left 65 with a 32px gap to the Due Date
 card (Fixed 324 x Hug 71, radius 12, border #F3F4F6, padding 12). The
@@ -214,7 +214,7 @@ inert (design-only control, no documented filter parameter).
 - Project Progress card: padding 20, gap 43, gauge group 178x178, legend row
   items vertical (value 16px/12 + gap 16 + dot+label 12px/9).
 - Needle gauge inner geometry (1:1 native capture + node reads): track
-  #E9E9EA is a 198deg arc from 168deg (screen coords, clockwise from 3
+  #E9E9EA is a ~192deg arc from 172.5deg (screen coords, clockwise from 3
   o'clock), r 83.3, stroke ~11, round caps; the ~162deg gap spans the
   bottom from 3 o'clock to ~8:45 and does not wrap the bottom. Dark arc
   #27272B drawn 168deg -> 294deg (126deg) starting at the track start.
@@ -225,7 +225,7 @@ inert (design-only control, no documented filter parameter).
 - Drawn-vs-truthful: the drawn dark arc (126deg) covers ~64% of the track,
   not the labeled 78%, so the design gauge is decorative (same pattern as
   the drawn 36+62+42>94 legend). Runtime mode maps pct truthfully over
-  the 198deg track (arc end and needle both at 168 + 1.98 * pct degrees);
+  the ~192deg track (arc end and needle both at 172.5 + 1.92 * pct degrees);
   the guarded visual fixture (localStorage collabspace_visual_fixture=1)
   reproduces the drawn 126deg arc and 22.09deg needle verbatim for pixel
   comparison only.
