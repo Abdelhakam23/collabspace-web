@@ -11,11 +11,6 @@ import type { User } from "@/lib/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
-/**
- * Drawn open-conversation state: the same sidebar with the active channel
- * highlighted, plus the conversation pane (header, messages, composer) for
- * the selected project.
- */
 export default function ChatConversationPage() {
   const params = useParams();
   const projectId = Number(params.id);
