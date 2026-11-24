@@ -188,7 +188,7 @@ export function CreateTaskOverlay({
                     setGuess("");
                   }
                 }}
-                className="absolute right-4 top-1/2 flex h-[30px] w-[113px] -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-[#27272B] text-sm font-medium text-white disabled:opacity-50"
+                className="absolute right-3 top-1/2 flex h-[30px] w-[84px] sm:right-4 sm:w-[113px] -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-[#27272B] text-sm font-medium text-white disabled:opacity-50"
               >
                 Add
                 <svg width="9.33" height="9.33" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
