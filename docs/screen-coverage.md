@@ -71,10 +71,13 @@ in chat", "Chat settings" are in-screen elements of it (find-box type
 evidence). Message send/edit/delete and thread replies have API support;
 frame review pending.
 
-## Notifications (Notification overlay + A9.1-A9.6): TODO
-Overlay frame 209-6425. The navbar bell is currently inert with a
-static dot; A9.3 (unread count) plus the overlay make this supported.
-
+## Notifications (Notification overlay 209-6425 + A9): DONE (2026-11-24)
+Navbar bell is live: unread dot from A9.3, overlay from A9.1, clicking an
+unread row marks it read (A9.4) optimistically. The design draws no
+mark-all or delete control, so A9.5/A9.6 stay unused. Row title/message/
+time text sizes are pixel-estimated from the 100% frame read (only the
+overlay title typography is node-read: Inter 500 16px #000712); time
+labels follow the drawn samples (HH:MM today, Yesterday, else date).
 ## Reports (Reports screen + pickers + A11.1-A11.5): TODO
 Hi-fi frames: Reports (screen; node id pending) with the report-type
 picker 163-1089 and period picker 163-995. "Detailed Reports", "Print/

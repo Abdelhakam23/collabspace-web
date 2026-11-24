@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 
 /**
  * Navbar component (native State variants, 1440x72 white bar over a 4px
@@ -59,11 +60,7 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
             />
           </label>
           <span className="flex items-center gap-5">
-            {/* Bell icon from the frame; its screen is not built yet. */}
-            <button type="button" aria-disabled="true" aria-label="Notifications (not available yet)" className="relative text-[#000712]">
-              <Bell className="h-[20.77px] w-[18px]" />
-              <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#e5484d]" aria-hidden="true" />
-            </button>
+            <NotificationBell />
             <span className="flex items-center gap-2">
               <span className={`${M} text-right text-xs leading-tight`}>
                 <span className="block font-medium text-[#000712]">{userName}</span>
