@@ -72,7 +72,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true" aria-label="New Project">
       <form
         onSubmit={onSubmit}
-        className={`${SANS} flex max-h-[90vh] min-h-[661px] w-full max-w-[720px] flex-col gap-8 overflow-y-auto rounded-2xl bg-white p-6 shadow-[0_8px_16px_rgba(0,0,0,0.16)]`}
+        className={`${SANS} flex max-h-[90vh] sm:min-h-[661px] w-full max-w-[720px] flex-col gap-8 overflow-y-auto rounded-2xl bg-white p-6 shadow-[0_8px_16px_rgba(0,0,0,0.16)]`}
       >
         <div className="flex items-center justify-between">
           <h2 className="text-[25px] font-medium leading-[24px] text-[#000712]">New Project</h2>
@@ -130,7 +130,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
                   setGuess("");
                 }
               }}
-              className="absolute right-4 top-1/2 flex h-[30px] w-[113px] -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-[#27272B] text-sm font-medium text-white"
+              className="absolute right-3 top-1/2 flex h-[30px] w-[84px] sm:right-4 sm:w-[113px] -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-[#27272B] text-sm font-medium text-white"
             >
               Add
               <svg width="9.33" height="9.33" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
