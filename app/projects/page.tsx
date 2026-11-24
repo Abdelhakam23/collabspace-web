@@ -9,36 +9,9 @@ import { getProfile } from "@/lib/api/profile";
 import type { Project } from "@/lib/types";
 
 /**
- * All Projects from the final hi-fi "All Projects" frame (UI Design page,
- * node 114-1915, 1440x1024), wired to GET /api/v1/projects (A4.1, read-only).
- *
- * Native properties read in Figma: page BG #F6F8FA; title Team C Text/H4
- * (Inter 600 31px, #000712, cap-height trim); search box 326x40, radius 100,
- * 1px border in BG label #F3F4F6, white fill, placeholder Rubik 400 14px
- * #000712; Add Project = Primary button (hug ~135x40, radius 32, padding
- * 12/12/12/20, gap 8, Inter 500 14px white on #005AFB, plus icon right);
- * filter labels Rubik 400 12px #000712 with a 10x5 chevron (1.5 border);
- * column headers Inter 500 18px #000712; rows Fill 1312 x hug 60, white,
- * space-between, 1px bottom border; cell text Team C Text/small Body r
- * (Inter 400 14px #000712); status active = Support colors/Redish/Normal
- * #FA2B75, Done = Support colors/Green/Normal #2BA52E; priority High =
- * Support colors/Red/Normal #DB302A, Medium = Support colors/Yellow/Normal
- * #E6BA0E; team avatars 23.73px, radius 17.8, 1.48px border #C2C2C2.
- * Column x positions are pixel-measured at 46% zoom (the row uses auto
- * layout with space-between, so no absolute offsets are exposed).
- *
- * Scope (design x API): the toolbar search filters the loaded rows
- * client-side (frontend-only behavior; A4.1 documents no search parameter).
- * Both filter dropdowns stay inert - the file does not show their contents.
- * Filter dropdowns (frame 2147224288): Hug x 40px, radius 16, border 1px
- * secodary-500 #27272B, padding 16/10, gap 10, label Rubik 400 12px #000712,
- * chevron 10x5 with 1.5px #000712 stroke - all native reads. Earlier
- * pixel-sampled values superseded.
- * zoom, not native reads. Add Project opens the New Project overlay
- * (node 139-2255), wired to POST /projects (A4.2). Add Project opens an overlay in the file; the
- * overlay frame has not been extracted yet, so the button is rendered but
- * inert for now. Statuses/priorities beyond the two drawn samples render
- * in the default text color until their design treatment is known.
+ * All Projects list (frame 114-1915) wired to A4.1. Filter/sort controls
+ * are design-only and stay inert; native table geometry and sampled-value
+ * disclosures: docs/design-api-gaps.md.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";

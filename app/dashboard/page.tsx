@@ -1,27 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Calendar, ChevronDown, Download } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
+import { AreaChart } from "@/components/charts/area-chart";
 import { getDashboardOverview } from "@/lib/api/dashboard";
 import { getProfile } from "@/lib/api/profile";
 
 /**
- * Dashboard from the FINAL hi-fi "Dashboard" frame (UI Design page,
- * SectionDashboard, node 285-12895, 1440x1024), wired to GET /api/v1/dashboard
- * (A10.1) and GET /api/v1/auth/me (A2.1).
- *
- * Native properties read in Figma: page fill style "BG color" #F6F8FA; color
- * styles Text Color #000712, secodary-500 #27272B, Secondary #525256, BG label
- * #F3F4F6, White #FFFFFF, Primary color-500 #005AFB; text styles "Team C Text"
- * (H1 61 ... H6 20, Body 16, small body 14, Caption 13, Small Caption 12, all
- * line-height 150%); font Montserrat (verified on the navbar user name,
- * 400 14px); navbar component 1440x72 white.
- * Accent palette (orange/teal/purple/chart blue, priority pills) is
- * pixel-sampled from the final frame render - approximate, disclosed in
- * docs/design-api-gaps.md.
- * The frame's "from last month" KPI deltas have no field in the API payload,
- * so they are omitted, not invented. Chart filter dropdowns remain inert:
- * A10.1 documents no query parameters (default period=year, group_by=month).
+ * Dashboard from the "Dashboard" frame (UI Design page, node 285-12895),
+ * wired to GET /api/v1/dashboard (A10.1) and GET /api/v1/auth/me (A2.1).
+ * Native reads and sampled-value disclosures: docs/design-api-gaps.md.
+ * KPI deltas and chart filters have no API backing, so they are omitted
+ * or inert rather than invented.
  */
 
 type Overview = {
@@ -68,33 +59,12 @@ function Bar({ ratio, color, className = "" }: { ratio: number; color: string; c
   );
 }
 
-function ChevronDown() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-function DownloadIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#718096" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <path d="m7 10 5 5 5-5" />
-      <path d="M12 15V3" />
-    </svg>
-  );
-}
-
 function KpiIcon({ tone }: { tone: "orange" | "blue" | "green" }) {
   const tones = { orange: ["#FFF5E6", "#FA9E00"], blue: ["#E5EFFF", "#005AFB"], green: ["#E7F6EC", "#22B14C"] } as const;
   const [bg, fg] = tones[tone];
   return (
     <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ backgroundColor: bg }} aria-hidden="true">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={fg} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="17" rx="2" />
-        <path d="M8 2v4M16 2v4M3 10h18" />
-      </svg>
+      <Calendar size={18} color={fg} />
     </span>
   );
 }
@@ -138,34 +108,6 @@ function Gauge({ ratio }: { ratio: number }) {
       ))}
       <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#000712" strokeWidth="3" strokeLinecap="round" />
       <circle cx={cx} cy={cy} r="4" fill="#000712" />
-    </svg>
-  );
-}
-
-function AreaChart({ points, maxChart }: { points: number[]; maxChart: number }) {
-  const w = 560, h = 180, pad = 4;
-  const n = Math.max(2, points.length);
-  const xs = points.map((_, i) => pad + (i * (w - pad * 2)) / (n - 1));
-  const ys = points.map((v) => h - pad - (v / maxChart) * (h - pad * 2));
-  // Monotone-smooth (Catmull-Rom) curve through the monthly points, as in the final frame.
-  const seg = (i: number) => {
-    const p0 = i > 0 ? i - 1 : 0, p1 = i, p2 = i + 1 < n ? i + 1 : n - 1, p3 = i + 2 < n ? i + 2 : n - 1;
-    const c1x = xs[p1] + (xs[p2] - xs[p0]) / 6, c1y = ys[p1] + (ys[p2] - ys[p0]) / 6;
-    const c2x = xs[p2] - (xs[p3] - xs[p1]) / 6, c2y = ys[p2] - (ys[p3] - ys[p1]) / 6;
-    return `C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${xs[p2].toFixed(1)},${ys[p2].toFixed(1)}`;
-  };
-  const path = `M${xs[0].toFixed(1)},${ys[0].toFixed(1)} ${Array.from({ length: n - 1 }, (_, i) => seg(i)).join(" ")}`;
-  const area = `${path} L${xs[n - 1].toFixed(1)},${h} L${xs[0].toFixed(1)},${h} Z`;
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-44 w-full" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="overviewArea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2692FF" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#2692FF" stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill="url(#overviewArea)" />
-      <path d={path} fill="none" stroke="#2692FF" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -234,8 +176,8 @@ export default function DashboardPage() {
           <Card title="Project overview" className="xl:col-span-6 xl:h-[285px]"
             actions={
               <span className={`${M} flex items-center gap-4 text-xs font-medium text-[#000712]`}>
-                <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown />All Projects</span>
-                <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown />This year</span>
+                <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown size={12} />All Projects</span>
+                <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown size={12} />This year</span>
               </span>
             }>
             <div className="flex items-stretch gap-2">
@@ -297,7 +239,7 @@ export default function DashboardPage() {
                   </span>
                   {/* Download affordance per the frame; file download endpoints are
                       not part of the dashboard payload, so it stays inert here. */}
-                  <span aria-disabled="true" aria-label="Download (not wired yet)"><DownloadIcon /></span>
+                  <span aria-disabled="true" aria-label="Download (not wired yet)"><Download size={16} /></span>
                 </li>
               ))}
               {data && data.recent_files.items.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No files yet.</li> : null}
@@ -333,7 +275,7 @@ export default function DashboardPage() {
           <Card title="Teams" className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden"
             actions={
               <span aria-disabled="true" className={`${M} flex items-center gap-1 text-xs font-medium text-[#000712]`}>
-                {teams[0]?.name ?? "All"}<ChevronDown />
+                {teams[0]?.name ?? "All"}<ChevronDown size={12} />
               </span>
             }>
             {/* The source panel heads its member list "Name"/"Tasks"; the payload

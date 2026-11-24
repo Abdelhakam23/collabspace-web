@@ -13,7 +13,7 @@ import {
   PrimaryButton,
   RememberMe,
 } from "@/components/auth/primitives";
-import { EnvelopeIcon, LockIcon } from "@/components/auth/icons";
+import { Lock, Mail } from "lucide-react";
 import { login } from "@/lib/api/auth";
 import { ApiError, storeToken } from "@/lib/api-client";
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          icon={<EnvelopeIcon />}
+          icon={<Mail size={20} strokeWidth={1.6} />}
           error={fieldErrors.email?.[0]}
         />
         <TextField
@@ -74,7 +74,7 @@ export default function LoginPage() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          icon={<LockIcon />}
+          icon={<Lock size={20} strokeWidth={1.6} />}
           error={fieldErrors.password?.[0]}
         />
         <div className="flex items-center justify-between">

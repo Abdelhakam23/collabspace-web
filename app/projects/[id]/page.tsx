@@ -3,31 +3,20 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Calendar, CircleCheck, Target } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
+import { AreaChart } from "@/components/charts/area-chart";
 import { getProjectOverview, getProjectTeamsTaskProgress } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
 import type { ProjectOverview, ProjectTeamProgress } from "@/lib/types";
 
 /**
- * Project detail "All Projects / Alpha" frame (UI Design page, node 181-1158,
- * 1440x1024, BG #F6F8FA). Breadcrumb small Body 14 #000000@60% ("Projects"
- * navigates back to All Projects); title Team C Text/H4 (Inter 600 31px);
- * tabs Body Me 16px, active tab Primary #005AFB; card titles H6 (Inter 500
- * 20px); description body Body Re 16px Secondary #525256; member names small
- * Body 14px #525256, Leader tag Inter 400 10px #27272B; member avatars 40px
- * radius 30 with 2.5px #E9E9EA border; Due Date card sits in the top header
- * right of the title, with its track drawn #005AFB on #E6EFFF.
- *
- * Scope (design x API): title, dates, priority, progress and team members
- * come from the documented Project model (A4.1). "Project Type" in Product
- * Details has no field in the model and is omitted. "Total Tasks" is read
- * from A5.1 (List Tasks, project_id filter documented) via the pagination
- * total; the collection documents no response shape for A5.1, so the item
- * renders only when the response actually carries a numeric total
- * (docs/design-api-gaps.md). The pending/in-progress/completed fractions and
- * the Project overview chart card consumes the A4.3 chart array; earlier
- * are undocumented, so they are omitted rather than parsed with guessed
- * keys. Tasks/Teams/Files tabs stay inert until their sibling frames ship.
+ * Project detail "All Projects / Alpha" frame (UI Design page, node 181-1158),
+ * wired to A4.1/A4.3/A4.4 (+ A5.1 total when the response carries one).
+ * Design fields with no API backing ("Project Type", status fractions) are
+ * omitted, not guessed. Native geometry and disclosures:
+ * docs/design-api-gaps.md. Tasks/Teams/Files tabs stay inert until their
+ * sibling frames ship.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -61,36 +50,17 @@ function Card({ title, children, className = "", gap = 20, aside, asideInline = 
   );
 }
 
-/** Needle gauge (Group 1171275875, 178x178 native; ring box 177.61 at
- *  card-relative (119,78), so the ring center is (88.8,88.8) in the box).
- *  Measured from the 1:1 native capture plus ellipse/rectangle node reads:
- *  - Track #E9E9EA: ~192deg vector arc from 172.5deg (screen coords,
- *    clockwise from 3 o'clock), r 82.5, stroke 9, round caps; visible
- *    span 169 -> ~7.5deg, so the ~162deg gap spans the bottom and does
- *    not wrap it.
- *  - Progress #27272B starts at the track start; drawn arc 120deg
- *    (visible 169 -> ~295.5).
- *  - Pivot dot: 17.01 white, 1.89 #27272B border, center (88.06,97.51),
- *    8.7px below ring center.
- *  - Needle (Rectangle 40109): 9.45x54.32 #27272B bar with fully rounded
- *    ends, drawn tilted 22.09deg clockwise from vertical, tip ending at
- *    the dark arc end (~292deg).
- *  Drawn-vs-truthful: the drawn dark arc (120deg) covers ~63% of the
- *  track, not the labeled 78%, so the design arc is decorative (same
- *  pattern as the drawn 36+62+42>94 legend). Runtime mode maps pct
- *  truthfully over the ~192deg track and rotates the needle to the arc
- *  end around the pivot; the visual fixture (localStorage
- *  collabspace_visual_fixture=1) reproduces the drawn 120deg arc and
- *  22.09deg needle verbatim (docs/design-api-gaps.md). */
+/** Needle gauge, geometry measured from the native file
+ *  (docs/design-api-gaps.md). The drawn arc is decorative (~63% of the
+ *  track, not the labeled 78%): runtime maps pct truthfully, the
+ *  visual-fixture harness reproduces the drawn state verbatim. */
 function Gauge({ pct, drawn = false }: { pct: number; drawn?: boolean }) {
   const clamped = Math.min(100, Math.max(0, pct));
   const c = 89, r = 82.5, C = 2 * Math.PI * r;
-  // Vector endpoints include the 4.5px round caps (~3.1deg at r 82.5):
-  // measured visible dark arc 169.1 -> 294 deg, light track to ~7.5 deg.
+  // Vector endpoints include the round caps (~3.1deg at r 82.5).
   const trackLen = (192 / 360) * C;
   const pivotX = 88.06, pivotY = 97.51;
-  // Truthful mapping: arc end and needle sit at 172.5 + 1.91 * pct degrees,
-  // i.e. (1.91 * pct - 97.5) degrees clockwise from straight up.
+  // Truthful mapping: arc end and needle at 172.5 + 1.92 * pct degrees.
   const trueDeg = 1.92 * clamped - 97.5;
   const needleDeg = drawn ? 22.09 : trueDeg;
   const progLen = drawn ? (120 / 360) * C : (trackLen * clamped) / 100;
@@ -114,76 +84,12 @@ function Gauge({ pct, drawn = false }: { pct: number; drawn?: boolean }) {
   );
 }
 
-/** Monthly area chart for the Project overview card: same smoothing and
- *  visual language as the dashboard chart (Catmull-Rom curve, blue gradient
- *  area). Series is the A4.3 chart array's created_tasks; the frame draws a
- *  single line and the response carries no second style for completed_tasks,
- *  so only created_tasks is plotted (docs/design-api-gaps.md). */
-function AreaChart({ points, maxChart }: { points: number[]; maxChart: number }) {
-  const w = 560, h = 180, pad = 4;
-  const n = Math.max(2, points.length);
-  const xs = points.map((_, i) => pad + (i * (w - pad * 2)) / (n - 1));
-  const ys = points.map((v) => h - pad - (v / maxChart) * (h - pad * 2));
-  const seg = (i: number) => {
-    const p0 = i > 0 ? i - 1 : 0, p1 = i, p2 = i + 1 < n ? i + 1 : n - 1, p3 = i + 2 < n ? i + 2 : n - 1;
-    const c1x = xs[p1] + (xs[p2] - xs[p0]) / 6, c1y = ys[p1] + (ys[p2] - ys[p0]) / 6;
-    const c2x = xs[p2] - (xs[p3] - xs[p1]) / 6, c2y = ys[p2] - (ys[p3] - ys[p1]) / 6;
-    return `C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${xs[p2].toFixed(1)},${ys[p2].toFixed(1)}`;
-  };
-  const path = `M${xs[0].toFixed(1)},${ys[0].toFixed(1)} ${Array.from({ length: n - 1 }, (_, i) => seg(i)).join(" ")}`;
-  const area = `${path} L${xs[n - 1].toFixed(1)},${h} L${xs[0].toFixed(1)},${h} Z`;
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-[218px] w-full" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="alphaOverviewArea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2692FF" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#2692FF" stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill="url(#alphaOverviewArea)" />
-      <path d={path} fill="none" stroke="#2692FF" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-/** Icon-in-tinted-circle marker used by the Product Details grid. Tints and
- *  icon colors pixel-sampled from the 46% capture (disclosed in
- *  docs/design-api-gaps.md); circle 40px, icon ~20px. */
+/** Icon-in-tinted-circle marker for the Product Details grid. */
 function DetailIcon({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
   return (
     <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: bg, color }}>
       {children}
     </span>
-  );
-}
-
-const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" } as const;
-
-function CalendarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" {...stroke}>
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M3 10h18M8 3v4M16 3v4" />
-    </svg>
-  );
-}
-
-function TargetIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" {...stroke}>
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="4.5" />
-      <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function CheckCircleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" {...stroke}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M8 12.5l2.5 2.5L16 9.5" />
-    </svg>
   );
 }
 
@@ -201,8 +107,7 @@ function ProjectDetailContent() {
   const [teamsProgress, setTeamsProgress] = useState<ProjectTeamProgress[]>([]);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState<string | undefined>();
-  // Set only by the guarded visual-fixture harness (tests/cs-fixture), never
-  // in production: reproduces the design's drawn gauge arc/needle verbatim.
+  // Set only by the visual-fixture harness, never in production.
   const [visualFixture] = useState(
     () => typeof window !== "undefined" && window.localStorage.getItem("collabspace_visual_fixture") === "1",
   );
@@ -210,9 +115,7 @@ function ProjectDetailContent() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      // A4.3 overview + A4.4 teams drive the whole screen: header, dates,
-      // priority, gauge, status legend and member list all come from their
-      // observed response shapes (docs/design-api-gaps.md).
+      // A4.3 + A4.4 drive the whole screen (docs/design-api-gaps.md).
       try {
         const [ov, tp, profile] = await Promise.all([
           getProjectOverview(id),
@@ -248,9 +151,7 @@ function ProjectDetailContent() {
   const series = chartData.map((d) => d.created_tasks);
   const yMax = Math.max(1, Math.ceil(Math.max(1, ...series) / 5) * 5);
 
-  // Due Date track fill: elapsed fraction between the documented start and
-  // deadline dates, clamped; the frame draws the track without stating its
-  // semantics (docs/design-api-gaps.md).
+  // Due Date fill: elapsed fraction between the documented dates, clamped.
   let elapsed = 0;
   if (startDate && deadline) {
     const s = new Date(startDate).getTime();
@@ -349,7 +250,7 @@ function ProjectDetailContent() {
                     ))}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <AreaChart points={series} maxChart={yMax} />
+                    <AreaChart points={series} maxChart={yMax} className="h-[218px] w-full" />
                     <div className="mt-[11px] flex h-3 justify-between text-[10px] leading-[12px] text-[#718096]">
                       {/* The frame draws six axis labels; all twelve monthly
                           points stay plotted - labels are representative,
@@ -370,21 +271,21 @@ function ProjectDetailContent() {
                     positions (docs/design-api-gaps.md). */}
                 <span aria-hidden="true" />
                 <div className="flex items-center gap-3">
-                  <DetailIcon bg="#F2EAF2" color="#BF75A9"><CalendarIcon /></DetailIcon>
+                  <DetailIcon bg="#F2EAF2" color="#BF75A9"><Calendar className="h-6 w-6" strokeWidth={1.6} /></DetailIcon>
                   <div>
                     <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Start Date</p>
                     <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(startDate)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <DetailIcon bg="#FFEDE6" color="#FB743A"><CalendarIcon /></DetailIcon>
+                  <DetailIcon bg="#FFEDE6" color="#FB743A"><Calendar className="h-6 w-6" strokeWidth={1.6} /></DetailIcon>
                   <div>
                     <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Deadline</p>
                     <p className={`${SANS} text-base font-medium text-[#000712]`}>{shortDate(deadline)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <DetailIcon bg="#FBEAEA" color="#DB302A"><TargetIcon /></DetailIcon>
+                  <DetailIcon bg="#FBEAEA" color="#DB302A"><Target className="h-6 w-6" strokeWidth={1.6} /></DetailIcon>
                   <div>
                     <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Priority</p>
                     <p className={`${SANS} text-base font-medium text-[#000712]`}>{overview?.priority ?? ""}</p>
@@ -392,7 +293,7 @@ function ProjectDetailContent() {
                 </div>
                 {totalTasks !== null ? (
                   <div className="flex items-center gap-3">
-                    <DetailIcon bg="#F3F4F6" color="#191919"><CheckCircleIcon /></DetailIcon>
+                    <DetailIcon bg="#F3F4F6" color="#191919"><CircleCheck className="h-6 w-6" strokeWidth={1.6} /></DetailIcon>
                     <div>
                       <p className={`${SANS} text-xs text-[#4A4A4A]/80`}>Total Tasks</p>
                       <p className={`${SANS} text-base font-medium text-[#000712]`}>{totalTasks}</p>

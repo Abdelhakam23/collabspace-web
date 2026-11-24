@@ -13,7 +13,7 @@ import {
   PrimaryButton,
   RememberMe,
 } from "@/components/auth/primitives";
-import { EnvelopeIcon, LockIcon, PersonIcon } from "@/components/auth/icons";
+import { Lock, Mail, User } from "lucide-react";
 import { register as registerAccount } from "@/lib/api/auth";
 import { ApiError, storeToken } from "@/lib/api-client";
 
@@ -64,7 +64,7 @@ export default function RegisterPage() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          icon={<PersonIcon />}
+          icon={<User size={20} strokeWidth={1.6} />}
           error={fieldErrors.name?.[0]}
         />
         <TextField
@@ -76,7 +76,7 @@ export default function RegisterPage() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          icon={<EnvelopeIcon />}
+          icon={<Mail size={20} strokeWidth={1.6} />}
           error={fieldErrors.email?.[0]}
         />
         <TextField
@@ -88,7 +88,7 @@ export default function RegisterPage() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          icon={<LockIcon />}
+          icon={<Lock size={20} strokeWidth={1.6} />}
           error={fieldErrors.password?.[0]}
         />
         {/* The register endpoint has no remember field; here it controls

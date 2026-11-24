@@ -1,30 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Calendar, Upload } from "lucide-react";
 import { createProject } from "@/lib/api/projects";
 import { uploadFileToProject } from "@/lib/api/files";
 import { listUsers } from "@/lib/api/users";
 import type { TaskPriority, User } from "@/lib/types";
 
 /**
- * "New Project overlya" frame (UI Design page, node 139-2255), opened from
- * the All Projects toolbar button whose interaction targets this overlay.
- * Native reads: 720 x Hug(661), vertical, radius 16, padding 24, gap 32,
- * white fill, drop shadow 0/8/16 #000000@16%; title Team C Text/H5 (Inter
- * 500 25px #000712, cap-height trim); close glyph 13.15px #000000; field
- * labels Small Caption 12px #718096; placeholders small Body 14px #718096;
- * member avatars 40px radius 30 with 2.5px #C2C2C2 border; upload zone
- * Fill 672 x 129, radius 4, dashed 0.5px #718096, padding 36; submit =
- * Primary button Fill 672 x Hug 40, radius 32, padding 13/20, #005AFB,
- * Inter 500 14px white. Input containers reuse the file's input component
- * styling (their own container reads kept resolving to the frame itself).
- *
- * Wiring (A4.2 POST /projects, then A7.2 POST /files per selected file):
- * name, priority, start_date, deadline ("End Date") and members come from
- * the form. A4.2 lists description/status with no required markers or
- * validation rules, so they are omitted rather than invented; the priority
- * options are the API's documented TaskPriority values (the file shows
- * only "High"). Members are sent as the documented array, all of them.
+ * New Project modal (overlay frame 139-2255) backed by A4.2 create.
+ * Unsupported fields stay inert; geometry notes: docs/design-api-gaps.md.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -193,10 +178,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
               className={`${fieldBox} pr-10 [&::-webkit-calendar-picker-indicator]:opacity-0 ${startDate ? "" : "text-transparent"}`}
             />
             <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#4A4A4A]">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4M16 3v4" />
-              </svg>
+              <Calendar size={16} strokeWidth={1.6} />
             </span>
             {!startDate ? <span className={`${SANS} pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#718096]`}>Start Date</span> : null}
           </label>
@@ -210,10 +192,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
               className={`${fieldBox} pr-10 [&::-webkit-calendar-picker-indicator]:opacity-0 ${deadline ? "" : "text-transparent"}`}
             />
             <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#4A4A4A]">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="3" y="5" width="18" height="16" rx="2" />
-                <path d="M3 10h18M8 3v4M16 3v4" />
-              </svg>
+              <Calendar size={16} strokeWidth={1.6} />
             </span>
             {!deadline ? <span className={`${SANS} pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#718096]`}>End Date</span> : null}
           </label>
@@ -227,10 +206,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
             onClick={() => fileInput.current?.click()}
             className="flex w-full flex-1 items-center justify-start gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white px-[36px] text-sm text-[#718096]"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M12 16V4m0 0 4 4m-4-4L8 8" />
-              <path d="M4 15v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3" />
-            </svg>
+            <Upload size={14} strokeWidth={1.6} />
             {files.length ? files.map((f) => f.name).join(", ") : "Drag and drop files or click to upload"}
           </button>
           <input

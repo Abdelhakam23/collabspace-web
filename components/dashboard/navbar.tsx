@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { Bell, Search } from "lucide-react";
 
 /**
- * Final hi-fi navbar (UI Design page, Navbar component in the Dashboard frame):
- * 1440x72, white fill; active item is a Primary #005AFB pill with white text
- * (hug width, 36px tall, radius 100, 10px padding); other items dark; right
- * side search, settings, bell with red dot, user name + role and avatar.
- * Text is Rubik. Items whose screens are not built yet stay inert so nothing
- * routes to a 404.
+ * Navbar component (native 1440x72, white; active item = #005AFB pill,
+ * text Rubik). Items whose screens are not built yet stay inert.
+ * Geometry details: docs/design-api-gaps.md.
  */
 const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Reports"];
 const M = "font-[family-name:var(--font-rubik)]";
@@ -46,10 +44,7 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
       </nav>
       <div className="ml-auto flex items-center gap-4">
         <label className={`hidden h-9 w-56 items-center gap-2 rounded-lg bg-[#F6F8FA] px-3 text-xs text-[#718096] lg:flex ${M}`}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
+          <Search size={14} />
           <input
             type="search"
             placeholder="Search"
@@ -59,10 +54,7 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
         </label>
         {/* Bell icon from the frame; its screen is not built yet. */}
         <button type="button" aria-disabled="true" aria-label="Notifications (not available yet)" className="relative text-[#000712]">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-          </svg>
+          <Bell size={18} />
           <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#e5484d]" aria-hidden="true" />
         </button>
         <span className="flex items-center gap-2">
