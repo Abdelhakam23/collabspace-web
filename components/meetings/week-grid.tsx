@@ -120,7 +120,6 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
                 key={d.toDateString()}
                 className={`flex min-h-[137px] flex-col items-center gap-0.5 px-3 py-4 ${i < days.length - 1 ? "border-r border-[#F3F4F6]" : ""} ${i === 0 ? "bg-[#E6EFFF]" : ""}`}
               >
-                <DayHeader date={d} label={i === 0 ? "Today" : WEEKDAYS[d.getDay()]} />
                 {cellMeetings.map(({ meeting }) => (
                   <MeetingCard key={meeting.id} meeting={meeting} />
                 ))}
