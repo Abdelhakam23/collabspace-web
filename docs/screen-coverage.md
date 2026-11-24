@@ -74,14 +74,14 @@ DONE (/meetings, node-read measurements):
 - Toolbar row (114-2606: top 202): month label Inter 500 20px #000712
   (H6). A6.1 takes no date range, so the month arrows render disabled
   with an explanatory title; the label shows the real current month.
-- This Week control + Duration overlay: only "This Week" is enabled
-  (sends the documented time_filter=upcoming); the other four drawn
-  options have no documented value and render disabled with a title.
-  The endpoint's scope for time_filter=upcoming is undocumented.
-  UNRESOLVED DESIGN-LABEL CONFLICT: the control says "This Week" but
-  the grid shows a rolling five-day range (today + next four), which
-  is not a calendar week and breaks across week boundaries; no drawn
-  or documented control offers a real calendar-week scope. Closed control's border is pixel-estimated as #CBD5E0
+- Duration control + overlay: only the selected option is enabled (sends
+  the documented time_filter=upcoming); the other four drawn options have
+  no documented value and render disabled with a title. The endpoint's
+  scope for time_filter=upcoming is undocumented. RESOLVED DESIGN-LABEL
+  CONFLICT (2026-11-24, user approved): the drawn label "This Week" was
+  not true of the rolling five-day grid (today + next four), so the
+  selected option now reads "Upcoming" to match the API scope and the
+  grid; this is a deliberate, user-approved deviation from the drawn text. Closed control's border is pixel-estimated as #CBD5E0
   (native control too small to sample cleanly).
 - Week grid (114-2617: 1311 at left 64/top 281): six equal 218.5px
   columns (time column + five days), rows with 1px #F3F4F6 row/cell

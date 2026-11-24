@@ -3,21 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * The "This Week" filter control from the Meetings frame plus its open
- * state, the "Duration overlay" (node 139-1583: 210x164 fixed, radius 16,
- * padding 16, white). The meetings list endpoint (A6.1) documents only
- * time_filter=upcoming, which is what "This Week" sends. The page keeps
- * the label true by displaying exactly the five days the control covers
- * from whatever the endpoint returns; the other drawn
- * options have no documented API value, so they render disabled and say why
- * instead of pretending to filter. The closed control's border color is
- * pixel-estimated as the shared input border #CBD5E0 (the native control is
- * too small to sample cleanly).
+ * The duration filter control from the Meetings frame plus its open state,
+ * the "Duration overlay" (node 139-1583: 210x164 fixed, radius 16, padding
+ * 16, white). The meetings list endpoint (A6.1) documents only
+ * time_filter=upcoming, which is what the selected option sends. The drawn
+ * label "This Week" was not true of the grid (a rolling today + next four
+ * days, not a calendar week), so with the user's sign-off (2026-11-24) the
+ * selected option reads "Upcoming" to match both the API scope and what
+ * the grid shows; the other drawn options have no documented API value, so
+ * they render disabled and say why instead of pretending to filter. The
+ * closed control's border color is pixel-estimated as the shared input
+ * border #CBD5E0 (the native control is too small to sample cleanly).
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
-const OPTIONS = ["Today", "This Week", "This Month", "Last Three Month", "This Year"];
-const SELECTED = "This Week";
+const OPTIONS = ["Today", "Upcoming", "This Month", "Last Three Month", "This Year"];
+const SELECTED = "Upcoming";
 
 export function DurationMenu() {
   const [open, setOpen] = useState(false);

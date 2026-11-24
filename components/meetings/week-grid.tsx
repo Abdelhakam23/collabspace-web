@@ -20,7 +20,7 @@ import type { Meeting } from "@/lib/types";
  * keeps a cell.
  *
  * Scope: the list is fetched with the only documented time_filter value
- * (upcoming) and the grid displays exactly the five days the "This Week"
+ * (upcoming) and the grid displays exactly the five days the "Upcoming"
  * control covers, which keeps the visible label true by construction.
  * Meetings the five drawn columns cannot hold CANNOT be reached by any
  * supported control (month navigation and the other Duration options
