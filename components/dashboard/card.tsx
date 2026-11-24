@@ -17,5 +17,5 @@ export function Card({ title, actions, children, className = "" }: { title: stri
 
 /** "View All" affordance from the frame; no listing target exists yet, so inert. */
 export function ViewAll() {
-  return <span aria-disabled="true" className={`${M} text-xs font-medium text-[#005AFB]`}>View All</span>;
+  return <span aria-disabled="true" className={`${M} text-xs font-normal text-[#005AFB]`}>View All</span>;
 }

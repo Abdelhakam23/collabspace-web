@@ -107,14 +107,14 @@ export default function DashboardPage() {
               </span>
             }>
             <div className="flex items-stretch gap-2">
-              <div className="flex h-44 flex-col justify-between py-1 text-right text-[10px] text-[#718096]" aria-hidden="true">
+              <div className="flex h-44 flex-col justify-between py-1 text-right text-xs text-[#718096]" aria-hidden="true">
                 {[yMax, Math.round((yMax * 2) / 3), Math.round(yMax / 3), 0].map((v, i) => (
                   <span key={i}>{v >= 1000 ? `${Math.round(v / 100) / 10}k` : v}</span>
                 ))}
               </div>
               <div className="min-w-0 flex-1">
                 <AreaChart points={series.length ? series : [0, 0]} maxChart={yMax} />
-                <div className="mt-1 flex justify-between text-[10px] text-[#718096]">
+                <div className="mt-1 flex justify-between text-xs text-[#718096]">
                   {chart.map((d) => <span key={d.label}>{d.label.split(" ")[0]}</span>)}
                 </div>
               </div>
