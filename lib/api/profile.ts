@@ -47,10 +47,14 @@ export async function changePassword(payload: ChangePasswordPayload) {
 
 export async function getUserTasks() {
   const { data } = await apiClient.get<ApiEnvelope<Paginated<Task>>>(`/api/v1/auth/profile/tasks`);
-  return data;
+  // The profile endpoint names the task field "name"; the rest of the app reads "title".
+  const rows = (data.data?.data ?? []).map((t) => ({ ...t, title: t.title ?? (t as unknown as { name?: string }).name ?? "" }));
+  return { ...data, data: { ...data.data, data: rows } } as typeof data;
 }
 
 export async function getUserFiles() {
   const { data } = await apiClient.get<ApiEnvelope<Paginated<FileAttachment>>>(`/api/v1/auth/profile/files`);
-  return data;
+  // The profile endpoint sends "file_size" instead of "size".
+  const rows = (data.data?.data ?? []).map((f) => ({ ...f, size: f.size ?? (f as unknown as { file_size?: number }).file_size }));
+  return { ...data, data: { ...data.data, data: rows } } as typeof data;
 }
