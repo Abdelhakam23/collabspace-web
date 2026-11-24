@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Calendar, MoreHorizontal, Plus } from "lucide-react";
 import { PRIORITY_TONES } from "@/lib/colors";
 import { initials, shortDate } from "@/lib/format";
 import type { KanbanColumn, Task } from "@/lib/types";
+import { CreateTaskOverlay } from "@/components/projects/create-task-overlay";
 
 /**
  * Kanban columns of the "All Projects / Alpha / Tasks" frame (node 181-1418),
@@ -11,8 +13,9 @@ import type { KanbanColumn, Task } from "@/lib/types";
  * 20px side padding and 18px gaps, and 264x167 task cards (#F6F8FA, 1px
  * #F3F4F6 border, 16px padding). Band tints and the ~15px band label size
  * (22px label box) are pixel/node-box estimates (docs/design-api-gaps.md).
- * "Add Task" is Inter Medium 14px #005AFB; it is a write flow and stays
- * inert under the read-only scope.
+ * "Add Task" is Inter Medium 14px #005AFB and opens the Create Task overlay
+ * (frame 141-2397) posting to A5.3 with the column's status, then the board
+ * refetches.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -73,47 +76,50 @@ function TaskCard({ task }: { task: Task }) {
   );
 }
 
-export function KanbanBoard({ columns }: { columns: KanbanColumn[] }) {
+export function KanbanBoard({ columns, projectId, onChanged }: { columns: KanbanColumn[]; projectId: string; onChanged: () => void }) {
+  const [creatingIn, setCreatingIn] = useState<string | null>(null);
   return (
-    <div className="mt-8 grid items-stretch gap-8 md:grid-cols-2 xl:grid-cols-4">
-      {columns.map((col) => {
-        const style = columnStyle(col.status);
-        return (
-          <section
-            key={col.status}
-            className="flex flex-col overflow-hidden rounded-2xl bg-white pb-5 ring-1 ring-[#E9E9EA]"
-          >
-            <header
-              className={`${SANS} flex h-[62px] items-center justify-between px-5 text-[15px] font-medium text-[#191919]`}
-              style={{ backgroundColor: style.bg }}
+    <>
+      <div className="mt-8 grid items-stretch gap-8 md:grid-cols-2 xl:grid-cols-4">
+        {columns.map((col) => {
+          const style = columnStyle(col.status);
+          return (
+            <section
+              key={col.status}
+              className="flex flex-col overflow-hidden rounded-2xl bg-white pb-5 ring-1 ring-[#E9E9EA]"
             >
-              {style.label}
-              {/* Column actions have no read-only scope equivalent. */}
-              <span aria-disabled="true" title="Column actions are not wired yet" className="text-[#4A4A4A]">
-                <MoreHorizontal size={16} />
-              </span>
-            </header>
-            <ul className="flex flex-col gap-[18px] px-5 pt-5">
-              {/* Task creation is a write flow outside the current read-only
-                  scope; the drawn control stays inert (docs/design-api-gaps.md). */}
-              <li>
-                <button
-                  type="button"
-                  aria-disabled="true"
-                  title="Task creation is not wired yet"
-                  className={`${SANS} flex w-full items-center justify-center gap-1 rounded-[10px] border border-dashed border-[#005AFB] py-2.5 text-sm font-medium leading-none text-[#005AFB]`}
-                >
-                  Add Task <Plus size={14} />
-                </button>
-              </li>
-              {(col.tasks ?? []).map((task) => (
-                <TaskCard key={task.id} task={task} />
-              ))}
-            </ul>
-          </section>
-        );
-      })}
-      {columns.length === 0 ? <p className={`${SANS} text-sm text-[#718096]`}>No tasks yet.</p> : null}
-    </div>
+              <header
+                className={`${SANS} flex h-[62px] items-center justify-between px-5 text-[15px] font-medium text-[#191919]`}
+                style={{ backgroundColor: style.bg }}
+              >
+                {style.label}
+                {/* Column actions have no read-only scope equivalent. */}
+                <span aria-disabled="true" title="Column actions are not wired yet" className="text-[#4A4A4A]">
+                  <MoreHorizontal size={16} />
+                </span>
+              </header>
+              <ul className="flex flex-col gap-[18px] px-5 pt-5">
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => setCreatingIn(col.status)}
+                    className={`${SANS} flex w-full items-center justify-center gap-1 rounded-[10px] border border-dashed border-[#005AFB] py-2.5 text-sm font-medium leading-none text-[#005AFB] transition-colors hover:bg-[#005AFB]/5`}
+                  >
+                    Add Task <Plus size={14} />
+                  </button>
+                </li>
+                {(col.tasks ?? []).map((task) => (
+                  <TaskCard key={task.id} task={task} />
+                ))}
+              </ul>
+            </section>
+          );
+        })}
+        {columns.length === 0 ? <p className={`${SANS} text-sm text-[#718096]`}>No tasks yet.</p> : null}
+      </div>
+      {creatingIn ? (
+        <CreateTaskOverlay projectId={projectId} status={creatingIn} onClose={() => setCreatingIn(null)} onCreated={onChanged} />
+      ) : null}
+    </>
   );
 }

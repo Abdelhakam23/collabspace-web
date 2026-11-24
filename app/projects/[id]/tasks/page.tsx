@@ -23,6 +23,17 @@ function ProjectTasksContent() {
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
   const [loaded, setLoaded] = useState(false);
 
+  async function load() {
+    try {
+      const res = await getKanbanBoardForProject(id);
+      setColumns(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setColumns([]);
+    } finally {
+      setLoaded(true);
+    }
+  }
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -42,7 +53,7 @@ function ProjectTasksContent() {
 
   return (
     <ProjectShell projectId={id}>
-      {loaded ? <KanbanBoard columns={columns} /> : null}
+      {loaded ? <KanbanBoard columns={columns} projectId={id} onChanged={load} /> : null}
     </ProjectShell>
   );
 }

@@ -13,15 +13,17 @@ export async function getKanbanBoardForProject(projectId: number | string) {
   return data;
 }
 
+// Only the fields also present in the Create Task overlay frame (141-2397)
+// are required; API-only extras stay optional instead of being invented.
 export interface CreateTaskPayload {
   name: string;
-  description: string;
   project_id: number;
-  team_id: number;
-  assigned_to: number;
-  priority: string;
   status: string;
   due_date: string;
+  description?: string;
+  team_id?: number;
+  assigned_to?: number;
+  priority?: string;
 }
 
 /** POST /api/v1/tasks — Create Task (A5.3) */

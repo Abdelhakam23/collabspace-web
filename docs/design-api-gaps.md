@@ -316,3 +316,27 @@ were 46% pixel estimates.
 - The kanban API statuses map to drawn labels: Pending -> To-do,
   In Progress -> In Progress, In Review -> In Review, Completed -> Completed
   Tasks; unknown future statuses fall back to their raw label on a grey band.
+
+## Create Task overlay (frame 141-2397) — added Nov 24
+
+The Add Task buttons open a modal matching the "Create Task Overlay" frame
+(Fixed 720, Hug content, radius 16, 24px padding, 32px gaps) and post to A5.3.
+Only fields present in both the frame and the documented request body are
+sent: name, due_date (the frame's End Date), status (the status of the column
+whose button was clicked, sent verbatim as returned by A5.2), project_id
+(route) and assigned_to.
+
+Intersection decisions:
+
+- Start Date is drawn in the frame but has no task-API field; it renders
+  disabled with an explanatory tooltip rather than collecting data it could
+  never send.
+- The frame's Add Guests allows several guests while A5.3 accepts a single
+  assigned_to; the first added guest is sent and the rest stay visual.
+- priority, description and team_id exist in A5.3 but not in the frame, so
+  they are not invented into the form; the backend's own response decides.
+- Add Task Files uploads each chosen file after creation via A7.3.
+- Field chrome (notched labels, 56px inputs, dashed dropzone) reuses the New
+  Project overlay's measurements, which were read from the same design file.
+- After a successful create the kanban board refetches (A5.2) instead of
+  trusting the local state.
