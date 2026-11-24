@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { ApiError, apiClient } from "@/lib/api-client";
 import type { ApiEnvelope, AuthPayload } from "@/lib/types";
 
 export interface RegisterPayload {
@@ -80,4 +80,13 @@ export async function socialAuthCallback(payload: SocialAuthCallbackPayload) {
 export async function logout() {
   const { data } = await apiClient.post<ApiEnvelope<null>>(`/api/v1/auth/logout`, {});
   return data;
+}
+
+/** Normalize a failed auth request into a form message plus per-field errors. */
+export function authError(err: unknown): { message: string | null; fields: Record<string, string[]> } {
+  if (err instanceof ApiError) {
+    const fields = err.fields ?? {};
+    return { message: Object.keys(fields).length > 0 ? null : err.message, fields };
+  }
+  return { message: "Something went wrong. Please try again.", fields: {} };
 }

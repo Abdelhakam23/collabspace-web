@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 
 /**
  * Page chrome shared by the auth screens: top bar + centered card.
@@ -19,9 +20,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
           title="English"
         >
           English
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="m6 9 6 6 6-6" />
-          </svg>
+          <ChevronDown size={14} />
         </button>
       </header>
       <main className="flex items-start justify-center px-4 pb-16 pt-4 sm:pt-8">
