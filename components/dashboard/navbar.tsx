@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
+import { logout } from "@/lib/api/auth";
+import { clearStoredToken } from "@/lib/api-client";
 
 const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Reports"];
 const M = "font-[family-name:var(--font-rubik)]";
@@ -8,6 +13,38 @@ const M = "font-[family-name:var(--font-rubik)]";
 const ROUTES: Record<string, string> = { Dashboard: "/dashboard", Projects: "/projects", Tasks: "/tasks", Chats: "/chats", Meetings: "/meetings", Reports: "/reports" };
 
 export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { userName: string; userRole?: string; active?: string }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [pending, setPending] = useState(false);
+  const menuRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onPointerDown(e: PointerEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
+
+  async function handleLogout() {
+    if (pending) return;
+    setPending(true);
+    try {
+      await logout();
+    } catch {
+      // The local session is cleared regardless of the server response.
+    }
+    clearStoredToken();
+    window.location.href = "/login";
+  }
+
   return (
     <header className="bg-white">
       <div className="flex min-h-[72px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2 sm:px-8 lg:h-[72px] lg:px-16 lg:py-0">
@@ -55,13 +92,32 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
           </label>
           <span className="flex items-center gap-5">
             <NotificationBell />
-                        <Link href="/profile" title="Open your profile" className="flex items-center gap-2">
-              <span className={`${M} text-right text-xs leading-tight`}>
-                <span className="block font-medium text-[#000712]">{userName}</span>
-                {userRole ? <span className="block font-normal text-[#718096]">{userRole}</span> : null}
-              </span>
-              <span className="h-10 w-10 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
-            </Link>
+            <span className="relative" ref={menuRef}>
+              <button
+                type="button"
+                onClick={() => setMenuOpen((open) => !open)}
+                title="Account menu"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                className="flex items-center gap-2"
+              >
+                <span className={`${M} text-right text-xs leading-tight`}>
+                  <span className="block font-medium text-[#000712]">{userName}</span>
+                  {userRole ? <span className="block font-normal text-[#718096]">{userRole}</span> : null}
+                </span>
+                <span className="h-10 w-10 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
+              </button>
+              {menuOpen ? (
+                <span role="menu" aria-label="Account" className="absolute right-0 top-full z-50 mt-2 flex w-40 flex-col overflow-hidden rounded-[12px] border border-[#E2E8F0] bg-white py-1 shadow-lg">
+                  <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)} className={`${M} px-4 py-2.5 text-left text-xs font-normal text-[#000712] hover:bg-[#F6F8FA]`}>
+                    Profile
+                  </Link>
+                  <button type="button" role="menuitem" onClick={handleLogout} disabled={pending} className={`${M} px-4 py-2.5 text-left text-xs font-normal text-[#af2622] hover:bg-[#F6F8FA] disabled:opacity-60`}>
+                    {pending ? "Logging out..." : "Log out"}
+                  </button>
+                </span>
+              ) : null}
+            </span>
           </span>
         </div>
       </div>
