@@ -8,11 +8,11 @@ export async function getProfile() {
 }
 
 export interface UpdateProfileWithAvatarPayload {
-  avatar: File;
-  job_title: string;
-  years_of_experience: string;
-  phone: string;
-  name: string;
+  avatar?: File;
+  job_title?: string;
+  years_of_experience?: string;
+  phone?: string;
+  name?: string;
 }
 
 /** POST /api/v1/auth/profile — Update Profile with Avatar (form-data) (A2.2) */

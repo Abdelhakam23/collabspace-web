@@ -345,3 +345,35 @@ Limitations:
 
 Estimated: stat title/value/delta text styles, card padding, chart axis
 styling (drawn axis labels are placeholder junk in the source).
+
+## Profile (/profile, /profile/settings)
+
+Source: "Profile/overview" (node 214-8454), "Profile / tasks" (214-8743),
+"Profile / files" (214-8536) and "Profile/Settomgs"; all 1440x1024,
+#F6F8FA.
+
+Implemented:
+
+- Shared header card (drawn 1313x92 hug, 13px radius, 20px gap): avatar
+  with the camera badge linking to /profile/settings, name, job title (or
+  first role), join date from created_at (omitted when the payload carries
+  no valid date), Completed Tasks and Hours Worked stats from A11.4 via the
+  fail-closed extractor ("Not available" when absent or ambiguous), and the
+  Overview / Tasks / Files tabs.
+- Overview: the About section (user.about). The drawn Recent Activities
+  section is omitted: the API has no activity-feed endpoint.
+- Tasks: To do / Done columns from A2.5 (status !== Completed vs
+  Completed). The drawn per-row progress bars are omitted: tasks carry no
+  progress field. Done rows keep the drawn check marker.
+- Files: three-column card grid from A2.6 (name, uploader, size, relative
+  time, download link to the file URL).
+- Settings: avatar picker (A2.2 avatar), Full Name, Phone Number, Job
+  Title and Years Of Experience wired to A2.2 with double-submit guard,
+  success and error states. Email Address, Availability Status and Current
+  Team / Project are disabled: A2.2 has no fields for them. No password
+  form is drawn, so A2.4 (change password) is not wired. Avatar removal
+  (A2.3) has no drawn control and is omitted.
+
+Estimated: tab text styles, stat card text, section label styles, field
+styles, file card icon treatment. The navbar keeps its drawn state on
+profile screens (the source draws the Reports pill active there).
