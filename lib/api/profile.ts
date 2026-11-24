@@ -24,7 +24,9 @@ export async function updateProfileWithAvatar(payload: UpdateProfileWithAvatarPa
   const form = new FormData();
   Object.entries(payload).forEach(([k, v]) => { if (v !== undefined && v !== null) form.append(k, v as string | Blob); });
   const { data } = await apiClient.post<ApiEnvelope<{ user: User }>>(`/api/v1/auth/profile`, form, { headers: { "Content-Type": "multipart/form-data" } });
-  return data;
+  // The update endpoint returns the user object directly in `data`, unlike GET /auth/me which nests it under `data.user`.
+  const user = data.data?.user ?? (data.data as unknown as User);
+  return { ...data, data: { user } };
 }
 
 export async function removeAvatar() {

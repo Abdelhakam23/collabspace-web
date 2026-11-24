@@ -78,7 +78,7 @@ export default function ProfileSettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
-      <DashboardNavbar userName={me?.name ?? ""} userRole={me?.roles?.[0]} active="Reports" />
+      <DashboardNavbar userName={me?.name ?? ""} userRole={me?.roles?.[0]} active="" />
       <main className="flex flex-col items-start gap-6 px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[44px]">
         {me === null ? (
           <p className={`${SANS} py-8 text-sm text-[#606C80]`}>Loading...</p>
