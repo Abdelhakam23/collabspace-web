@@ -55,9 +55,9 @@ it, not yet implemented; EXCLUDED = one source missing, reason given.
   zero results).
 - Column actions menu: EXCLUDED — no column-level endpoint.
 
-## Meetings (design frames + A6.1-A6.10): page + scheduling DONE (one unresolved limitation); room TODO
+## Meetings (design frames + A6.1-A6.10): page + scheduling + room DONE (two unresolved limitations)
 Hi-fi frames: Meetings (screen 114-2597, 1440x1024, #F6F8FA),
-Meetings / Join Meeting (274-12876, 720x502), Add Meeting overlay
+Meetings / Join Meeting (114-3107, 1440x1024, #F6F8FA), Add Meeting overlay
 (139-2808, 720xHug595 r16 p24 gap32), Duration overlay (139-1583,
 210x164 r16 p16 white: Today / This Week / This Month / Last Three
 Month / This Year). Items like "Up coming meetings", "Create
@@ -120,10 +120,45 @@ DONE (/meetings, node-read measurements):
   against A12.1 like the Create Task overlay. Fixture-tested against a
   stubbed POST (no live mutation authority).
 
-TODO: Meetings / join Meeting room (274-12876). In intersection: A6.3
-details + A6.7 summary (its AI Summary tab); the drawn video player
-has no API and Note/Comments have no endpoints. AI summary work
-(A6.6-A6.9) depends on what the summary surface offers.
+DONE (meetings/[id] room, canonical node 114-3107 on UI Design,
+1440x1024, #F6F8FA; copies 274-12876 (720x502 miniature) and
+75-2482 (UX page) measured for geometry, canonical wins conflicts):
+- Breadcrumb "Meetings > {title}" links back to /meetings; separator
+  and muted styling are estimated (text style panel cut off before
+  the color section was read).
+- Title Inter 600 31px lh150% #000 (Team C Text/H4, same pattern as
+  the other page H1s).
+- Meta row (gap 16): project name resolved through A4.3 overview
+  (the only supported project_id -> name path; omitted if the fetch
+  fails), attendee initials avatars (5 + overflow), date and
+  start-end time from A6.3.
+- Video area: drawn 752x323 r28 #D9D9D9 with a centered play glyph
+  (flowbite:play-solid 64x64; brand-blue fill estimated from the
+  design screenshot). Rendered as an inert placeholder with no
+  controls: the API has no call/embed capability, so nothing here
+  implies a working video call.
+- Tabs: AI Summary active (white tab, r tl8/tr7, p10), Note and
+  Comments drawn but endpoint-less, so they render disabled with the
+  reason on hover. Tab text style/color estimated (Inter 500 14px).
+- AI card (751 wide, r20 tl0, p20/16/16/16 gap24, #F0F0F0): "AI
+  Generate Summary" Rubik 500 24px, "Key Points" Rubik 500 20px,
+  bullets Inter 400 16px. A6.7 returns one content string, so lines
+  written as "- " bullets render under Key Points and anything else
+  renders as paragraphs; no content is invented. Line heights
+  normalized (native cap-trim values clip real text).
+- OMITTED: the drawn "Meeting Transcripts" side panel, its search
+  and language menu. The API has no transcript read endpoint (A6.6
+  only accepts a transcript as generation input), so there is no
+  honest content for it.
+- MeetingCard Join now always navigates to the room (the card's
+  drawn on-click destination); meeting_link stays a scheduling-only
+  field with no drawn read control, so the earlier external-link
+  behavior was removed.
+- Fixture-verified: room render and grid -> Join -> room navigation
+  (stubbed A6.1/A6.3/A6.7, zero live mutations).
+
+AI summary work (A6.6-A6.9) depends on what the summary surface
+offers.
 
 ## Chats (design frames + A8.1-A8.7): TODO
 Hi-fi frames: Chats (screen; node id pending). "Project Chat", "Search
@@ -215,7 +250,8 @@ Known ids: Ask AI 225-9992 (1440x1024, vertical, gap 40, fill #F8FAFC),
 Ask Ai/ chat 229-5948, Sign in 225-9362, Dashboard 285-12895,
 Tasks Page 107-11473, All Projects 114-1915, project tabs
 181-1418/181-1982/181-2367, Create Task Overlay 141-2397,
-Meetings / join Meeting 274-12876, Notification overlay 209-6425,
+Meetings / join Meeting 114-3107 (canonical; 274-12876 miniature
+superseded), Notification overlay 209-6425,
 Add Meeting overlay 139-2808, Duration overlay 139-1583,
 Teams overlay 139-1513, Language overlay 139-2996,
 Search Bar overlay 225-10323, project picker 139-1571,

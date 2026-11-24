@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { initials } from "@/lib/format";
 import type { Meeting } from "@/lib/types";
 
@@ -57,9 +58,9 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
   const attendees = meeting.attendees ?? [];
   const shown = attendees.slice(0, 2);
   const extra = attendees.length - shown.length;
-  // A6.1 list items are not documented field by field; the schedule payload
-  // (A6.2) includes meeting_link, so tolerate it on list items when present.
-  const link = (meeting as unknown as { meeting_link?: string | null }).meeting_link;
+  // The card's drawn on-click goes to the meeting room (114-3107), so Join
+  // always navigates there. meeting_link stays a scheduling-field value
+  // (A6.2); the design draws no control that opens it.
   return (
     <div className="flex h-[105px] w-full flex-col rounded-2xl border border-[#F3F4F6] bg-white p-3">
       <div className="flex flex-col gap-2">
@@ -83,31 +84,15 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
             </span>
           ) : null}
         </span>
-        {link ? (
-          <a
-            href={link}
-            target="_blank"
-            rel="noreferrer"
-            className={`${SANS} ml-auto flex items-center gap-1 rounded-2xl text-xs font-normal leading-4 text-[#383838]`}
-          >
-            Join
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-          </a>
-        ) : (
-          <button
-            type="button"
-            disabled
-            title="The meetings list does not include a meeting link"
-            className={`${SANS} ml-auto flex cursor-not-allowed items-center gap-1 rounded-2xl text-xs font-normal leading-4 text-[#383838] opacity-40`}
-          >
-            Join
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-          </button>
-        )}
+        <Link
+          href={`/meetings/${meeting.id}`}
+          className={`${SANS} ml-auto flex items-center gap-1 rounded-2xl text-xs font-normal leading-4 text-[#383838]`}
+        >
+          Join
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </Link>
       </div>
     </div>
   );
