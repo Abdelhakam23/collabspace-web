@@ -22,7 +22,7 @@ function initials(name: string): string {
 
 export function ChatsSidebar({ channels, activeId }: { channels: ChannelPreview[]; activeId?: number }) {
   return (
-    <aside className="flex w-full max-w-[415px] shrink-0 flex-col gap-6 self-start rounded-2xl bg-white p-4">
+    <aside className={`${activeId !== undefined ? "hidden md:flex" : "flex"} w-full max-w-[415px] shrink-0 flex-col gap-6 self-start rounded-2xl bg-white p-4`}>
       <div className="flex h-12 items-center justify-between">
         <h2 className={`${SANS} text-[49px] font-semibold leading-[150%] text-[#222222]`}>Chats</h2>
         <button
