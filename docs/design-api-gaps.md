@@ -332,11 +332,17 @@ Intersection decisions:
 - Start Date is drawn in the frame but has no task-API field; it renders
   disabled with an explanatory tooltip rather than collecting data it could
   never send.
-- The frame's Add Guests allows several guests while A5.3 accepts a single
-  assigned_to; the first added guest is sent and the rest stay visual.
+- The frame draws several guest chips while A5.3 accepts a single
+  assigned_to, so the picker stops at one assignee, explains the limit in
+  the UI ("One assignee per task") and the chip can be removed to pick
+  someone else; extra guests are never silently dropped.
 - priority, description and team_id exist in A5.3 but not in the frame, so
   they are not invented into the form; the backend's own response decides.
-- Add Task Files uploads each chosen file after creation via A7.3.
+- Add Task Files uploads each chosen file after creation via A7.3. A failed
+  upload after a successful create surfaces as a partial success ("Task
+  created, but N file(s) failed to upload") with the submit blocked, so a
+  retry can never create a duplicate task; a ref guard also stops two
+  submits fired in the same render batch.
 - Field chrome (notched labels, 56px inputs, dashed dropzone) reuses the New
   Project overlay's measurements, which were read from the same design file.
 - After a successful create the kanban board refetches (A5.2) instead of

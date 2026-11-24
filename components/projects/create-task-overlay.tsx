@@ -12,12 +12,17 @@ import type { User } from "@/lib/types";
  * 720px, radius 16, 24px padding, 32px gaps, white) and posting to A5.3.
  * Only fields present in BOTH the frame and the documented request body are
  * sent: name, due_date (End Date), status (the column the button lives in),
- * project_id (route) and assigned_to (first added guest - the API accepts a
- * single assignee while the frame allows several; documented in
- * docs/design-api-gaps.md). The frame's Start Date has no task-API field and
- * renders disabled, and priority/description/team_id exist only in the API,
- * so they are not invented into the form. Files upload after creation via
- * A7.3. Field chrome reuses the New Project overlay's measurements.
+ * project_id (route) and assigned_to.
+ *
+ * The frame draws several guest chips while A5.3 accepts a single
+ * assigned_to, so the form takes one assignee, says so in the UI before
+ * submission, and never silently drops extra guests. Create-success with an
+ * upload-failure is surfaced as partial success with resubmission blocked,
+ * so a retry cannot create a duplicate task. The frame's Start Date has no
+ * task-API field and renders disabled, and priority/description/team_id
+ * exist only in the API, so they are not invented into the form. Files
+ * upload after creation via A7.3. Field chrome reuses the New Project
+ * overlay's measurements.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
@@ -43,7 +48,13 @@ export function CreateTaskOverlay({
   const [files, setFiles] = useState<File[]>([]);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Set once the task exists: the form never submits twice, and a failed
+  // file upload after a successful create becomes a visible partial success.
+  const [created, setCreated] = useState(false);
+  const [uploadFailures, setUploadFailures] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
+  // Ref guard: state alone cannot stop two submits in the same render batch.
+  const submitting = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,6 +74,8 @@ export function CreateTaskOverlay({
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submitting.current || created) return;
+    submitting.current = true;
     setPending(true);
     setError(null);
     try {
@@ -73,13 +86,25 @@ export function CreateTaskOverlay({
         due_date: dueDate,
         ...(guests[0] ? { assigned_to: guests[0].id } : {}),
       });
-      const created = (res.data as { task?: { id?: number } }).task;
-      for (const f of files) {
-        if (created?.id) await uploadFileToTask({ file: f, task_id: String(created.id) });
-      }
+      setCreated(true);
       onCreated();
-      onClose();
+      const createdTask = (res.data as { task?: { id?: number } }).task;
+      let failed = 0;
+      for (const f of files) {
+        if (!createdTask?.id) break;
+        try {
+          await uploadFileToTask({ file: f, task_id: String(createdTask.id) });
+        } catch {
+          failed += 1;
+        }
+      }
+      if (failed) {
+        setUploadFailures(failed);
+      } else {
+        onClose();
+      }
     } catch {
+      submitting.current = false;
       setError("Could not create the task. Please try again.");
     } finally {
       setPending(false);
@@ -142,7 +167,14 @@ export function CreateTaskOverlay({
           <div>
             <div className="relative">
               <span className={fieldLabel}>Add Guests</span>
-              <input value={guess} onChange={(e) => setGuess(e.target.value)} placeholder="@Anas Mohamed" className={`${fieldBox} pr-24`} list="create-task-users" />
+              <input
+                value={guess}
+                onChange={(e) => setGuess(e.target.value)}
+                placeholder="@Anas Mohamed"
+                disabled={guests.length > 0}
+                className={`${fieldBox} pr-24 disabled:cursor-not-allowed disabled:opacity-60`}
+                list="create-task-users"
+              />
               <datalist id="create-task-users">
                 {matches.map((u) => (
                   <option key={u.id} value={u.name} />
@@ -150,14 +182,15 @@ export function CreateTaskOverlay({
               </datalist>
               <button
                 type="button"
+                disabled={guests.length > 0}
                 onClick={() => {
                   const u = users.find((x) => x.name.toLowerCase() === guess.trim().toLowerCase());
                   if (u) {
-                    setGuests((m) => [...m, u]);
+                    setGuests([u]);
                     setGuess("");
                   }
                 }}
-                className="absolute right-4 top-1/2 flex h-[30px] w-[113px] -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-[#27272B] text-sm font-medium text-white"
+                className="absolute right-4 top-1/2 flex h-[30px] w-[113px] -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-[#27272B] text-sm font-medium text-white disabled:opacity-50"
               >
                 Add
                 <svg width="9.33" height="9.33" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
@@ -165,18 +198,30 @@ export function CreateTaskOverlay({
                 </svg>
               </button>
             </div>
+            {/* A5.3 accepts exactly one assigned_to, so the picker stops at
+                one and says why instead of silently dropping extra guests. */}
             {guests.length ? (
-              <div className="mt-4 flex h-10 items-center gap-[12.5px]">
-                {guests.map((m) => (
-                  <span key={m.id} title={m.name} className="flex h-10 w-10 items-center justify-center rounded-full border-[2.5px] border-[#C2C2C2] bg-[#F6F8FA] text-xs text-[#000712]">
-                    {m.avatar_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={m.avatar_url} alt={m.name} className="h-full w-full rounded-full object-cover" />
-                    ) : (
-                      m.name.split(" ").map((p) => p[0]).filter(Boolean).slice(0, 2).join("").toUpperCase()
-                    )}
-                  </span>
-                ))}
+              <div className="mt-4 flex items-center gap-3">
+                <div className="flex h-10 items-center">
+                  {guests.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      title={`Remove ${m.name}`}
+                      aria-label={`Remove ${m.name}`}
+                      onClick={() => setGuests([])}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border-[2.5px] border-[#C2C2C2] bg-[#F6F8FA] text-xs text-[#000712]"
+                    >
+                      {m.avatar_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={m.avatar_url} alt={m.name} className="h-full w-full rounded-full object-cover" />
+                      ) : (
+                        m.name.split(" ").map((p) => p[0]).filter(Boolean).slice(0, 2).join("").toUpperCase()
+                      )}
+                    </button>
+                  ))}
+                </div>
+                <span className={`${SANS} text-xs text-[#718096]`}>One assignee per task</span>
               </div>
             ) : null}
           </div>
@@ -186,7 +231,7 @@ export function CreateTaskOverlay({
             <button
               type="button"
               onClick={() => fileInput.current?.click()}
-              className="flex w-full flex-1 items-center justify-start gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white px-[36px] text-sm text-[#718096]"
+              className="flex w-full flex-1 items-center justify-center gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white px-[36px] text-sm text-[#718096]"
             >
               <Upload size={14} strokeWidth={1.6} />
               {files.length ? files.map((f) => f.name).join(", ") : "Drag and drop files or click to upload"}
@@ -203,13 +248,28 @@ export function CreateTaskOverlay({
 
         {error ? <p className="text-sm text-[#af2622]">{error}</p> : null}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex h-10 w-full items-center justify-center rounded-[32px] bg-[#005AFB] px-5 py-[13px] text-sm font-medium text-white disabled:opacity-60"
-        >
-          {pending ? "Creating..." : "Create Task"}
-        </button>
+        {uploadFailures ? (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-[#af2622]">
+              Task created, but {uploadFailures} file{uploadFailures > 1 ? "s" : ""} failed to upload. You can attach them again from the task later.
+            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-10 w-full items-center justify-center rounded-[32px] bg-[#005AFB] px-5 py-[13px] text-sm font-medium text-white"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <button
+            type="submit"
+            disabled={pending || created}
+            className="flex h-10 w-full items-center justify-center rounded-[32px] bg-[#005AFB] px-5 py-[13px] text-sm font-medium text-white disabled:opacity-60"
+          >
+            {pending ? "Creating..." : "Create Task"}
+          </button>
+        )}
       </form>
     </div>
   );
