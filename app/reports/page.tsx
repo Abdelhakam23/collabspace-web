@@ -105,7 +105,6 @@ export default function ReportsPage() {
   const [taskMetric, setTaskMetric] = useState<LoadState<ReportMetric>>({ status: "loading" });
   const [projectMetric, setProjectMetric] = useState<LoadState<ReportMetric>>({ status: "loading" });
   const [teamMetric, setTeamMetric] = useState<LoadState<ReportMetric>>({ status: "loading" });
-  const [workerMetric, setWorkerMetric] = useState<LoadState<ReportMetric>>({ status: "loading" });
   const [taskSeries, setTaskSeries] = useState<LoadState<ReportPoint[]>>({ status: "loading" });
   const [projectSeries, setProjectSeries] = useState<LoadState<ReportPoint[]>>({ status: "loading" });
   const [workerSeries, setWorkerSeries] = useState<LoadState<ReportPoint[]>>({ status: "loading" });
@@ -124,7 +123,6 @@ export default function ReportsPage() {
       setTaskMetric(metricState(tasks, (p) => extractMetric(p, /completion.*rate|rate/i)));
       setProjectMetric(metricState(projects, (p) => extractMetric(p, /completion.*rate|rate/i)));
       setTeamMetric(metricState(teams, (p) => extractMetric(p, /activ.*rate|rate/i)));
-      setWorkerMetric(metricState(users, (p) => extractMetric(p, /activ.*rate|rate/i)));
       setTaskSeries(metricState(tasks, extractSeries));
       setProjectSeries(metricState(projects, extractSeries));
       setWorkerSeries(metricState(users, extractSeries));

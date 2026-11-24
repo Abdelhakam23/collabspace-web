@@ -329,11 +329,15 @@ Implemented:
 
 Limitations:
 
-- The A11 endpoints document no response fields (api.json lists none), so
-  metrics and series are extracted tolerantly in lib/reports-normalize.ts;
-  the documented risk is that live payloads use other key names, in which
-  case only that file changes. Values are rendered as percentages per the
-  drawn 0-100 scale.
+- INTEGRATION UNVERIFIED: the A11 endpoints document no response fields
+  (api.json lists none) and no authorized live payload read has been
+  possible, so the data semantics of every metric/series binding are
+  unverified, not just the key names. lib/reports-normalize.ts fails
+  closed: a metric binds only on a UNIQUE candidate key, an ambiguous
+  schema renders "Not available", a missing delta never renders as zero,
+  and a chart with more than one candidate series renders its empty
+  state. No guessed metric, series or axis appears as real data. Resolving
+  this debt needs one authorized read of each live A11 payload.
 - The drawn "All Projects" and "Monthly" dropdowns have no documented
   filter parameters and are disabled with reasons.
 - The "Submit a detailed report" form has no POST endpoint; every control
