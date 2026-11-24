@@ -77,8 +77,8 @@ function DayHeader({ date, label }: { date: Date; label: string }) {
   );
 }
 
-export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
-  const today = new Date();
+export function WeekGrid({ meetings, startDate }: { meetings: Meeting[]; startDate?: Date }) {
+  const today = startDate ?? new Date();
   const days = Array.from({ length: 5 }, (_, i) => {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
@@ -102,9 +102,9 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
         {days.map((d, i) => (
           <div
             key={d.toDateString()}
-            className={`flex h-[137px] flex-col items-center gap-0.5 px-3 py-4 ${i < days.length - 1 ? "border-r border-[#F3F4F6]" : ""} ${i === 0 ? "bg-[#E6EFFF]" : ""}`}
+            className={`flex h-[137px] flex-col items-center gap-0.5 px-3 py-4 ${i < days.length - 1 ? "border-r border-[#F3F4F6]" : ""} ${sameDay(d, new Date()) ? "bg-[#E6EFFF]" : ""}`}
           >
-            <DayHeader date={d} label={i === 0 ? "Today" : WEEKDAYS[d.getDay()]} />
+            <DayHeader date={d} label={sameDay(d, new Date()) ? "Today" : WEEKDAYS[d.getDay()]} />
           </div>
         ))}
       </div>
@@ -118,7 +118,7 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
             return (
               <div
                 key={d.toDateString()}
-                className={`flex min-h-[137px] flex-col items-center gap-0.5 px-3 py-4 ${i < days.length - 1 ? "border-r border-[#F3F4F6]" : ""} ${i === 0 ? "bg-[#E6EFFF]" : ""}`}
+                className={`flex min-h-[137px] flex-col items-center gap-0.5 px-3 py-4 ${i < days.length - 1 ? "border-r border-[#F3F4F6]" : ""} ${sameDay(d, new Date()) ? "bg-[#E6EFFF]" : ""}`}
               >
                 {cellMeetings.map(({ meeting }) => (
                   <MeetingCard key={meeting.id} meeting={meeting} />
@@ -130,7 +130,7 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
       ))}
       {hiddenCount > 0 ? (
         <p className={`${SANS} mt-4 text-sm text-[#606C80]`}>
-          {hiddenCount} more upcoming {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the days this screen can show, and there is no way to page to {hiddenCount === 1 ? "it" : "them"} yet.
+          {hiddenCount} more upcoming {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the days this screen can show, use the arrows above to view other days.
         </p>
       ) : null}
     </div>
