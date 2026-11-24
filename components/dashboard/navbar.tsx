@@ -1,18 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
+import { NAV_ITEMS, ROUTES } from "@/constants/navigation";
 import { logout } from "@/lib/api/auth";
 import { clearStoredToken } from "@/lib/api-client";
 
-const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Reports"];
 const M = "font-[family-name:var(--font-rubik)]";
 
-const ROUTES: Record<string, string> = { Dashboard: "/dashboard", Projects: "/projects", Tasks: "/tasks", Chats: "/chats", Meetings: "/meetings", Reports: "/reports" };
-
 export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { userName: string; userRole?: string; active?: string }) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const menuRef = useRef<HTMLSpanElement>(null);
@@ -42,7 +42,7 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
       // The local session is cleared regardless of the server response.
     }
     clearStoredToken();
-    window.location.href = "/login";
+    router.replace("/login");
   }
 
   return (
