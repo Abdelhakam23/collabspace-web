@@ -75,10 +75,11 @@ DONE (/meetings, node-read measurements):
 - This Week control + Duration overlay: only "This Week" is enabled
   (sends the documented time_filter=upcoming); the other four drawn
   options have no documented value and render disabled with a title.
-  The endpoint's scope for time_filter=upcoming is undocumented, so
-  the page keeps the label true by construction: the grid displays
-  exactly the five days the control covers from whatever the endpoint
-  returns. Closed control's border is pixel-estimated as #CBD5E0
+  The endpoint's scope for time_filter=upcoming is undocumented.
+  UNRESOLVED DESIGN-LABEL CONFLICT: the control says "This Week" but
+  the grid shows a rolling five-day range (today + next four), which
+  is not a calendar week and breaks across week boundaries; no drawn
+  or documented control offers a real calendar-week scope. Closed control's border is pixel-estimated as #CBD5E0
   (native control too small to sample cleanly).
 - Week grid (114-2617: 1311 at left 64/top 281): six equal 218.5px
   columns (time column + five days), rows with 1px #F3F4F6 row/cell

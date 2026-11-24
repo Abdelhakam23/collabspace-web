@@ -180,7 +180,7 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
       ))}
       {hiddenCount > 0 ? (
         <p className={`${SANS} mt-4 text-sm text-[#606C80]`}>
-          {hiddenCount} more upcoming {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the days this screen can show; the drawn month navigation has no API support, so there is no way to page to {hiddenCount === 1 ? "it" : "them"} yet.
+          {hiddenCount} more upcoming {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the days this screen can show, and there is no way to page to {hiddenCount === 1 ? "it" : "them"} yet.
         </p>
       ) : null}
     </div>
