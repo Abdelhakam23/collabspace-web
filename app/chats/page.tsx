@@ -24,7 +24,7 @@ export default function ChatsPage() {
       <DashboardNavbar userName={me?.name ?? ""} userRole={me?.roles?.[0]} active="Chats" />
       <main className="flex items-start gap-6 px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[44px]">
         <ChatsSidebar channels={channels ?? []} />
-        <section className="flex min-h-[400px] flex-1 items-center justify-center">
+        <section className="hidden min-h-[400px] min-w-0 flex-1 items-center justify-center md:flex">
           <p className={`${SANS} text-[24px] font-semibold text-[#222222]`}>Select Chat</p>
         </section>
       </main>

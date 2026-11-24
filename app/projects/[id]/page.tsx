@@ -64,8 +64,8 @@ function ProjectDetailContent() {
 
   return (
     <ProjectShell projectId={id}>
-        <div className="mt-8 grid gap-8 lg:grid-cols-[864px_416px] lg:justify-between">
-          <div className="flex flex-col gap-8">
+        <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[864px_416px] lg:justify-between">
+          <div className="flex min-w-0 flex-col gap-8">
             <Card title="Description" gap={20}>
               <p className={`${SANS} -my-[6px] text-[16px] leading-6 text-[#525256]`}>
                 {overview?.description ?? ""}
@@ -107,7 +107,7 @@ function ProjectDetailContent() {
             </Card>
 
             <Card title="Product Details" gap={24}>
-              <div className="grid grid-cols-3 gap-x-6 gap-y-6">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3">
                                 <span aria-hidden="true" />
                 <div className="flex items-center gap-3">
                   <DetailIcon bg="#F2EAF2" color="#BF75A9"><Calendar className="h-6 w-6" strokeWidth={1.6} /></DetailIcon>
@@ -153,7 +153,7 @@ function ProjectDetailContent() {
                 </div>
               </div>
                                           <div className="flex justify-center">
-                <div className="flex w-fit items-start gap-[43px]">
+                <div className="flex w-fit flex-wrap items-start gap-x-8 gap-y-4 sm:gap-[43px]">
                 {STATUS_LEGEND.map((item, i) => (
                   <div key={item.label} className="flex flex-col items-center gap-4">
                     <span className={`${SANS} text-[16px] font-medium leading-[12px] text-black`}>
