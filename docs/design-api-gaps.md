@@ -61,8 +61,21 @@ card titles and KPI labels H6 = Inter Medium 20px (#191919 / #000000); task
 titles small Body r = Inter Regular 14px #252525; meeting titles Inter
 Regular 14px #000000; fractions and meta Inter Medium 12px #525256; View All
 Small Caption = Inter Regular 12px #005AFB; chart axis = Inter Regular 12px
-#718096. Unverified native reads (pill labels, member names, month labels,
-file rows, Ask AI hint) follow the same scale pending deeper selection.
+#718096. Deeper node reads (Nov 24, second pass): Recent Files file name
+"small Body r" = Inter Regular 14px #27272B (secodary-500), cap-height trim,
+line height 150%; file meta ("By ... - time") = Inter REGULAR 12px #525256,
+cap-height trim, line height 150% (an earlier 12 Medium note was wrong);
+priority pill label = Inter Medium 12px, line height 16px, no cap trim, High
+= Support Red Normal #DB302A (pill container Indicator, Hug 39x24); Teams
+member task count = Inter Regular 12px, line height 16px, #525256; member
+name = 12px line-height-16 #525256 (row Hug 16 + group colors; weight
+unread, Medium kept); chart month labels = style "12px/Regular", Inter
+Regular 12px, line height 18px, #718096 (Text Color/600-Body); the frame
+draws six month labels (Month row 643px, six 90px frames) while the chart
+plots twelve monthly points - the dashboard now labels every second point to
+match the source tick cadence, and the y axis uses six divisions (native
+25k/20k/15k/10k/5k/0k). Still unread natively: pill background tints
+(medium/low sampled), Ask AI hint text.
 
 ## Native dashboard geometry (read from Figma properties, Nov 24)
 Frame 1440x1024, BG #F6F8FA, page padding 64px, card gap 24px. Cards: white
@@ -133,8 +146,9 @@ position is an inference from A4.1's observed shape and has been verified
 only against stubbed fixture responses, not against the live API (live
 calls are on hold). The pending /
 in progress / completed fractions under the gauge and the Project overview
-chart card depend on A4.3/A4.4, whose response shapes are undocumented, so
-both are omitted rather than parsed with guessed keys; the avatar drawn
+chart card depend on A4.3/A4.4, whose response shapes are undocumented in
+the collection but were captured read-only from the live API (Nov 24) and
+are wired from those observed keys; the avatar drawn
 above the Due Date card has no owner/avatar field in the model and is
 omitted. The Due Date track fill presents the elapsed fraction between the
 documented start_date and deadline; the frame draws the track without

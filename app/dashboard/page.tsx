@@ -40,7 +40,7 @@ type DashboardPayload = {
 const M = "font-[family-name:var(--font-sans)]";
 
 const PRIORITY_TONES: Record<string, { text: string; bg: string }> = {
-  high: { text: "#D92D20", bg: "#FEE4E2" },
+  high: { text: "#DB302A", bg: "#FEE4E2" },
   medium: { text: "#B54708", bg: "#FEF0C7" },
   low: { text: "#067647", bg: "#D1FADF" },
 };
@@ -106,15 +106,16 @@ export default function DashboardPage() {
               </span>
             }>
             <div className="flex items-stretch gap-2">
-              <div className="flex h-44 flex-col justify-between py-1 text-right text-xs text-[#718096]" aria-hidden="true">
-                {[yMax, Math.round((yMax * 2) / 3), Math.round(yMax / 3), 0].map((v, i) => (
+              <div className="flex h-44 flex-col justify-between py-1 text-right text-xs leading-[18px] text-[#718096]" aria-hidden="true">
+                {[yMax, Math.round((yMax * 4) / 5), Math.round((yMax * 3) / 5), Math.round((yMax * 2) / 5), Math.round(yMax / 5), 0].map((v, i) => (
                   <span key={i}>{v >= 1000 ? `${Math.round(v / 100) / 10}k` : v}</span>
                 ))}
               </div>
               <div className="min-w-0 flex-1">
                 <AreaChart points={series.length ? series : [0, 0]} maxChart={yMax} />
-                <div className="mt-1 flex justify-between text-xs text-[#718096]">
-                  {chart.map((d) => <span key={d.label}>{d.label.split(" ")[0]}</span>)}
+                <div className="mt-1 flex justify-between text-xs leading-[18px] text-[#718096]">
+                  {/* The frame draws six axis labels; all twelve monthly points are plotted. */}
+                  {chart.map((d, i) => <span key={d.label}>{i % 2 === 0 ? d.label.split(" ")[0] : ""}</span>)}
                 </div>
               </div>
             </div>
@@ -152,8 +153,8 @@ export default function DashboardPage() {
                       <File size={14} />
                     </span>
                     <span className="min-w-0">
-                      <p className={`${M} truncate text-sm font-medium text-[#000712]`}>{f.name}</p>
-                      <p className={`${M} text-xs text-[#718096]`}>By {[f.owner, f.updated_at].filter(Boolean).join(" • ")}</p>
+                      <p className={`${M} truncate text-sm font-normal text-[#27272B]`}>{f.name}</p>
+                      <p className={`${M} text-xs text-[#525256]`}>By {[f.owner, f.updated_at].filter(Boolean).join(" • ")}</p>
                     </span>
                   </span>
                   {/* Download affordance per the frame; file download endpoints are
@@ -176,7 +177,7 @@ export default function DashboardPage() {
                     <div className="flex items-start justify-between gap-2">
                       <p className={`${M} text-sm font-normal text-[#252525]`}>{task.title}</p>
                       {task.priority && tone ? (
-                        <span className={`${M} shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold`} style={{ color: tone.text, backgroundColor: tone.bg }}>{task.priority}</span>
+                        <span className={`${M} shrink-0 rounded-md px-2 py-1 text-xs font-medium leading-4`} style={{ color: tone.text, backgroundColor: tone.bg }}>{task.priority}</span>
                       ) : null}
                     </div>
                     <div className={`${M} mt-1 flex items-center justify-between text-xs text-[#718096]`}>
@@ -207,10 +208,10 @@ export default function DashboardPage() {
                 <li key={team.id} className="flex items-center gap-3">
                   <span className="h-8 w-8 shrink-0 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
                   <span className="w-full min-w-0">
-                    <span className={`${M} block truncate text-sm font-medium text-[#000712]`}>{team.name}</span>
+                    <span className={`${M} block truncate text-xs font-medium leading-4 text-[#525256]`}>{team.name}</span>
                     <Bar ratio={(team.tasks_count ?? 0) / maxTeamTasks} color="#2692FF" className="mt-1.5" />
                   </span>
-                  <span className={`${M} shrink-0 text-xs text-[#718096]`}>{team.tasks_count ?? 0}/{team.members_count ?? 0}</span>
+                  <span className={`${M} shrink-0 text-xs leading-4 text-[#525256]`}>{team.tasks_count ?? 0}/{team.members_count ?? 0}</span>
                 </li>
               ))}
               {data && teams.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No teams yet.</li> : null}
