@@ -420,3 +420,13 @@ gap 32 like the project tab):
   progress, comments, attachment or reviewer fields in A5.2); assignee
   (initials avatar) and due date are rendered because A5.2 provides them.
 - Column "..." actions stay inert: no column-level endpoint exists.
+
+## Sign-in card item heights (frame 225-9362)
+
+Item heights measured from the deselected frame capture at 46% (each value
+±2px): heading block 48 (31px title + 16px subtitle, both cap-trimmed, 15px
+internal gap), Google button 50, OR row ~21, Email/Password fields 54 each
+(notched label, h-[54px]), Remember/Forgot row 36, Log In button 40. The
+"Google sign-in isn't available yet" note adds an intentional 20px the
+native card does not have. Card total: native 627; implementation 644 =
+627 + 20 note - 3px of cap-height rounding in the trimmed boxes.
