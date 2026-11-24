@@ -9,14 +9,6 @@ import { askAi } from "@/lib/api/ai";
 import { getProfile } from "@/lib/api/profile";
 import type { User } from "@/lib/types";
 
-/**
- * Ask AI page: the empty state (frame 225-9992) before the first message,
- * the chat surface (frame 229-5948) once the conversation starts. Sends
- * through A10.2 POST /api/v1/ai/ask ({ query }); the response field is
- * parsed tolerantly because the collection does not document the reply
- * body (docs/design-api-gaps.md). No AI error surface exists in the
- * design, so failures restore the draft and show one plain note.
- */
 export default function AskAiPage() {
   const [me, setMe] = useState<User | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -65,8 +57,7 @@ export default function AskAiPage() {
             </div>
           </div>
         ) : (
-          /* Native rhythm: heading at top, hero centered in the free space,
-             input card near the bottom (frame 225-9992 positions). */
+
           <div className="flex min-h-[calc(100vh-220px)] flex-col pb-16">
             <div className="grid flex-1 place-items-center">
               <EmptyHero />

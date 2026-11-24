@@ -17,27 +17,6 @@ import type { User } from "@/lib/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
-/**
- * "Reports" frame (node 104-2653, 1440x1024, page background #F6F8FA):
- * navbar with the Reports pill active, three stat cards, two chart cards,
- * a worker-activity chart card, and the "Submit a detailed report" form.
- *
- * Scope notes:
- * - The A11 endpoints document no response fields in the collection;
- *   their shapes were grounded by authorized read-only live captures
- *   (2026-11-23 test account, re-verified 2026-11-24 under the granted
- *   admin read-only account with non-zero data). lib/reports-normalize.ts
- *   binds exact observed paths only; anything outside the observed shape
- *   renders as "Not available", never as zero. The drawn percentages
- *   imply a 0-100 scale.
- * - The drawn "All Projects" and "Monthly" dropdowns have no documented
- *   filter parameters, so they are disabled with reasons.
- * - The "Submit a detailed report" form has no POST endpoint in the API, so
- *   every control in it is disabled with a reason.
- * - Card geometry and chart colors are drawn; stat/label text styles are
- *   estimated (unmeasured).
- */
-
 type LoadState<T> = { status: "loading" } | { status: "error"; forbidden: boolean } | { status: "ready"; value: T | null };
 
 function metricState<T>(settled: PromiseSettledResult<unknown>, pick: (payload: unknown) => T | null): LoadState<T> {
@@ -145,10 +124,7 @@ export default function ReportsPage() {
           <StatCard title="Teams Activity Rate" state={teamMetric} />
         </div>
         <div className="flex max-w-[1311px] gap-6">
-          {/* The observed payloads carry only monthly task/project counts;
-              counts do not establish the drawn chart meanings, so the charts
-              stay in their honest empty state (see lib/reports-normalize.ts). */}
-          <ChartCard title="Task Completion Time vs Deadline">
+                    <ChartCard title="Task Completion Time vs Deadline">
             <ReportBarChart points={null} />
           </ChartCard>
           <ChartCard title="Projects Progress" trailing={<DisabledSelect label="All Projects" reason={noFilterReason} />}>

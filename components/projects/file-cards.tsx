@@ -3,26 +3,11 @@ import { Download, FileIcon, FileText, Image as ImageIcon } from "lucide-react";
 import { saveFileDownload } from "@/lib/api/files";
 import type { FileAttachment } from "@/lib/types";
 
-/**
- * File cards of the "All Projects / Alpha / Files" frame (node 181-2367),
- * wired to A7.1 (GET /files?project_id=). Geometry and type are read from
- * the native nodes: 90px white cards (radius 16, 1px #AEAEB2 border, 16px
- * padding, 14px gaps) with the red PDF artwork (~29x37, #F44336), the name
- * in Inter Medium 16px, the uploader in Inter Regular 13px and the size/time
- * meta in Inter Regular 12px, all #000000. The 18px black download icon is
- * wired to A7.5 (a read) and saves the blob. Recent Files cards are 404px
- * wide with 50px
- * gaps; the All Files grid uses 346px cards with 32px gaps.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 
 function fileIcon(file: FileAttachment) {
   const name = (file.original_name || file.name || "").toLowerCase();
   const mime = (file.mime_type || "").toLowerCase();
-  // PDFs carry the native document artwork recovered from the design file
-  // (public/assets/pdf-file.svg); other types keep a lucide stand-in since
-  // the design only ever draws PDFs.
   if (mime.includes("pdf") || name.endsWith(".pdf")) return { pdf: true as const, color: "#F44336", Icon: FileText };
   if (mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg)$/.test(name)) return { pdf: false as const, color: "#0DB0A8", Icon: ImageIcon };
   return { pdf: false as const, color: "#525256", Icon: FileIcon };
@@ -49,7 +34,6 @@ export function FileCard({ file }: { file: FileAttachment }) {
   const { color, Icon, pdf } = fileIcon(file);
   const [downloading, setDownloading] = useState(false);
   const meta = [fileSize(file.size), timeAgo(file.created_at)].filter(Boolean).join(" • ");
-  // A7.5 is a read; the download affordance is wired and saves the blob.
   async function onDownload() {
     setDownloading(true);
     try {

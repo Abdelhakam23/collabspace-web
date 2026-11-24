@@ -10,15 +10,6 @@ import { getProfile } from "@/lib/api/profile";
 import { useKanbanBoard } from "@/lib/use-kanban-board";
 import type { KanbanColumn, Project, User } from "@/lib/types";
 
-/**
- * Global "Tasks Page" frame (node 107-11473): navbar, the toolbar (search,
- * project selector, My Task menu, Create Task) and the selected project's
- * kanban board (A5.2). Search and My Tasks filter the loaded board
- * client-side; A5.2 returns the full board for the project with no
- * pagination envelope, so the loaded board is the whole result set
- * (docs/design-api-gaps.md).
- */
-
 export default function GlobalTasksPage() {
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [projectId, setProjectId] = useState<number | null>(null);
@@ -92,8 +83,6 @@ export default function GlobalTasksPage() {
         ) : null}
       </main>
       {creating && projectId != null ? (
-        // No column context here, so the overlay posts with the default
-        // To-do status; the board refetches after creation.
         <CreateTaskOverlay projectId={String(projectId)} status="Pending" onClose={() => setCreating(false)} onCreated={reload} />
       ) : null}
     </div>

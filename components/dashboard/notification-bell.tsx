@@ -9,15 +9,6 @@ import {
 } from "@/lib/api/notifications";
 import type { AppNotification } from "@/lib/types";
 
-/**
- * Navbar bell + the Notification overlay (frame 209-6425: 311px, radius 16,
- * vertical, padding 16 T/B, gap 20; rows 8/16 padding, gap 8; unread rows
- * filled #E6EFFF). Unread dot from A9.3, list from A9.1, and clicking an
- * unread row marks it read (A9.4) optimistically. The design draws no
- * delete or mark-all control, so A9.5/A9.6 stay unused (docs/screen-coverage.md).
- * Time label follows the design's samples: HH:MM today, "Yesterday", else
- * the date. Row message/time sizes are pixel-estimated from the 100% frame.
- */
 export function NotificationBell() {
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);

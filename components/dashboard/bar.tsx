@@ -1,4 +1,3 @@
-/** Thin progress track used across the dashboard panels. */
 export function Bar({ ratio, color, className = "" }: { ratio: number; color: string; className?: string }) {
   const width = `${Math.min(100, Math.max(0, Math.round(ratio * 100)))}%`;
   return (

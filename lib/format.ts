@@ -1,4 +1,3 @@
-/** Short "Mon D" presentation of an ISO date as drawn in the frames. */
 export function shortDate(value?: string | null) {
   if (!value) return "";
   const d = new Date(value);
@@ -6,7 +5,6 @@ export function shortDate(value?: string | null) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-/** Up to two uppercase initials for an avatar placeholder. */
 export function initials(name: string) {
   return name
     .split(" ")

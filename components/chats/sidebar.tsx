@@ -20,22 +20,6 @@ function initials(name: string): string {
     .join("");
 }
 
-/**
- * Chats sidebar card (drawn sidebar 415x942 at left 65/top 104: white, 16px
- * radius, 16px padding, 24px gaps): the H2 title row with the search icon,
- * the inbox / Project Chats tabs, and the project channel list.
- *
- * Scope notes:
- * - The API has no channel concept, so the drawn channel sub-labels
- *   ("Public Channel", "Frontend Team Channel") are omitted; each project is
- *   one conversation.
- * - The drawn search icon has no message-search parameter in the API, so it
- *   is disabled with a reason.
- * - The drawn "inbox" tab holds direct messages; there is no DM endpoint, so
- *   the tab is disabled with a reason.
- * - Tab text, row text and time styles are estimated (unmeasured in the
- *   source); geometry comes from the drawn frames.
- */
 export function ChatsSidebar({ channels, activeId }: { channels: ChannelPreview[]; activeId?: number }) {
   return (
     <aside className="flex w-full max-w-[415px] shrink-0 flex-col gap-6 self-start rounded-2xl bg-white p-4">

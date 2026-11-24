@@ -2,11 +2,6 @@ import type { FileAttachment, Task, User } from "@/lib/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
-/**
- * Overview tab: the drawn About section fed by the profile. The drawn
- * "Recent Activities" section is omitted: the API has no activity-feed
- * endpoint, and fabricating activity rows would be invented data.
- */
 export function OverviewTab({ user }: { user: User }) {
   return (
     <section className="w-full max-w-[1311px] rounded-[13px] bg-white p-5">
@@ -47,11 +42,6 @@ function TaskCard({ title, count, done, tasks }: { title: string; count: number;
   );
 }
 
-/**
- * Tasks tab (drawn To do / Done columns fed by A2.5). The drawn per-row
- * progress bars are omitted: tasks carry no progress field, so there is no
- * honest value to draw.
- */
 export function TasksTab({ tasks }: { tasks: Task[] | null }) {
   if (tasks === null) {
     return <p className={`${SANS} w-full max-w-[1311px] py-8 text-center text-sm text-[#606C80]`}>Loading tasks...</p>;
@@ -79,7 +69,6 @@ function ago(iso: string): string {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-/** Files tab (drawn three-column file card grid fed by A2.6). */
 export function FilesTab({ files }: { files: FileAttachment[] | null }) {
   if (files === null) {
     return <p className={`${SANS} w-full max-w-[1311px] py-8 text-center text-sm text-[#606C80]`}>Loading files...</p>;

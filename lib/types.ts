@@ -1,4 +1,3 @@
-/** Shared API envelope. Laravel returns { success, message, data }. */
 export interface ApiEnvelope<T> {
   success: boolean;
   message?: string;
@@ -201,8 +200,6 @@ export interface AuditLog {
   created_at: string;
 }
 
-/** A4.3 Get Project Overview - shape observed from the live backend
- *  (sanitized capture in docs/design-api-gaps.md). */
 export interface ProjectOverview {
   id: number;
   name: string;
@@ -244,8 +241,6 @@ export interface ProjectOverview {
   };
 }
 
-/** A4.4 Get Project Teams & Task Progress - shape observed from the live
- *  backend; the envelope's data is the team array itself. */
 export interface ProjectTeamProgress {
   id: number;
   name: string;

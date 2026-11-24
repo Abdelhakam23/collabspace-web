@@ -7,24 +7,6 @@ import { uploadFileToTask } from "@/lib/api/files";
 import { listUsers } from "@/lib/api/users";
 import type { User } from "@/lib/types";
 
-/**
- * Create Task modal, matching the "Create Task Overlay" frame (node 141-2397:
- * 720px, radius 16, 24px padding, 32px gaps, white) and posting to A5.3.
- * Only fields present in BOTH the frame and the documented request body are
- * sent: name, due_date (End Date), status (the column the button lives in),
- * project_id (route) and assigned_to.
- *
- * The frame draws several guest chips while A5.3 accepts a single
- * assigned_to, so the form takes one assignee, says so in the UI before
- * submission, and never silently drops extra guests. Create-success with an
- * upload-failure is surfaced as partial success with resubmission blocked,
- * so a retry cannot create a duplicate task. The frame's Start Date has no
- * task-API field and renders disabled, and priority/description/team_id
- * exist only in the API, so they are not invented into the form. Files
- * upload after creation via A7.3. Field chrome reuses the New Project
- * overlay's measurements.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
 const fieldBox = `${SANS} h-14 w-full rounded-[12px] border border-[#CBD5E0] bg-transparent px-4 py-2 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
@@ -48,12 +30,9 @@ export function CreateTaskOverlay({
   const [files, setFiles] = useState<File[]>([]);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Set once the task exists: the form never submits twice, and a failed
-  // file upload after a successful create becomes a visible partial success.
   const [created, setCreated] = useState(false);
   const [failedFiles, setFailedFiles] = useState<File[]>([]);
   const fileInput = useRef<HTMLInputElement>(null);
-  // Ref guard: state alone cannot stop two submits in the same render batch.
   const submitting = useRef(false);
   const createdTaskId = useRef<number | null>(null);
 
@@ -114,8 +93,6 @@ export function CreateTaskOverlay({
     }
   }
 
-  // Retries only the failed uploads against the already-created task -
-  // never a second POST /tasks.
   async function onRetryUploads() {
     if (submitting.current || !createdTaskId.current) return;
     submitting.current = true;
@@ -142,9 +119,7 @@ export function CreateTaskOverlay({
       >
         <div className="flex items-center justify-between">
           <h2 className="text-[25px] font-medium leading-[24px] text-[#000712]">Create Task</h2>
-          {/* Closing stays blocked while a create or upload is in flight, so
-              reopening can never double-submit a half-finished flow. */}
-          <button type="button" onClick={onClose} disabled={pending} aria-label="Close" className="text-black disabled:opacity-40">
+                    <button type="button" onClick={onClose} disabled={pending} aria-label="Close" className="text-black disabled:opacity-40">
             <svg width="13.15" height="13.15" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
               <path d="m1 1 12 12M13 1 1 13" />
             </svg>
@@ -164,9 +139,7 @@ export function CreateTaskOverlay({
           </label>
 
           <div className="grid gap-[33px] sm:grid-cols-2">
-            {/* The frame draws Start Date, but A5.3 has no start field, so it
-                is marked unavailable instead of collecting data it never sends. */}
-            <label className="relative block" title="Start date is not supported by the documented task API">
+                        <label className="relative block" title="Start date is not supported by the documented task API">
               <input disabled aria-disabled="true" className={`${fieldBox} cursor-not-allowed pr-10 text-transparent opacity-60`} />
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#4A4A4A]">
                 <Calendar size={16} strokeWidth={1.6} />
@@ -223,9 +196,7 @@ export function CreateTaskOverlay({
                 </svg>
               </button>
             </div>
-            {/* A5.3 accepts exactly one assigned_to, so the picker stops at
-                one and says why instead of silently dropping extra guests. */}
-            {guests.length ? (
+                        {guests.length ? (
               <div className="mt-4 flex items-center gap-3">
                 <div className="flex h-10 items-center">
                   {guests.map((m) => (

@@ -21,25 +21,6 @@ function messageTime(iso: string): string {
 
 const DISABLED_ICON = "cursor-not-allowed text-[#000712] opacity-40";
 
-/**
- * Conversation pane (drawn open-chat state, 864px wide): a white header card
- * (16px radius/padding/gap) with the conversation title and the icon cluster,
- * the message list, and the composer (white, 16px radius, 24px/16px padding)
- * with the paperclip and the blue send button.
- *
- * Scope notes:
- * - The header title uses the project name; the drawn channel label
- *   ("Public Channel") has no API counterpart.
- * - Header search, phone, video and menu icons have no API endpoints, so
- *   they are disabled with reasons.
- * - The paperclip uploads through A7.2, then the message sends through A8.2
- *   with file_attachment_id. A picked file shows as a small removable chip
- *   above the input (the source draws no pending-attachment state; this is
- *   the minimal affordance the drawn paperclip needs).
- * - Failure handling: an upload failure keeps the file and text for retry;
- *   a send failure after a successful upload retries the send only, never
- *   re-uploading, so one attachment cannot be stored twice.
- */
 export function Conversation({ project, onSent }: { project: Project; onSent?: (message: Message) => void }) {
   const [messages, setMessages] = useState<Message[] | null>(null);
   const [error, setError] = useState(false);
@@ -53,8 +34,6 @@ export function Conversation({ project, onSent }: { project: Project; onSent?: (
 
   const load = useCallback(
     () =>
-      // Promise callbacks keep the state updates asynchronous (react-hooks
-      // set-state-in-effect): the effect below only kicks off the fetch.
       listProjectMessages(project.id, { per_page: 50 }).then(
         (res) => setMessages([...(res.data.data ?? [])].reverse()),
         () => setError(true),

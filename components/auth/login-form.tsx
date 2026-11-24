@@ -63,10 +63,7 @@ export function LoginForm() {
       />
       <div className="flex h-9 items-center justify-between">
         <RememberMe checked={remember} onChange={setRemember} />
-        {/* The design shows this link, but the file has no recovery screens, so
-            there is no Figma source for where it leads. Rendered inert until a
-            designed target exists - see docs/design-api-gaps.md. */}
-        <span className="text-base text-primary-500" aria-disabled="true">
+                <span className="text-base text-primary-500" aria-disabled="true">
           Forget Password?
         </span>
       </div>

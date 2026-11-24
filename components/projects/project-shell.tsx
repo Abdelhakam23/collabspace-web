@@ -10,13 +10,6 @@ import { getProfile } from "@/lib/api/profile";
 import { shortDate } from "@/lib/format";
 import type { ProjectOverview } from "@/lib/types";
 
-/**
- * Shared chrome of the "All Projects / Alpha" frame family (nodes 181-1158,
- * 181-1418, 181-1982, 181-2367): navbar, breadcrumb, title with completion
- * percentage, the Due Date card and the tab row. Every tab page fetches the
- * same A4.3 overview payload through this shell.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 
 const TABS = [
@@ -55,9 +48,6 @@ export function ProjectShell({ projectId, children }: { projectId: string; child
   const startDate = overview?.due_date_indicator?.start_date;
   const deadline = overview?.due_date_indicator?.deadline;
 
-  // Due Date fill: elapsed fraction between the documented dates, clamped.
-  // The "now" reading is taken once per mount (state initializer), never
-  // during render.
   const [now] = useState(() => Date.now());
   let elapsed = 0;
   if (startDate && deadline) {
@@ -71,11 +61,7 @@ export function ProjectShell({ projectId, children }: { projectId: string; child
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} active="Projects" />
-      {/* Native layout: header block top 104 (navbar 76), left 65, 1311 wide,
-          Hug 71: title column (Fill 955, vertical gap 16) beside the Due Date
-          card (Fixed 324x71, radius 12, border #F3F4F6, padding 12, gap 16).
-          Tabs row top 207, Hug 28, gap 30. */}
-      <main className="px-4 pt-7 sm:px-8 lg:px-16 lg:pt-[32px]">
+            <main className="px-4 pt-7 sm:px-8 lg:px-16 lg:pt-[32px]">
         <div className="flex items-start justify-between gap-8">
           <div className="flex flex-col gap-4">
             <p className={`${SANS} text-sm leading-[16px] text-black/60`}>

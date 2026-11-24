@@ -1,12 +1,5 @@
 import { Sparkle } from "lucide-react";
 
-/**
- * Hero block of the empty Ask AI frame (225-9992): centered stack, gap
- * 28.83px. Badge: white rounded square with a light blue border and the
- * primary sparkle glyph (25x28, 3.2 stroke, #005AFB). "Hi There" uses the
- * design's H4 (Inter 600, 31px, 150%), the subtitle H6 (Inter 500, 20px,
- * #000712). Badge border #D7E3FA is pixel-sampled (docs/design-api-gaps.md).
- */
 export function EmptyHero() {
   return (
     <div className="flex flex-col items-center gap-7">

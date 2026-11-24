@@ -11,12 +11,6 @@ import { initials } from "@/lib/format";
 import { PROJECT_COLORS } from "@/lib/colors";
 import type { Project } from "@/lib/types";
 
-/**
- * All Projects list (frame 114-1915) wired to A4.1. Filter/sort controls
- * are design-only and stay inert; native table geometry and sampled-value
- * disclosures: docs/design-api-gaps.md.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 const RUBIK = "font-[family-name:var(--font-rubik)]";
 
@@ -24,10 +18,6 @@ const STATUS_COLORS: Record<string, string> = { Active: "#FA2B75", Completed: "#
 const PRIORITY_COLORS: Record<string, string> = { High: "#DB302A", Medium: "#E6BA0E" };
 
 function ProjectIcon({ color }: { color: string }) {
-  // The frame's project badge is the "Bag-Suitcase-1" glyph from the public
-  // Streamline Core set (layer name Bag-Suitcase-1--Streamline-Core), drawn
-  // 16x16 centered in a 32px tile tinted with the project's accent color
-  // (docs/design-api-gaps.md palette; the list payload has no color field).
   return (
     <span className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px]" style={{ backgroundColor: `${color}1A`, color }}>
       <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -38,9 +28,6 @@ function ProjectIcon({ color }: { color: string }) {
 }
 
 function FileIcon() {
-  // The frame's files glyph is "mdi-light:file" (layer name mdi-light:file),
-  // a 20x20 vector; orange fill pixel-sampled from the frame capture
-  // (~#F8B040, disclosed in docs/design-api-gaps.md).
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="#F8B040" aria-hidden="true">
       <path d="M14 11a3 3 0 0 1-3-3V4H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-8zm-2-3a2 2 0 0 0 2 2h3.59L12 4.41zM7 3h5l7 7v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3" />
@@ -49,16 +36,12 @@ function FileIcon() {
 }
 
 function DotsIcon() {
-  // Trailing row affordance: "pepicons-pencil:dots-y", 24x24, fill #000712
-  // (fill read from the vector's native properties).
   return (
     <svg width="24" height="24" viewBox="0 0 20 20" fill="#000712" aria-hidden="true">
       <path d="M9 15.25a1.25 1.25 0 1 1 2.5 0a1.25 1.25 0 0 1-2.5 0m0-5a1.25 1.25 0 1 1 2.5 0a1.25 1.25 0 0 1-2.5 0m0-5a1.249 1.249 0 1 1 2.5 0a1.25 1.25 0 0 1-2.5 0" />
     </svg>
   );
 }
-
-
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[] | null>(null);
@@ -113,10 +96,7 @@ export default function ProjectsPage() {
         </div>
 
         <div className="mt-[31px] flex items-center justify-between gap-4">
-          {/* Search and filters: drawn in the frame, but A4.1 documents no
-              search parameter and the dropdown contents are not designed, so
-              both stay inert (docs/design-api-gaps.md). */}
-          <label
+                    <label
             className={`${RUBIK} flex h-10 w-full max-w-[326px] items-center gap-2 rounded-full border border-[#F3F4F6] bg-white pl-4 pr-1 text-sm text-[#000712]`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
@@ -140,13 +120,7 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Table per native reads: vertical list, gap 16, header Hug 59
-            (border-bottom 1px #BCBCBD, padding T4 B8) and rows Hug 60 (white,
-            padding T4 B4, justify space-between, no horizontal padding; the seven 184px cells pack from the left at 184px pitch) each
-            holding seven equal Fill cells (header 181.71px, rows 184px) with 10px cell padding, Because header and row cell
-            widths differ by design, header labels and row values sit a few
-            pixels apart - that offset is drawn, not a defect. */}
-        <div className="mt-5 flex flex-col gap-4">
+                <div className="mt-5 flex flex-col gap-4">
           <div className="flex items-center border-b border-[#BCBCBD] pb-2 pt-1">
             {["Project Name", "Start Date", "Deadline", "Status", "Files", "Teams", "Priority"].map((h) => (
               <span key={h} className={`${SANS} flex-1 p-[10px] text-left text-[18px] font-medium leading-[150%] text-[#000712]`}>

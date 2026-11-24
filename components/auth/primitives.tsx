@@ -1,7 +1,6 @@
 import type { ButtonHTMLAttributes, CSSProperties } from "react";
 import { GoogleIcon } from "./icons";
 
-/** Primary action: 40px tall, 16px radius, primary blue. */
 export function PrimaryButton({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
@@ -13,15 +12,6 @@ export function PrimaryButton({ children, ...props }: ButtonHTMLAttributes<HTMLB
   );
 }
 
-/**
- * "Sign With Google" from the design: 50px tall, 6px radius, white fill,
- * #CBD5E0 border. Shown disabled on purpose: the API documents the flow
- * (GET /auth/social/google/redirect returns an authorization_url, then
- * POST /auth/social/google/callback with the token), but the saved
- * backend response points its redirect at a localhost callback URL, so
- * the round trip cannot work yet. Wire it up once the backend's
- * callback configuration is confirmed.
- */
 export function GoogleButton() {
   return (
     <div className="space-y-1">
@@ -60,8 +50,7 @@ export function RememberMe({
 }) {
   return (
     <label className="flex cursor-pointer items-center gap-2 text-base text-[#718096]">
-      {/* Native checkbox is 16x16; the Remember/Forgot row block measures 36px tall. */}
-      <input
+            <input
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
@@ -92,10 +81,7 @@ export function AuthHeading({
 }) {
   return (
     <div className="space-y-[15px] text-center">
-      {/* Native Figma properties: Sign In title Inter 600 31px #1F2937,
-          Sign Up title Inter 700 36px #1F2937, subtitle Inter 400 16px #718096.
-          Boxes are cap-trimmed: the native heading block measures 48px tall. */}
-      <h1
+            <h1
         className={`${titleClassName} text-[#1f2937]`}
         style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as CSSProperties}
       >

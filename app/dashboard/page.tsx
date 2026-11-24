@@ -15,14 +15,6 @@ import { getProfile } from "@/lib/api/profile";
 import { PRIORITY_TONES } from "@/lib/colors";
 import { PROJECT_COLORS } from "@/lib/colors";
 
-/**
- * Dashboard from the "Dashboard" frame (UI Design page, node 285-12895),
- * wired to GET /api/v1/dashboard (A10.1) and GET /api/v1/auth/me (A2.1).
- * Native reads and sampled-value disclosures: docs/design-api-gaps.md.
- * KPI deltas and chart filters have no API backing, so they are omitted
- * or inert rather than invented.
- */
-
 type Overview = {
   projects: { total: number; active: number; completed: number; average_progress: number };
   tasks: Record<string, number>;
@@ -111,8 +103,7 @@ export default function DashboardPage() {
               <div className="min-w-0 flex-1">
                 <AreaChart points={series.length ? series : [0, 0]} maxChart={yMax} />
                 <div className="mt-1 flex justify-between text-xs leading-[18px] text-[#718096]">
-                  {/* The frame draws six axis labels; all twelve monthly points are plotted. */}
-                  {chart.map((d, i) => <span key={d.label}>{i % 2 === 0 ? d.label.split(" ")[0] : ""}</span>)}
+                                    {chart.map((d, i) => <span key={d.label}>{i % 2 === 0 ? d.label.split(" ")[0] : ""}</span>)}
                 </div>
               </div>
             </div>
@@ -154,9 +145,7 @@ export default function DashboardPage() {
                       <p className={`${M} text-xs text-[#525256]`}>By {[f.owner, f.updated_at].filter(Boolean).join(" • ")}</p>
                     </span>
                   </span>
-                  {/* Download affordance per the frame; file download endpoints are
-                      not part of the dashboard payload, so it stays inert here. */}
-                  <span aria-disabled="true" aria-label="Download (not wired yet)"><Download size={16} /></span>
+                                    <span aria-disabled="true" aria-label="Download (not wired yet)"><Download size={16} /></span>
                 </li>
               ))}
               {data && data.recent_files.items.length === 0 ? <li className={`${M} text-sm text-[#718096]`}>No files yet.</li> : null}
@@ -195,9 +184,7 @@ export default function DashboardPage() {
                 {teams[0]?.name ?? "All"}<ChevronDown size={12} />
               </span>
             }>
-            {/* The source panel heads its member list "Name"/"Tasks"; the payload
-                carries teams only, so these rows are teams and the header says so. */}
-            <div className={`${M} flex justify-between text-[10px] font-medium uppercase tracking-wide text-[#a0a8b5]`}>
+                        <div className={`${M} flex justify-between text-[10px] font-medium uppercase tracking-wide text-[#a0a8b5]`}>
               <span>Team</span><span>Tasks</span>
             </div>
             <ul className="mt-3 space-y-4">
@@ -245,8 +232,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card title="Ask AI" className="!bg-[#F0F6FC] xl:col-span-3 xl:flex xl:h-[414px] xl:flex-col xl:overflow-hidden">
-            {/* The card is the design's entry to the Ask AI page (/ask-ai). */}
-            <Link href="/ask-ai" className="flex flex-1 flex-col" aria-label="Open the Collabspace AI assistant">
+                        <Link href="/ask-ai" className="flex flex-1 flex-col" aria-label="Open the Collabspace AI assistant">
               <div className="flex flex-col items-center gap-4 py-4">
                 <Image src="/ask-ai-robot.png" alt="" width="42.67" height="64" aria-hidden="true" />
                 <p className={`${M} text-sm text-[#525256]`}>ask me anything about...</p>
