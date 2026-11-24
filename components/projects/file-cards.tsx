@@ -20,9 +20,12 @@ const SANS = "font-[family-name:var(--font-sans)]";
 function fileIcon(file: FileAttachment) {
   const name = (file.original_name || file.name || "").toLowerCase();
   const mime = (file.mime_type || "").toLowerCase();
-  if (mime.includes("pdf") || name.endsWith(".pdf")) return { color: "#F44336", Icon: FileText };
-  if (mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg)$/.test(name)) return { color: "#0DB0A8", Icon: ImageIcon };
-  return { color: "#525256", Icon: FileIcon };
+  // PDFs carry the native document artwork recovered from the design file
+  // (public/assets/pdf-file.svg); other types keep a lucide stand-in since
+  // the design only ever draws PDFs.
+  if (mime.includes("pdf") || name.endsWith(".pdf")) return { pdf: true as const, color: "#F44336", Icon: FileText };
+  if (mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg)$/.test(name)) return { pdf: false as const, color: "#0DB0A8", Icon: ImageIcon };
+  return { pdf: false as const, color: "#525256", Icon: FileIcon };
 }
 
 function fileSize(bytes?: number | null) {
@@ -43,7 +46,7 @@ function timeAgo(value?: string | null) {
 }
 
 export function FileCard({ file }: { file: FileAttachment }) {
-  const { color, Icon } = fileIcon(file);
+  const { color, Icon, pdf } = fileIcon(file);
   const [downloading, setDownloading] = useState(false);
   const meta = [fileSize(file.size), timeAgo(file.created_at)].filter(Boolean).join(" • ");
   // A7.5 is a read; the download affordance is wired and saves the blob.
@@ -58,7 +61,12 @@ export function FileCard({ file }: { file: FileAttachment }) {
   return (
     <li className="flex h-[90px] items-center gap-[14px] rounded-2xl bg-white p-4 ring-1 ring-[#AEAEB2]">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center" style={{ color }}>
-        <Icon size={30} strokeWidth={1.5} />
+        {pdf ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/assets/pdf-file.svg" alt="" width={29} height={37} />
+        ) : (
+          <Icon size={30} strokeWidth={1.5} />
+        )}
       </span>
       <span className="flex h-[58px] min-w-0 flex-1 flex-col justify-between">
         <span className={`${SANS} block truncate text-base font-medium leading-tight text-black`}>

@@ -297,7 +297,8 @@ were 46% pixel estimates.
   #E6EFFF track with #005AFB fill; count Inter Regular 12px #000712.
 - Files: Recent cards 404px wide with 50px gaps; All Files grid 346px cards,
   32px gaps; card 90px tall, radius 16, 1px #AEAEB2 border, 16px padding,
-  14px gaps, white; PDF artwork ~29x37 #F44336 (lucide FileText stands in);
+  14px gaps, white; PDF artwork ~29x37 #F44336 recovered from the design file
+  via Copy as SVG (public/assets/pdf-file.svg);
   name Inter Medium 16px black, uploader Inter Regular 13px black, size/time
   Inter Regular 12px black; download icon 18px black. Section titles Inter
   Medium 25px; section-to-cards gap 31px; sections 48px apart. Upload File
