@@ -10,7 +10,7 @@ import { logout } from "@/lib/api/auth";
 import { clearStoredToken } from "@/lib/api-client";
 
 const M = "font-[family-name:var(--font-rubik)]";
-const DRAWER_WIDTH = 260;
+const DRAWER_WIDTH = 264;
 
 const ICONS: Record<string, typeof Folder> = {
   Dashboard: LayoutDashboard,
