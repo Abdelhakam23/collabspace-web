@@ -5,7 +5,7 @@ import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { ProfileHeader, type ProfileTab } from "@/components/profile/header";
 import { FilesTab, OverviewTab, TasksTab } from "@/components/profile/tabs";
 import { getProfile, getUserFiles, getUserTasks } from "@/lib/api/profile";
-import type { FileAttachment, Task, User } from "@/lib/types";
+import type { FileAttachment, Task, User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
