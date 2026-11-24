@@ -86,7 +86,7 @@ export function Conversation({ project, onSent }: { project: Project; onSent?: (
   const busy = sending;
 
   return (
-    <section className="flex w-full max-w-[864px] flex-1 flex-col gap-6">
+    <section className="flex w-full min-w-0 max-w-[864px] flex-1 flex-col gap-6">
       <header className="flex items-center justify-between gap-4 rounded-2xl bg-white p-4">
         <h1 className={`${SANS} truncate text-[20px] font-semibold text-[#000712]`}>{project.name}</h1>
         <div className="flex items-center gap-4">

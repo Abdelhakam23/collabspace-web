@@ -30,12 +30,12 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
   const shown = attendees.slice(0, 2);
   const extra = attendees.length - shown.length;
   return (
-    <div className="flex h-[105px] w-full flex-col rounded-2xl border border-[#F3F4F6] bg-white p-3">
+    <div className="flex min-h-[105px] w-full min-w-0 flex-col rounded-2xl border border-[#F3F4F6] bg-white p-3">
       <div className="flex flex-col gap-2">
         <p className={`${SANS} truncate text-sm font-normal leading-4 text-black`}>{meeting.title}</p>
         <p className={`${SANS} text-xs font-normal leading-4 text-black/75`}>{timeRange(meeting)}</p>
       </div>
-      <div className="mt-auto flex items-center">
+      <div className="mt-auto flex flex-wrap items-center gap-y-1">
         <span className="flex items-center">
           {shown.map((user, i) => (
             <span
