@@ -3,15 +3,6 @@
 import { Mic, Plus, Send } from "lucide-react";
 import type { FormEvent } from "react";
 
-/**
- * The AI input card, drawn twice in the design:
- * - "empty" (Ask AI frame 225-9992): radius 16, padding 20, vertical gap 51,
- *   placeholder "ask me anything about....", no shadow, border #E9E9EA.
- * - "chat" (Ask Ai/ chat frame 229-5948): radius 24, padding 16, gap 10,
- *   shadow lg, border #E2E8F0, placeholder "Message to ChatBot....".
- * Both: + button (12px plus, 1.5 stroke), mic icon (24px), Submit pill
- * (Hug 112 x 48, radius 32, #005AFB, pl-20/pr-12/py-12, gap 8, send icon).
- */
 export function AskAiInput({
   variant,
   value,
@@ -47,8 +38,7 @@ export function AskAiInput({
         className="w-full bg-transparent text-base text-black outline-none placeholder:text-black/60"
       />
       <div className="flex items-center justify-between">
-        {/* A10.2 accepts only { query }: no attachment or voice input. */}
-        <button
+                <button
           type="button"
           disabled
           title="Attachments are not supported by the assistant endpoint"
