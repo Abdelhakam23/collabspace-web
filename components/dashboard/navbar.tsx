@@ -56,6 +56,7 @@ function AccountMenu({ userName, userRole, placement }: { userName: string; user
   }
 
   const side = placement === "sidebar";
+<<<<<<< development
 <<<<<<< feature/responsive-fixes
   return (
     <span className={`relative ${side ? "block w-full" : ""}`} ref={menuRef}>
@@ -288,6 +289,104 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
           </span>
         </div>
 >>>>>>> development
+=======
+  return (
+    <span className={`relative ${side ? "block w-full" : ""}`} ref={menuRef}>
+      <button
+        type="button"
+        onClick={() => setMenuOpen((open) => !open)}
+        title="Account menu"
+        aria-haspopup="menu"
+        aria-expanded={menuOpen}
+        className={`flex items-center gap-2 ${side ? "w-full rounded-xl p-2 text-left hover:bg-[#F6F8FA]" : ""}`}
+      >
+        <span className="h-10 w-10 shrink-0 rounded-full bg-[#e2e8f0]" aria-hidden="true" />
+        <span className={`${M} min-w-0 text-xs leading-tight ${side ? "text-left" : "hidden text-right sm:block"}`}>
+          <span className="block truncate font-medium text-[#000712]">{userName}</span>
+          {userRole ? <span className="block truncate font-normal text-[#718096]">{userRole}</span> : null}
+        </span>
+      </button>
+      {menuOpen ? (
+        <span
+          role="menu"
+          aria-label="Account"
+          className={`absolute z-50 flex w-40 flex-col overflow-hidden rounded-[12px] border border-[#E2E8F0] bg-white py-1 shadow-lg ${
+            side ? "bottom-full left-0 mb-2" : "right-0 top-full mt-2"
+          }`}
+        >
+          <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)} className={`${M} px-4 py-2.5 text-left text-xs font-normal text-[#000712] hover:bg-[#F6F8FA]`}>
+            Profile
+          </Link>
+          <button type="button" role="menuitem" onClick={handleLogout} disabled={pending} className={`${M} px-4 py-2.5 text-left text-xs font-normal text-[#af2622] hover:bg-[#F6F8FA] disabled:opacity-60`}>
+            {pending ? "Logging out..." : "Log out"}
+          </button>
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { userName: string; userRole?: string; active?: string }) {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Reserve room for the fixed sidebar on wide screens only.
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1280px)");
+    const apply = () => {
+      document.body.style.paddingLeft = mq.matches ? `${SIDEBAR_WIDTH}px` : "";
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => {
+      mq.removeEventListener("change", apply);
+      document.body.style.paddingLeft = "";
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setDrawerOpen(false);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [drawerOpen]);
+
+  return (
+    <>
+      <header className="bg-white xl:hidden">
+        <div className="flex h-[72px] items-center gap-3 px-4 sm:px-8">
+          <button type="button" aria-label="Open menu" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-full text-[#000712] hover:bg-[#F6F8FA]">
+            <Menu size={22} />
+          </button>
+          <span className={`${M} text-[20px] font-normal leading-[44px] text-[#000712]`}>Collabspace</span>
+          <div className="ml-auto flex items-center gap-5">
+            <NotificationBell />
+            <AccountMenu userName={userName} userRole={userRole} placement="bar" />
+          </div>
+        </div>
+        <div className="h-1 bg-[linear-gradient(to_bottom,rgba(9,30,66,0.13),rgba(9,30,66,0))]" aria-hidden="true" />
+      </header>
+
+      {drawerOpen ? <div className="fixed inset-0 z-40 bg-black/40 xl:hidden" onClick={() => setDrawerOpen(false)} aria-hidden="true" /> : null}
+
+      <aside
+        aria-label="Main navigation"
+        style={{ width: SIDEBAR_WIDTH }}
+        className={`fixed inset-y-0 left-0 z-50 flex-col border-r border-[#E2E8F0] bg-white px-4 py-5 xl:z-30 xl:flex ${drawerOpen ? "flex" : "hidden"}`}
+      >
+        <div className="flex items-center justify-between px-2">
+          <span className={`${M} text-[20px] font-normal leading-[44px] text-[#000712]`}>Collabspace</span>
+          <span className="flex items-center gap-3">
+            <span className="hidden xl:block">
+              <NotificationBell />
+            </span>
+            <button type="button" aria-label="Close menu" onClick={() => setDrawerOpen(false)} className="flex h-9 w-9 items-center justify-center rounded-full text-[#000712] hover:bg-[#F6F8FA] xl:hidden">
+              <X size={20} />
+            </button>
+          </span>
+        </div>
+>>>>>>> main
 
         <label
           title="Global search is not documented in the API"
