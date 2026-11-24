@@ -58,14 +58,14 @@ export function ProjectShell({ projectId, children }: { projectId: string; child
       <DashboardNavbar userName={userName} userRole={userRole} active="Projects" />
             <main className="px-4 pt-7 sm:px-8 lg:px-16 lg:pt-[32px]">
         <div className="flex items-start justify-between gap-8">
-          <div className="flex flex-col gap-4">
+          <div className="flex min-w-0 flex-col gap-4">
             <p className={`${SANS} text-sm leading-[16px] text-black/60`}>
               <Link href="/projects" className="hover:underline">Projects</Link>
               <span className="px-1">&gt;</span>
               {overview?.name ?? "…"}
             </p>
-            <div className="flex h-[28px] items-center gap-4">
-              <h1 className={`${SANS} text-[31px] font-semibold leading-[28px] text-black`}>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 lg:min-h-[28px]">
+              <h1 className={`${SANS} text-2xl font-semibold leading-8 text-black sm:text-[31px] sm:leading-[28px]`}>
                 {overview?.name ?? "…"}
               </h1>
               {overview ? <span className={`${SANS} text-xs text-[#2BA52E]`}>{pct}% Completed</span> : null}
@@ -88,7 +88,7 @@ export function ProjectShell({ projectId, children }: { projectId: string; child
           </section>
         </div>
 
-        <nav className="mt-8 flex h-[28px] items-start gap-[30px]">
+        <nav className="mt-8 flex h-[28px] items-start gap-4 overflow-x-auto sm:gap-[30px] [scrollbar-width:none] [&>*]:shrink-0">
           {PROJECT_TABS.map((t) => {
             const href = `${base}${t.path}`;
             const active = pathname === href;
