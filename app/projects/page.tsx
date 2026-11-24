@@ -119,7 +119,7 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-                <div className="mt-5 flex flex-col gap-4">
+                <div className="mt-5 overflow-x-auto"><div className="flex min-w-[1312px] flex-col gap-4">
           <div className="flex items-center border-b border-[#BCBCBD] pb-2 pt-1">
             {["Project Name", "Start Date", "Deadline", "Status", "Files", "Teams", "Priority"].map((h) => (
               <span key={h} className={`${SANS} flex-1 p-[10px] text-left text-[18px] font-medium leading-[150%] text-[#000712]`}>
@@ -189,6 +189,7 @@ export default function ProjectsPage() {
               No projects yet.
             </div>
           ) : null}
+        </div>
         </div>
       </main>
       {showNew ? (

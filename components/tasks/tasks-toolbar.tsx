@@ -96,10 +96,10 @@ export function TasksToolbar({
   const selected = projects.find((p) => p.id === projectId);
 
   return (
-    <div className="flex h-11 items-center justify-between gap-4">
-      <div className="flex items-center gap-4">
+    <div className="flex min-h-11 flex-wrap items-center justify-between gap-4">
+      <div className="flex w-full min-w-0 flex-wrap items-center gap-4 sm:w-auto">
         <label
-          className={`${SANS} flex h-10 w-[326px] items-center gap-1 rounded-full bg-[#E9E9EA] pl-4 pr-1 text-sm text-[#000712]`}
+          className={`${SANS} flex h-10 w-full max-w-[326px] items-center gap-1 rounded-full bg-[#E9E9EA] pl-4 pr-1 text-sm text-[#000712]`}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
             <circle cx="11" cy="11" r="8" />
@@ -115,7 +115,7 @@ export function TasksToolbar({
           />
         </label>
 
-        <div className="relative">
+        <div className="relative max-w-full">
           <button
             type="button"
             aria-haspopup="menu"
@@ -123,7 +123,7 @@ export function TasksToolbar({
             onClick={() => setOpenMenu(openMenu === "project" ? null : "project")}
             className={`${SANS} flex h-11 items-center gap-[10px] rounded-2xl border border-[#27272B] bg-[#F6F8FA] p-[10px] text-[13px] text-[#000712]`}
           >
-            {selected?.name ?? "Project"}
+            <span className="min-w-0 truncate">{selected?.name ?? "Project"}</span>
             <TinyChevron />
           </button>
           <Menu open={openMenu === "project"} onClose={close}>

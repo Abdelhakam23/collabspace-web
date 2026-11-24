@@ -118,12 +118,12 @@ export default function ReportsPage() {
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={me?.name ?? ""} userRole={me?.roles?.[0]} active="Reports" />
       <main className="flex flex-col gap-6 px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[40px]">
-        <div className="flex max-w-[1311px] gap-6">
+        <div className="flex max-w-[1311px] flex-col gap-6 md:flex-row">
           <StatCard title="Task Completion Rate" state={taskMetric} />
           <StatCard title="Projects Completion Rate" state={projectMetric} />
           <StatCard title="Teams Activity Rate" state={teamMetric} />
         </div>
-        <div className="flex max-w-[1311px] gap-6">
+        <div className="flex max-w-[1311px] flex-col gap-6 md:flex-row">
                     <ChartCard title="Task Completion Time vs Deadline">
             <ReportBarChart points={null} />
           </ChartCard>
@@ -131,7 +131,7 @@ export default function ReportsPage() {
             <ReportAreaChart points={null} />
           </ChartCard>
         </div>
-        <div className="flex max-w-[1311px] gap-6 pb-10">
+        <div className="flex max-w-[1311px] flex-col gap-6 md:flex-row pb-10">
           <ChartCard title="Worker Activity Rate" trailing={<DisabledSelect label="Monthly" reason={noFilterReason} />}>
             <ReportLineChart points={null} />
           </ChartCard>
@@ -141,7 +141,7 @@ export default function ReportsPage() {
               <option>Select Report Type</option>
             </select>
             <input disabled title={submitReason} placeholder="Add Note" className={fieldClass} aria-label="Add Note (unavailable)" />
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <input disabled title={submitReason} placeholder="Start Date" className={fieldClass} aria-label="Start Date (unavailable)" />
               <input disabled title={submitReason} placeholder="End Date" className={fieldClass} aria-label="End Date (unavailable)" />
             </div>

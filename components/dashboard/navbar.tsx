@@ -50,7 +50,7 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
       <div className="flex min-h-[72px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2 sm:px-8 lg:h-[72px] lg:px-16 lg:py-0">
         <span className={`${M} text-[20px] font-normal leading-[44px] text-[#000712]`}>Collabspace</span>
         <nav className="order-3 flex basis-full min-w-0 lg:order-none lg:basis-auto">
-          <div className="flex flex-wrap items-center gap-[19px] rounded-full bg-[#F6F8FA] pb-1 pl-1 pr-2 pt-1">
+          <div className="flex max-w-full flex-nowrap items-center gap-3 overflow-x-auto rounded-full bg-[#F6F8FA] p-1 pr-2 [scrollbar-width:none] sm:gap-[19px] [&>*]:shrink-0">
             {NAV_ITEMS.map((item) =>
               item === active ? (
                 <span
