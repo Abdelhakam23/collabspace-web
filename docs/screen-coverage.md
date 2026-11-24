@@ -261,3 +261,48 @@ Search Bar overlay 225-10323, project picker 139-1571,
 report-type picker 163-1089, period picker 163-995,
 New Project overlay = "New Project overlya" (id recorded in
 implementation notes).
+
+## Chats (/chats and /chats/[id])
+
+Source: "Chats" frame (node 126-2481, inbox tab state) plus its prototype
+destinations, the Project Chats list state and the drawn open-conversation
+state (1440x1024 each, page background #F6F8FA). The conversation state was
+found through the prototype links, not frame names; earlier name searches
+missed it.
+
+Implemented:
+
+- Sidebar card (drawn 415x942 at left 65/top 104, white, 16px radius,
+  16px padding, 24px gaps): "Chats" title (Inter 600 49px #222222), search
+  icon disabled (no message-search parameter), "inbox" tab disabled (no DM
+  endpoint; the drawn inbox content is omitted entirely), "Project Chats"
+  tab active, and one row per project (row 383 Fill x 96, 8px radius) with
+  the latest message (A8.1, per_page=1) as the drawn preview line and time.
+- Empty state at /chats: centered "Select Chat" (style estimated).
+- Conversation at /chats/[id]: white header card (864 wide, 16px
+  radius/padding/gap) with the project name; search, phone, video and menu
+  icons disabled (no endpoints); message list (avatar initials, name, time,
+  body, attachment chip when present; bubble 16px radius, 8/16 padding,
+  geometry from the drawn bubble frame); composer (white, 16px radius,
+  24px/16px padding) sending A8.2 with the message text on click or Enter,
+  with double-submit guarding.
+
+Omissions and disabled controls:
+
+- No channels concept in the API: drawn channel sub-labels ("Public
+  Channel", "Frontend Team Channel") are omitted; one conversation per
+  project; the header shows the project name.
+- Direct messages (inbox tab): no DM endpoint, tab disabled.
+- Message search, voice/video call, chat settings icons: no endpoints,
+  disabled with reasons.
+- Message attachments: the paperclip is drawn and A8.2 accepts
+  file_attachment_id, but the upload-then-send composer flow is not wired
+  yet (deferred; attachment chips on received messages do render).
+- Thread replies (A8.3), edit (A8.4), delete (A8.5), mark-read (A8.6) and
+  unread count (A8.7): no drawn controls, omitted.
+- Unread badges drawn on rows have no per-channel unread source, omitted.
+
+Estimated values (unmeasured in the source): tab text styles, active-tab
+treatment, channel row name/preview/time text styles, "Select Chat" style,
+header title size, message name/body text styles, avatar sizes, send button
+size. The drawn 49px title and all card geometry are measured.

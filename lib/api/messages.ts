@@ -9,9 +9,9 @@ export async function listProjectMessages(projectId: number | string, query?: { 
 
 export interface SendMessagePayload {
   message: string;
-  parent_id: string;
-  file_attachment_id: string;
-  mentions: string;
+  parent_id?: string;
+  file_attachment_id?: string;
+  mentions?: string;
 }
 
 /** POST /api/v1/projects/1/messages — Send Message (with Mentions & Attachment) (A8.2) */
