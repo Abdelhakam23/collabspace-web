@@ -1,20 +1,6 @@
 import { initials } from "@/lib/format";
 import type { ProjectTeamProgress } from "@/lib/types";
 
-/**
- * Team cards of the "All Projects / Alpha / teams" frame (node 181-1982),
- * wired to A4.4 (GET /projects/:id/teams). Geometry and type are read from
- * the native nodes: white cards (radius 16, 1px #F3F4F6 border, 16px bottom
- * padding, 20px internal gap), a 68px tinted band with 20px padding, the
- * team name in Inter Medium 20px, and a transparent 28px pill carrying the
- * completion text in Inter Regular 13px, colored per team. Member rows are
- * 40px tall with 16px gaps and 16px side padding: a 40px avatar, the name
- * (Inter Regular 14px #000712) with the role (Inter Regular 12px #4A4A4A),
- * and a 4px progress bar (#E6EFFF track, #005AFB fill) with the task count
- * (Inter Regular 12px). Member photos fall back to initials because the API
- * rarely carries avatar URLs.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 
 const BAND_TINTS: Record<string, string> = {
