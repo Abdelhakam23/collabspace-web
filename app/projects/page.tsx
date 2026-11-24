@@ -61,8 +61,8 @@ function ProjectIcon() {
   // Approximation of the frame's violet project glyph (Support colors/Violet 2
   // #7D2D7E strokes); the original vector is not exportable from a view-only file.
   return (
-    <span className="flex h-[22px] w-[22px] items-center justify-center rounded-[6px] bg-[#F7EFF7]">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7D2D7E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <span className="flex h-[32px] w-[32px] items-center justify-center rounded-[8px] bg-[#F7EFF7]">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7D2D7E" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
       </svg>
     </span>
@@ -73,7 +73,7 @@ function FileIcon() {
   // Orange document glyph; color pixel-sampled from the frame capture
   // (~#F8B040, disclosed in docs/design-api-gaps.md).
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F8B040" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F8B040" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M6 3h8l4 4v13a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 5 20V4.5A1.5 1.5 0 0 1 6.5 3z" />
       <path d="M14 3v4h4" />
       <path d="M9 12h6M9 16h6" />
@@ -171,8 +171,8 @@ export default function ProjectsPage() {
 
         {/* Table per native reads: vertical list, gap 16, header Hug 59
             (border-bottom 1px #BCBCBD, padding T4 B8) and rows Hug 60 (white,
-            padding T4 B4, 12px horizontal) each holding seven equal Fill cells
-            (header 181.71px, rows 184px) with 10px cell padding, plus the
+            padding T4 B4, justify space-between, no horizontal padding; the seven 184px cells pack from the left at 184px pitch) each
+            holding seven equal Fill cells (header 181.71px, rows 184px) with 10px cell padding, plus the
             header's trailing 40x40 bordered box. Because header and row cell
             widths differ by design, header labels and row values sit a few
             pixels apart - that offset is drawn, not a defect. */}
@@ -187,16 +187,18 @@ export default function ProjectsPage() {
           </div>
           {(projects ?? []).filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase())).map((p) => {
             const members = (p.teams ?? []).flatMap((t) => t.members ?? []);
-            const cell = "flex flex-1 items-center p-[10px]";
+            const cell = "flex w-[184px] items-center p-[10px]";
             return (
               <Link
                 key={p.id}
                 href={`/projects/${p.id}`}
-                className="flex h-[60px] items-center border-b border-[#F3F4F6] bg-white px-3 py-1"
+                className="flex h-[60px] items-center border-b border-[#F3F4F6] bg-white py-1"
               >
-                <span className={`${cell} gap-2`}>
-                  <ProjectIcon />
-                  <span className={`${SANS} text-sm text-[#000712]`}>{p.name}</span>
+                <span className={cell}>
+                  <span className="flex items-center gap-[8px]">
+                    <ProjectIcon />
+                    <span className={`${SANS} text-sm text-[#000712]`}>{p.name}</span>
+                  </span>
                 </span>
                 <span className={cell}>
                   <span className={`${SANS} text-sm text-[#000712]`}>{p.start_date ?? ""}</span>
@@ -209,9 +211,11 @@ export default function ProjectsPage() {
                     {p.status === "Completed" ? "Done" : p.status.toLowerCase()}
                   </span>
                 </span>
-                <span className={`${cell} gap-2`}>
-                  <FileIcon />
-                  <span className={`${SANS} text-sm text-[#000712]`}>{p.files_count ?? 0} Files</span>
+                <span className={cell}>
+                  <span className="flex items-center gap-[8px]">
+                    <FileIcon />
+                    <span className={`${SANS} text-sm text-[#000712]`}>{p.files_count ?? 0} Files</span>
+                  </span>
                 </span>
                 <span className={cell}>
                   <span className="flex items-center">
