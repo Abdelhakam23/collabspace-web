@@ -325,7 +325,10 @@ function ProjectDetailContent() {
                   <div className="min-w-0 flex-1">
                     <AreaChart points={series} maxChart={yMax} />
                     <div className="mt-[11px] flex h-3 justify-between text-[10px] leading-[12px] text-[#718096]">
-                      {chartData.map((d) => <span key={d.label}>{d.month}</span>)}
+                      {/* The frame draws six axis labels; all twelve monthly
+                          points stay plotted - labels are representative,
+                          data is not dropped. */}
+                      {chartData.map((d, i) => <span key={d.label}>{i % 2 === 0 ? d.month : ""}</span>)}
                     </div>
                   </div>
                 </div>
