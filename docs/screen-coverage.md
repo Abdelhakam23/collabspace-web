@@ -311,3 +311,33 @@ Estimated values (unmeasured in the source): tab text styles, active-tab
 treatment, channel row name/preview/time text styles, "Select Chat" style,
 header title size, message name/body text styles, avatar sizes, send button
 size. The drawn 49px title and all card geometry are measured.
+
+## Reports (/reports)
+
+Source: "Reports" frame (node 104-2653, 1440x1024, #F6F8FA).
+
+Implemented:
+
+- Three stat cards (Task Completion Rate, Projects Completion Rate, Teams
+  Activity Rate) fed by A11.2 / A11.1 / A11.3, with the drawn
+  "From last month" delta when the payload carries one.
+- Task Completion Time vs Deadline bar chart (blue), Projects Progress area
+  chart (green), Worker Activity Rate line chart (blue), fed by A11.2 /
+  A11.1 / A11.4 series (recharts).
+- Cards distinguish zero from unavailable: a missing metric renders "Not
+  available", a 403 renders "Not available for your role."
+
+Limitations:
+
+- The A11 endpoints document no response fields (api.json lists none), so
+  metrics and series are extracted tolerantly in lib/reports-normalize.ts;
+  the documented risk is that live payloads use other key names, in which
+  case only that file changes. Values are rendered as percentages per the
+  drawn 0-100 scale.
+- The drawn "All Projects" and "Monthly" dropdowns have no documented
+  filter parameters and are disabled with reasons.
+- The "Submit a detailed report" form has no POST endpoint; every control
+  is disabled with a reason.
+
+Estimated: stat title/value/delta text styles, card padding, chart axis
+styling (drawn axis labels are placeholder junk in the source).
