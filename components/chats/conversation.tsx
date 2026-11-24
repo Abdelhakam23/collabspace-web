@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { listProjectMessages, sendMessage } from "@/lib/api/messages";
 import { uploadFileToProject } from "@/lib/api/files";
-import type { Message, Project } from "@/lib/types";
+import type { Message, Project } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 

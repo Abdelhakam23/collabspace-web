@@ -10,14 +10,10 @@ import { ProjectShell } from "@/components/projects/project-shell";
 import { TinyChevron } from "@/components/projects/tiny-chevron";
 import { initials, shortDate } from "@/lib/format";
 import { getProjectOverview, getProjectTeamsTaskProgress } from "@/lib/api/projects";
-import type { ProjectOverview, ProjectTeamProgress } from "@/lib/types";
+import type { ProjectOverview, ProjectTeamProgress } from "@/types";
+import { STATUS_LEGEND } from "@/constants/projects";
 
 const SANS = "font-[family-name:var(--font-sans)]";
-const STATUS_LEGEND = [
-  { status: "Pending", label: "Pending tasks", color: "#191919" },
-  { status: "In Progress", label: "In progress tasks", color: "#005AFB" },
-  { status: "Completed", label: "Completed tasks", color: "#2BA52E" },
-];
 
 export default function ProjectDetailPage() {
   return (

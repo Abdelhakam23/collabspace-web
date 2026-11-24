@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { useParams } from "next/navigation";
 import { KanbanBoard } from "@/components/projects/kanban-board";
 import { ProjectShell } from "@/components/projects/project-shell";
-import { useKanbanBoard } from "@/lib/use-kanban-board";
+import { useKanbanBoard } from "@/hooks/use-kanban-board";
 
 export default function ProjectTasksPage() {
   return (

@@ -5,9 +5,9 @@ import { useParams } from "next/navigation";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { ChatsSidebar } from "@/components/chats/sidebar";
 import { Conversation } from "@/components/chats/conversation";
-import { useChannels } from "@/components/chats/use-channels";
+import { useChannels } from "@/hooks/use-channels";
 import { getProfile } from "@/lib/api/profile";
-import type { User } from "@/lib/types";
+import type { User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 

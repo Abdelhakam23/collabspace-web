@@ -9,13 +9,12 @@ import { listProjects } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
 import { initials } from "@/lib/format";
 import { PROJECT_COLORS } from "@/lib/colors";
-import type { Project } from "@/lib/types";
+import type { Project } from "@/types";
+import { PRIORITY_COLORS, STATUS_COLORS } from "@/constants/projects";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const RUBIK = "font-[family-name:var(--font-rubik)]";
 
-const STATUS_COLORS: Record<string, string> = { Active: "#FA2B75", Completed: "#2BA52E" };
-const PRIORITY_COLORS: Record<string, string> = { High: "#DB302A", Medium: "#E6BA0E" };
 
 function ProjectIcon({ color }: { color: string }) {
   return (

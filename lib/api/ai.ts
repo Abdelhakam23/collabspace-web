@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, AiSetting, AuditLog, Paginated } from "@/lib/types";
+import type { ApiEnvelope, AiSetting, AuditLog, Paginated } from "@/types";
 
 export async function askAi(query: string): Promise<string> {
   const { data } = await apiClient.post<ApiEnvelope<Record<string, unknown>>>(`/api/v1/ai/ask`, { query });

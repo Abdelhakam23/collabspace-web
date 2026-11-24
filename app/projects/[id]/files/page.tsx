@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import { FileCardGrid } from "@/components/projects/file-cards";
 import { ProjectShell } from "@/components/projects/project-shell";
 import { listFiles, uploadFileToProject } from "@/lib/api/files";
-import type { FileAttachment } from "@/lib/types";
+import type { FileAttachment } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 

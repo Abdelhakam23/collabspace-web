@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, DashboardData } from "@/lib/types";
+import type { ApiEnvelope, DashboardData } from "@/types";
 
 export async function getDashboardOverview() {
   const { data } = await apiClient.get<ApiEnvelope<DashboardData>>(`/api/v1/dashboard`);

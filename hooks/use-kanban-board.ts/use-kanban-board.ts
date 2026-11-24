@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getKanbanBoardForProject, updateTaskStatus } from "@/lib/api/tasks";
-import type { KanbanColumn } from "@/lib/types";
+import type { KanbanColumn } from "@/types";
 
 export function useKanbanBoard(projectId: string | number | null) {
   const [columns, setColumns] = useState<KanbanColumn[]>([]);

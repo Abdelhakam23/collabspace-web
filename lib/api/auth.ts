@@ -1,5 +1,5 @@
 import { ApiError, apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, AuthPayload } from "@/lib/types";
+import type { ApiEnvelope, AuthPayload } from "@/types";
 
 export interface RegisterPayload {
   name: string;

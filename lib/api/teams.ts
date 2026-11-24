@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, Team, TeamRole, Paginated } from "@/lib/types";
+import type { ApiEnvelope, Team, TeamRole, Paginated } from "@/types";
 
 export async function listTeamRoles() {
   const { data } = await apiClient.get<ApiEnvelope<{ roles: TeamRole[] }>>(`/api/v1/team-roles`);

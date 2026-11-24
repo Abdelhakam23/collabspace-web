@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, Task, KanbanColumn, Paginated } from "@/lib/types";
+import type { ApiEnvelope, Task, KanbanColumn, Paginated } from "@/types";
 
 export async function listTasks(query?: { project_id: string | number; status: string | number; per_page: string | number }) {
   const { data } = await apiClient.get<ApiEnvelope<Paginated<Task>>>(`/api/v1/tasks`, { params: query });

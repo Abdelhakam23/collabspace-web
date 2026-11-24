@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, FileAttachment, Paginated } from "@/lib/types";
+import type { ApiEnvelope, FileAttachment, Paginated } from "@/types";
 
 export async function listFiles(query?: { project_id: string | number; per_page: string | number }) {
   const { data } = await apiClient.get<ApiEnvelope<Paginated<FileAttachment>>>(`/api/v1/files`, { params: query });

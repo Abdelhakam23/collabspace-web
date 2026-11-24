@@ -3,22 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { scheduleMeeting } from "@/lib/api/meetings";
 import { listProjects } from "@/lib/api/projects";
+import { DURATIONS } from "@/constants/meetings";
 import { listUsers } from "@/lib/api/users";
 import { initials } from "@/lib/format";
-import type { Project, User } from "@/lib/types";
+import type { Project, User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
 const fieldBox = `${SANS} h-14 w-full rounded-[12px] border border-[#CBD5E0] bg-transparent px-4 py-2 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
 
-const DURATIONS: { label: string; minutes: number }[] = [
-  { label: "15 min", minutes: 15 },
-  { label: "30 min", minutes: 30 },
-  { label: "45 min", minutes: 45 },
-  { label: "1 hour", minutes: 60 },
-  { label: "1 hour 30 min", minutes: 90 },
-  { label: "2 hours", minutes: 120 },
-];
 
 export function AddMeetingOverlay({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [subject, setSubject] = useState("");

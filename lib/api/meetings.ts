@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, Meeting, MeetingSummary, Paginated } from "@/lib/types";
+import type { ApiEnvelope, Meeting, MeetingSummary, Paginated } from "@/types";
 
 function normalizeMeeting(value: Meeting): Meeting {
   const raw = value as Meeting & { meeting_date?: string; participants?: Meeting["attendees"]; meeting_link?: string };

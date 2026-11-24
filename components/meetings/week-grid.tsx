@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { initials } from "@/lib/format";
-import type { Meeting } from "@/lib/types";
+import type { Meeting } from "@/types";
+import { DRAWN_END, DRAWN_START, WEEKDAYS } from "@/constants/meetings";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const RUBIK = "font-[family-name:var(--font-rubik)]";
-const DRAWN_START = 9;
-const DRAWN_END = 13;
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thurs", "Fri", "Sat"];
 
 function sameDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();

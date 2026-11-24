@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { TinyChevron } from "@/components/projects/tiny-chevron";
-import type { Project } from "@/lib/types";
+import type { Project } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
