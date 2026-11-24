@@ -6,6 +6,10 @@ import { useParams } from "next/navigation";
 import { Calendar, CircleCheck, Target } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { AreaChart } from "@/components/charts/area-chart";
+import { Card, DetailIcon } from "@/components/projects/detail/card";
+import { Gauge } from "@/components/projects/detail/gauge";
+import { TinyChevron } from "@/components/projects/tiny-chevron";
+import { initials, shortDate } from "@/lib/format";
 import { getProjectOverview, getProjectTeamsTaskProgress } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
 import type { ProjectOverview, ProjectTeamProgress } from "@/lib/types";
@@ -27,71 +31,6 @@ const STATUS_LEGEND = [
   { status: "In Progress", label: "In progress tasks", color: "#005AFB" },
   { status: "Completed", label: "Completed tasks", color: "#2BA52E" },
 ];
-
-// Short "Mon D" presentation of an ISO date as drawn in the frame.
-function shortDate(value?: string | null) {
-  if (!value) return "";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-function Card({ title, children, className = "", gap = 20, aside, asideInline = false }: { title: string; children: React.ReactNode; className?: string; gap?: number; aside?: React.ReactNode; asideInline?: boolean }) {
-  return (
-    <section className={`rounded-2xl bg-white p-5 ring-1 ring-[#F3F4F6] ${className}`}>
-      <div className="flex flex-col" style={{ gap }}>
-        <div className={asideInline ? "flex items-center gap-4" : "flex items-start justify-between"}>
-          <h2 className={`${SANS} text-[20px] font-medium leading-[15px] text-[#191919]`}>{title}</h2>
-          {aside}
-        </div>
-        {children}
-      </div>
-    </section>
-  );
-}
-
-/** Needle gauge, geometry measured from the native file
- *  (docs/design-api-gaps.md). The drawn arc is decorative (~63% of the
- *  track, not the labeled 78%): runtime maps pct truthfully, the
- *  visual-fixture harness reproduces the drawn state verbatim. */
-function Gauge({ pct, drawn = false }: { pct: number; drawn?: boolean }) {
-  const clamped = Math.min(100, Math.max(0, pct));
-  const c = 89, r = 82.5, C = 2 * Math.PI * r;
-  // Vector endpoints include the round caps (~3.1deg at r 82.5).
-  const trackLen = (192 / 360) * C;
-  const pivotX = 88.06, pivotY = 97.51;
-  // Truthful mapping: arc end and needle at 172.5 + 1.92 * pct degrees.
-  const trueDeg = 1.92 * clamped - 97.5;
-  const needleDeg = drawn ? 22.09 : trueDeg;
-  const progLen = drawn ? (120 / 360) * C : (trackLen * clamped) / 100;
-  return (
-    <svg viewBox="0 0 178 178" className="absolute inset-0 h-full w-full">
-      <circle cx={c} cy={c} r={r} fill="none" stroke="#E9E9EA" strokeWidth="9"
-        strokeLinecap="round" strokeDasharray={`${trackLen} ${C}`} transform={`rotate(172.5 ${c} ${c})`} />
-      {progLen > 0 ? (
-        <circle cx={c} cy={c} r={r} fill="none" stroke="#27272B" strokeWidth="9"
-          strokeLinecap="round" strokeDasharray={`${progLen} ${C}`} transform={`rotate(172.5 ${c} ${c})`} />
-      ) : null}
-      <g transform={`rotate(${needleDeg - 22.09} ${pivotX} ${pivotY})`}>
-        {/* Figma reports the rotated bounding box for the needle, so place
-            by its center (99.5,69.1) and tilt 22.09deg clockwise. */}
-        <rect x={94.78} y={41.94} width={9.45} height={54.32} rx={4.725} fill="#27272B"
-          transform="rotate(22.09 99.5 69.1)" />
-      </g>
-      {/* Dot stroke draws inside the 17.01 box, so r = 8.505 - 1.89/2. */}
-      <circle cx={pivotX} cy={pivotY} r={7.56} fill="#FFFFFF" stroke="#27272B" strokeWidth="1.89" />
-    </svg>
-  );
-}
-
-/** Icon-in-tinted-circle marker for the Product Details grid. */
-function DetailIcon({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
-  return (
-    <span className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: bg, color }}>
-      {children}
-    </span>
-  );
-}
 
 export default function ProjectDetailPage() {
   return (
@@ -232,11 +171,11 @@ function ProjectDetailContent() {
                       parameters for A4.3, so both stay inert
                       (docs/design-api-gaps.md). */}
                   <span aria-disabled="true" title="Filtering is not available from the API" className="flex h-6 items-center gap-1">
-                    <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
+                    <TinyChevron />
                     All Projects
                   </span>
                   <span aria-disabled="true" title="Filtering is not available from the API" className="flex h-6 items-center gap-1">
-                    <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
+                    <TinyChevron />
                     This Year
                   </span>
                 </span>
@@ -340,7 +279,7 @@ function ProjectDetailContent() {
               aside={
                 <span aria-disabled="true" title="Team filtering is not built yet" className={`${SANS} flex h-[15px] items-center gap-[12px] text-[12px] leading-[9px] text-[#4A4A4A]`}>
                   UI/UX
-                  <svg viewBox="0 0 10 5" className="h-[5px] w-[10px]" fill="none" stroke="#4A4A4A" strokeWidth="1.5"><path d="M1 1l4 3 4-3" /></svg>
+                  <TinyChevron />
                 </span>
               }
             >
@@ -353,7 +292,7 @@ function ProjectDetailContent() {
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={m.avatar_url} alt={m.name} className="h-full w-full rounded-full object-cover" />
                         ) : (
-                          m.name.split(" ").map((x) => x[0]).filter(Boolean).slice(0, 2).join("").toUpperCase()
+                          initials(m.name)
                         )}
                       </span>
                       <span className={`${SANS} text-sm text-[#525256]`}>{m.name}</span>

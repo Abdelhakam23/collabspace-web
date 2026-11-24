@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { NewProjectOverlay } from "@/components/projects/new-project-overlay";
+import { TinyChevron } from "@/components/projects/tiny-chevron";
 import { listProjects } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
+import { initials } from "@/lib/format";
 import type { Project } from "@/lib/types";
 
 /**
@@ -19,16 +21,6 @@ const RUBIK = "font-[family-name:var(--font-rubik)]";
 
 const STATUS_COLORS: Record<string, string> = { Active: "#FA2B75", Completed: "#2BA52E" };
 const PRIORITY_COLORS: Record<string, string> = { High: "#DB302A", Medium: "#E6BA0E" };
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((p) => p[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
 
 function ProjectIcon() {
   // The frame's project badge is the "Bag-Suitcase-1" glyph from the public
@@ -65,13 +57,7 @@ function DotsIcon() {
   );
 }
 
-function Chevron() {
-  return (
-    <svg width="10" height="5" viewBox="0 0 10 5" fill="none" stroke="#000712" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="m1 1 4 3 4-3" />
-    </svg>
-  );
-}
+
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[] | null>(null);
@@ -147,7 +133,7 @@ export default function ProjectsPage() {
                 className={`${RUBIK} flex h-10 items-center gap-[10px] rounded-2xl border border-[#27272B] bg-white pl-4 pr-[10px] text-xs text-[#000712]`}
               >
                 {label}
-                <Chevron />
+                <span className="text-[#000712]"><TinyChevron /></span>
               </span>
             ))}
           </div>
