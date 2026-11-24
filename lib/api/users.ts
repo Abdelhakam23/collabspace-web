@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, User } from "@/lib/types";
+import type { ApiEnvelope, User } from "@/types";
 
 export async function listUsers(query?: { per_page: string | number }) {
   const { data } = await apiClient.get<ApiEnvelope<User[]>>(`/api/v1/users`, { params: query });
