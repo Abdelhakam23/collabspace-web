@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, User, Task, FileAttachment, Paginated } from "@/lib/types";
+import type { ApiEnvelope, User, Task, FileAttachment, Paginated } from "@/types";
 
 export interface ProfileStats {
   completed_tasks?: number;
