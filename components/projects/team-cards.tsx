@@ -1,21 +1,9 @@
 import { initials } from "@/lib/format";
-import type { ProjectTeamProgress } from "@/lib/types";
+import type { ProjectTeamProgress } from "@/types";
+import { BAND_TINTS, COMPLETION_COLORS } from "@/constants/projects";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
-const BAND_TINTS: Record<string, string> = {
-  "ui/ux": "#FAECF6",
-  frontend: "#F2EAF2",
-  backend: "#E6F8F7",
-  marketing: "#E9E9EA",
-};
-
-const COMPLETION_COLORS: Record<string, string> = {
-  "ui/ux": "#A43782",
-  frontend: "#7D2D7E",
-  backend: "#04B5AE",
-  marketing: "#27272B",
-};
 
 export function TeamCards({ teams }: { teams: ProjectTeamProgress[] }) {
   return (

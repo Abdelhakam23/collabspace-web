@@ -5,10 +5,10 @@ import { Calendar, Upload } from "lucide-react";
 import { createProject } from "@/lib/api/projects";
 import { uploadFileToProject } from "@/lib/api/files";
 import { listUsers } from "@/lib/api/users";
-import type { TaskPriority, User } from "@/lib/types";
+import type { TaskPriority, User } from "@/types";
+import { PRIORITIES } from "@/constants/projects";
 
 const SANS = "font-[family-name:var(--font-sans)]";
-const PRIORITIES: TaskPriority[] = ["Low", "Medium", "High", "Urgent"];
 
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
 const fieldBox = `${SANS} h-14 w-full rounded-[12px] border border-[#CBD5E0] bg-transparent px-4 py-2 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;

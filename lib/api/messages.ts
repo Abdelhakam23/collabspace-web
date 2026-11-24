@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, Message, Paginated } from "@/lib/types";
+import type { ApiEnvelope, Message, Paginated } from "@/types";
 
 function normalizeMessage(value: Message): Message {
   const raw = value as Message & { message?: string; sender?: Message["user"] };

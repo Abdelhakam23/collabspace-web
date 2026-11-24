@@ -5,7 +5,7 @@ import { Calendar, Upload } from "lucide-react";
 import { createTask } from "@/lib/api/tasks";
 import { uploadFileToTask } from "@/lib/api/files";
 import { listUsers } from "@/lib/api/users";
-import type { User } from "@/lib/types";
+import type { User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { listProjects } from "@/lib/api/projects";
 import { listProjectMessages } from "@/lib/api/messages";
-import type { Message } from "@/lib/types";
+import type { Message } from "@/types";
 import type { ChannelPreview } from "@/components/chats/sidebar";
 
 export function useChannels(): {

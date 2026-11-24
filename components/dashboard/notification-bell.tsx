@@ -7,7 +7,7 @@ import {
   listUserNotifications,
   markNotificationAsRead,
 } from "@/lib/api/notifications";
-import type { AppNotification } from "@/lib/types";
+import type { AppNotification } from "@/types";
 
 export function NotificationBell() {
   const [unread, setUnread] = useState(0);

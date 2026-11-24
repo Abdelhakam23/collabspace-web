@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, Project, Paginated, ProjectOverview, ProjectTeamProgress } from "@/lib/types";
+import type { ApiEnvelope, Project, Paginated, ProjectOverview, ProjectTeamProgress } from "@/types";
 
 export async function listProjects(query?: { page: string | number; per_page: string | number; sort: string | number }) {
   const { data } = await apiClient.get<ApiEnvelope<Paginated<Project>>>(`/api/v1/projects`, { params: query });

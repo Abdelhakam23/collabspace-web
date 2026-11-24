@@ -7,7 +7,7 @@ import { DurationMenu } from "@/components/meetings/duration-menu";
 import { AddMeetingOverlay } from "@/components/meetings/add-meeting-overlay";
 import { listMeetings } from "@/lib/api/meetings";
 import { getProfile } from "@/lib/api/profile";
-import type { Meeting, User } from "@/lib/types";
+import type { Meeting, User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 

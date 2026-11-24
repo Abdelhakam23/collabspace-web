@@ -7,8 +7,8 @@ import { CreateTaskOverlay } from "@/components/projects/create-task-overlay";
 import { TasksToolbar, type TaskScope } from "@/components/tasks/tasks-toolbar";
 import { listProjects } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
-import { useKanbanBoard } from "@/lib/use-kanban-board";
-import type { KanbanColumn, Project, User } from "@/lib/types";
+import { useKanbanBoard } from "@/hooks/use-kanban-board";
+import type { KanbanColumn, Project, User } from "@/types";
 
 export default function GlobalTasksPage() {
   const [projects, setProjects] = useState<Project[] | null>(null);

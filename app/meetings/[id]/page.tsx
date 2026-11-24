@@ -9,7 +9,7 @@ import { getMeetingDetails, getMeetingSummary } from "@/lib/api/meetings";
 import { getProjectOverview } from "@/lib/api/projects";
 import { getProfile } from "@/lib/api/profile";
 import { initials } from "@/lib/format";
-import type { Meeting, MeetingSummary, User } from "@/lib/types";
+import type { Meeting, MeetingSummary, User } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const RUBIK = "font-[family-name:var(--font-rubik)]";

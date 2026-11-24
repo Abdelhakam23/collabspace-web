@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope } from "@/lib/types";
+import type { ApiEnvelope } from "@/types";
 
 export async function projectReports() {
   const { data } = await apiClient.get<ApiEnvelope<unknown>>(`/api/v1/reports/projects`);

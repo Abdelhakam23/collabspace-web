@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Message, Project } from "@/lib/types";
+import type { Message, Project } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 

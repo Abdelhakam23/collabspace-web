@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Download, FileIcon, FileText, Image as ImageIcon } from "lucide-react";
 import { saveFileDownload } from "@/lib/api/files";
-import type { FileAttachment } from "@/lib/types";
+import type { FileAttachment } from "@/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 

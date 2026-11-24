@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, AppNotification } from "@/lib/types";
+import type { ApiEnvelope, AppNotification } from "@/types";
 
 export async function listUserNotifications(query?: { per_page: string | number }) {
   const { data } = await apiClient.get<ApiEnvelope<AppNotification[]>>(`/api/v1/notifications`, { params: query });
