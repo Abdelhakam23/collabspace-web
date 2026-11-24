@@ -13,18 +13,32 @@ it, not yet implemented; EXCLUDED = one source missing, reason given.
 ## Auth
 - Sign In (frame 225-9362): DONE. Google button disabled: A1.8/A1.9 exist
   but the saved backend redirect points at a localhost callback (noted
-  in-app); Language overlay: EXCLUDED (no i18n/locale API).
+  in-app).
 - Sign Up: DONE.
-- Forgot/reset password (A1.5-A1.7): EXCLUDED — no recovery screens in
-  the design, so the "Forget Password?" link stays inert by design rule.
+- Forgot/reset password (A1.5-A1.7): EXCLUDED — layer search for
+  "Forgot" on the UI Design page returns zero results; the
+  "Forget Password?" link stays inert by design rule.
+- Language overlay (139-2996, 210xHug116 r16 p16, rows English (checked)
+  / Arabic / France): TODO as a marked control — the selector itself is
+  drawn, but neither source contains any translated strings, so Arabic
+  and France render disabled with the limitation noted; no translations
+  will be invented.
 
 ## Core app
 - Dashboard (285-12895, A10.1): DONE.
 - All Projects list (114-1915, A4.1): DONE (filter/sort chips inert —
   A4.1 documents no such parameters).
-- New Project / Project overlay (A4.2): DONE. Two further "Project
-  overlay" frame variants exist (likely edit/other states): REVIEW
-  PENDING — if they are edit/delete surfaces (A4.5/A4.8), they are TODO.
+- New Project overlay (A4.2): DONE. The three "Project overlay" named
+  frames were reviewed (2026-11-24): 139-1571 is a project-picker
+  dropdown (All Projects checked / Project one / Project two, 210xHug116)
+  for the global Tasks Page; 163-1089 is a report-type picker (Project
+  Progress / Meetings Summery / Worker Preformance / Tasks / KPI's,
+  608xHug172) for the Reports screen; 163-995 is a period picker
+  (Monthly checked / Daily / Yearly, 210xHug116). None is an edit or
+  delete surface, so A4.5/A4.8 stay EXCLUDED (no drawn affordance).
+  Open: align the Tasks Page project dropdown with 139-1571, including
+  the "All Projects" entry (check A5.1 without project_id for whether an
+  all-projects task list is supported before enabling it).
 - Project shell: Overview (A4.3) DONE, Teams (A4.4) DONE, Tasks
   (A5.2/A5.3/A5.6) DONE, Files (A7.1/A7.2) DONE.
 - Global Tasks Page (107-11473): DONE (A4.1 + A5.2 + A5.3 + A5.6 + A2.1;
@@ -32,55 +46,81 @@ it, not yet implemented; EXCLUDED = one source missing, reason given.
 - Create Task Overlay: DONE. My task overlay: DONE (filter menu).
 
 ## Tasks/detail surfaces
-- Task detail/edit/assign/delete (A5.4, A5.5, A5.7, A5.8): EXCLUDED —
-  no task-detail surface exists anywhere in the design (layer-tree
-  search evidence).
+- Task detail/edit/assign/delete (A5.4, A5.5, A5.7, A5.8): EXCLUDED,
+  cross-checked on the UI Design page 2026-11-24: the only "Task
+  Details" nodes are boxes in a sitemap/flowchart diagram (160x24 labels
+  alongside "Workflows", "Timeline", "Table view", "Roles
+  (admin-manger)", "Channels", "Threads"), not a hi-fi screen. No edit
+  or delete affordance found ("Edit Task" and "Delete" layer searches:
+  zero results).
 - Column actions menu: EXCLUDED — no column-level endpoint.
 
 ## Meetings (design frames + A6.1-A6.10): TODO
-Frames seen: Meetings, Up coming meetings, Sprint Planning Meeting,
-Meetings / Join Meeting, Create meetings, Meetings settings, Add Meeting
-overlay, Duration overlay, Meetng summery. Not yet reviewed frame by
-frame; list/schedule (A6.1/A6.2) are the obvious core. AI summary
-(A6.6-A6.9) depends on what the summary frame offers.
+Hi-fi frames: Meetings (screen; node id pending), Meetings / Join
+Meeting (274-12876), Add Meeting overlay (139-2808), Duration overlay
+(139-1583: Today / This Week / This Month / Last Three Month / This
+Year — compare with A6.1 time_filter values before wiring). Items like
+"Up coming meetings", "Create meetings", "Meetings settings", "Sprint
+Planning Meeting" are in-screen labels/cards, not standalone frames
+(find-box type evidence, 2026-11-24). AI summary work (A6.6-A6.9)
+depends on what the summary surface offers.
 
 ## Chats (design frames + A8.1-A8.7): TODO
-Frames seen: Chats, Project Chat, Chat settings. Message send/edit/delete
-and thread replies have API support; frame review pending.
+Hi-fi frames: Chats (screen; node id pending). "Project Chat", "Search
+in chat", "Chat settings" are in-screen elements of it (find-box type
+evidence). Message send/edit/delete and thread replies have API support;
+frame review pending.
 
 ## Notifications (Notification overlay + A9.1-A9.6): TODO
-The navbar bell is currently inert with a static dot; A9.3 (unread count)
-plus the overlay frame make this a supported surface.
+Overlay frame 209-6425. The navbar bell is currently inert with a
+static dot; A9.3 (unread count) plus the overlay make this supported.
 
-## Reports (Reports / Detailed Reports / KPI frames + A11.1-A11.5): TODO
-Frames seen: Reports, Detailed Reports, Print/Save Report, KPI's,
-Personal, Meetng summery, Project progress. Frame review pending;
-print/save has no API (browser print is a client concern — review).
+## Reports (Reports screen + pickers + A11.1-A11.5): TODO
+Hi-fi frames: Reports (screen; node id pending) with the report-type
+picker 163-1089 and period picker 163-995. "Detailed Reports", "Print/
+Save Report", "KPI's", "Personal", "Project progress" are in-screen
+labels (find-box type evidence); print/save has no API (browser print
+is a client concern — review during implementation).
 
 ## Ask AI (Ask AI + Ask Ai/ chat frames + A10.2-A10.4): TODO
-Robot artwork recovery via Copy-as-SVG is the immediate next step, then
-the chat surface against A10.2/A10.3.
+Frames: Ask AI empty state 225-9992 (1440x1024, BG #F6F8FA, "Collabspace
+AI" heading, sparkle badge, "Hi There" greeting, input card "ask me
+anything about...." with + / mic / Submit), chat surface 229-5948
+(1440x1024 Hug, AI/user bubbles with CB badge and avatar, external-link
+card, feedback icon row, typing indicator, "Message to ChatBot...."
+input). No robot artwork exists on these frames (layer search "robot":
+zero results); the center badge is a sparkle icon from the icon set.
+Entry point from the navbar or dashboard to be confirmed during
+implementation.
 
 ## Profile (Profile, /overview, /tasks, /files, /Settomgs + A2.x): TODO
 Profile/overview (A2.1), Profile / tasks (A2.5), Profile / files (A2.6),
 Profile/Settings (A2.2 avatar, A2.3 remove avatar, A2.4 password) are all
-in the intersection.
+in the intersection. Node ids pending harvest.
 
 ## Search
-- Search Bar overlay: REVIEW PENDING — no global /search endpoint exists
-  in the collection; per-field search is already client-side where drawn.
-  If the overlay is a command/search UI, it is EXCLUDED unless an endpoint
-  is found.
+- Search Bar overlay (225-10323): REVIEW PENDING — no global /search
+  endpoint exists in the collection; per-field search is already
+  client-side where drawn. If the overlay is a command/search UI, it is
+  EXCLUDED unless an endpoint is found. Inspect the frame content before
+  finalizing.
 
 ## Admin/AI settings/audit
 - A12 user management, A13.1/A13.2 AI settings, A13.3 audit logs:
-  EXCLUDED unless matching admin frames are found — none seen so far in
-  layer searches ("Users", "Settings", "Audit" show only Profile/Settings,
-  which is self-service).
+  EXCLUDED, cross-checked on the UI Design page 2026-11-24: "Admin"
+  search returns only "John Doe (Admin)" card labels and sitemap boxes;
+  "Audit" returns only case-study "Accessibility Audit" text. No admin
+  frames exist.
 
 ## Files
 - File delete (A7.6): EXCLUDED — no drawn affordance.
 - File download (A7.5): read-only, DONE if wired (verify during sweep).
+
+## Unidentified top-level layers (identify during implementation)
+Frame 2147224599, Frame 2147224589, Frame 2147224606, Frame 2147224473,
+Frame 2147224287, Rectangle 40093, Frame, n 1, image 1, image 1830,
+Group 43674 — likely decorative assets or older frame versions; each
+gets a one-line classification before the final sweep.
 
 ## Testing boundary (all TODO families)
 Reads render live data; every write flow (schedule meeting, send message,
