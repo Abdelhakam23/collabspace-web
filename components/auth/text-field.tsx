@@ -7,7 +7,7 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 /**
- * Field from the design: 56px tall, 10px radius, 1px #CBD5E0 border,
+ * Field from the design: 54px tall, 10px radius, 1px #CBD5E0 border,
  * #F9FAFB fill, label notched over the top border, leading icon in #718096.
  */
 export function TextField({ label, icon, error, id, ...props }: TextFieldProps) {
@@ -21,7 +21,7 @@ export function TextField({ label, icon, error, id, ...props }: TextFieldProps) 
           {label}
         </label>
         <div
-          className={`flex h-14 items-center gap-3 rounded-[10px] border bg-[#f9fafb] px-4 text-[#718096] transition-colors focus-within:border-primary-500 ${
+          className={`flex h-[54px] items-center gap-3 rounded-[10px] border bg-[#f9fafb] px-4 text-[#718096] transition-colors focus-within:border-primary-500 ${
             error ? "border-[#af2622]" : "border-[#cbd5e0]"
           }`}
         >

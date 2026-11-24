@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, CSSProperties } from "react";
 import { GoogleIcon } from "./icons";
 
 /** Primary action: 40px tall, 16px radius, primary blue. */
@@ -60,6 +60,7 @@ export function RememberMe({
 }) {
   return (
     <label className="flex cursor-pointer items-center gap-2 text-base text-[#718096]">
+      {/* Native checkbox is 16x16; the Remember/Forgot row block measures 36px tall. */}
       <input
         type="checkbox"
         checked={checked}
@@ -90,11 +91,22 @@ export function AuthHeading({
   titleClassName?: string;
 }) {
   return (
-    <div className="space-y-3 text-center">
+    <div className="space-y-[15px] text-center">
       {/* Native Figma properties: Sign In title Inter 600 31px #1F2937,
-          Sign Up title Inter 700 36px #1F2937, subtitle Inter 400 16px #718096. */}
-      <h1 className={`${titleClassName} leading-tight text-[#1f2937]`}>{title}</h1>
-      <p className="text-base text-[#718096]">{subtitle}</p>
+          Sign Up title Inter 700 36px #1F2937, subtitle Inter 400 16px #718096.
+          Boxes are cap-trimmed: the native heading block measures 48px tall. */}
+      <h1
+        className={`${titleClassName} text-[#1f2937]`}
+        style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as CSSProperties}
+      >
+        {title}
+      </h1>
+      <p
+        className="text-base text-[#718096]"
+        style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as CSSProperties}
+      >
+        {subtitle}
+      </p>
     </div>
   );
 }

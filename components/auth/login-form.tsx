@@ -61,7 +61,7 @@ export function LoginForm() {
         icon={<Lock size={20} strokeWidth={1.6} />}
         error={fieldErrors.password?.[0]}
       />
-      <div className="flex items-center justify-between">
+      <div className="flex h-9 items-center justify-between">
         <RememberMe checked={remember} onChange={setRemember} />
         {/* The design shows this link, but the file has no recovery screens, so
             there is no Figma source for where it leads. Rendered inert until a
