@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CollabSpace
 
-## Getting Started
+A collaborative project management platform for teams: projects, tasks, meetings, files, messaging, reports and AI-assisted insights.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS 4
+- TanStack Query 5 for server state
+- Axios API client with Bearer token auth
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local   # set NEXT_PUBLIC_API_URL
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `app/` — routes, layouts, providers
+- `lib/api-client.ts` — axios instance, auth token handling, error envelope
+- `lib/api/` — typed API modules per domain (auth, projects, tasks, meetings, files, messages, notifications, dashboard, reports, teams, users, profile, ai)
+- `lib/types.ts` — shared domain types
+- `components/` — shared UI components
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Workflow
 
-## Learn More
+- Feature branches off `development`, pull requests back into `development`.
+- `main` holds the integrated, reviewed result.
 
-To learn more about Next.js, take a look at the following resources:
+## API configuration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The app talks to the CollabSpace backend at the URL in `NEXT_PUBLIC_API_URL`
+(see `.env.local`; the collection's host is the default). All requests go
+through `lib/api-client.ts`: the Bearer token is read from web storage
+(localStorage when "Remember Me" is checked, sessionStorage otherwise), a
+401 outside the auth calls clears the token and returns to `/login`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scope: implemented vs unsupported
 
-## Deploy on Vercel
+Every screen is built from the Figma UI Design frames, and only where both
+the design and the backend collection support the control. The headline
+areas (auth, dashboard, projects, tasks kanban, meetings, chats with
+attachments, notifications, Ask AI, reports, profile) are fully wired.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Controls the design draws but the API does not serve render disabled with
+an on-control reason instead of pretending to work: video/voice call
+buttons, global and in-chat search, report filters and the detailed-report
+form, most duration/month navigation options. Where an endpoint's payload
+cannot honestly feed a drawn element (for example the report charts, which
+would need duration/rate series the API does not return), the element shows
+an explicit empty state rather than invented numbers.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`docs/screen-coverage.md` lists every screen, its source frames and
+endpoints, and each deviation or disabled control with its reason.
