@@ -56,7 +56,8 @@ export function TasksTab({ tasks }: { tasks: Task[] | null }) {
   );
 }
 
-function fileSize(bytes: number): string {
+function fileSize(bytes: number | undefined): string {
+  if (typeof bytes !== "number") return "";
   if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${bytes} B`;
@@ -90,7 +91,7 @@ export function FilesTab({ files }: { files: FileAttachment[] | null }) {
             <p className={`${SANS} truncate text-[13px] font-semibold text-[#000712]`}>{file.original_name || file.name}</p>
             <p className={`${SANS} truncate text-[11px] text-[#606C80]`}>
               {file.uploader ? `By ${file.uploader.name} • ` : ""}
-              {fileSize(file.size)} • {ago(file.created_at)}
+              {file.size !== undefined ? `${fileSize(file.size)} • ` : ""}{ago(file.created_at)}
             </p>
           </div>
           <a
