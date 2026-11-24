@@ -91,17 +91,19 @@ export function KanbanBoard({
   onChanged,
   onMoveTask,
   pendingMove,
+  className = "mt-8",
 }: {
   columns: KanbanColumn[];
   projectId: string;
   onChanged: () => void;
   onMoveTask: (taskId: number, toStatus: string) => void;
   pendingMove: number | null;
+  className?: string;
 }) {
   const [creatingIn, setCreatingIn] = useState<string | null>(null);
   return (
     <>
-      <div className="mt-8 grid items-stretch gap-8 md:grid-cols-2 xl:grid-cols-4">
+      <div className={`${className} grid items-stretch gap-8 md:grid-cols-2 xl:grid-cols-4`}>
         {columns.map((col) => {
           const style = columnStyle(col.status);
           return (

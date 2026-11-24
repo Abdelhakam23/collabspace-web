@@ -14,7 +14,7 @@ import { Bell, Search } from "lucide-react";
 const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Reports"];
 const M = "font-[family-name:var(--font-rubik)]";
 
-const ROUTES: Record<string, string> = { Dashboard: "/dashboard", Projects: "/projects" };
+const ROUTES: Record<string, string> = { Dashboard: "/dashboard", Projects: "/projects", Tasks: "/tasks" };
 
 export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { userName: string; userRole?: string; active?: string }) {
   return (

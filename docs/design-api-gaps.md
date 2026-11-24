@@ -390,3 +390,33 @@ Status of every designed control against its API, per the intersection rule:
   a drawn control it stays excluded.
 - Task filters (plan 3.2): PENDING - limited to what the drawn controls and
   A5.1 query params jointly support.
+
+## Global Tasks Page (frame 107-11473, /tasks)
+
+Toolbar (Frame 2147224445, 1312x44, justify-between; page padding 64, gap to
+navbar 39, gap to kanban region 26 — Frame 2147224455, 1312xHug 695, column
+gap 32 like the project tab):
+
+- Search (326x40, radius 100, padding L16 R4): fill #E9E9EA, no stroke
+  (pixel-sampled from the deselected frame at 46%). Filters the loaded
+  board client-side (title + description). A5.2 returns the full board for
+  the selected project with no pagination envelope, so loaded == complete
+  for that project; if the API ever pages the kanban payload, this filter
+  becomes loaded-only.
+- "Project 1" chip (Hug x 44, radius 16, 1px border, padding 10, gap 10):
+  lists A4.1 projects; switching re-loads the board. Chip fill matches the
+  page (#F6F8FA); border is dark, sampled ~#4A4A4A at 46% — kept #27272B
+  for consistency with the sibling Projects-page chips (direct read there);
+  the two are indistinguishable at capture scale.
+- "My Task" chip opens the "My task overlay" menu (210 x Hug 172, radius
+  16, padding 16): My Tasks filters the loaded board by assignee == /me id
+  (A2.1); All Tasks clears it. UIUX / Front End / Back End are disabled:
+  the task payload carries no team field and A5.1 documents no team filter,
+  so no client- or server-side team mapping exists.
+- "Create Task +" (shared Button component, Hug 136 x 40): opens the same
+  Create Task overlay as the project tab, scoped to the selected project
+  with the default To-do status (no column context on this page).
+- Cards reuse the project-tab component. Native extras stay omitted (no
+  progress, comments, attachment or reviewer fields in A5.2); assignee
+  (initials avatar) and due date are rendered because A5.2 provides them.
+- Column "..." actions stay inert: no column-level endpoint exists.
