@@ -7,9 +7,6 @@ import { TeamCards } from "@/components/projects/team-cards";
 import { getProjectTeamsTaskProgress } from "@/lib/api/projects";
 import type { ProjectTeamProgress } from "@/lib/types";
 
-/** Teams tab of the project screen ("All Projects / Alpha / teams",
- * node 181-1982), wired to A4.4. */
-
 export default function ProjectTeamsPage() {
   return (
     <Suspense>
