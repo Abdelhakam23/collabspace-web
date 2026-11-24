@@ -45,7 +45,7 @@ function shortDate(value?: string | null) {
 function Card({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
     <section className={`rounded-2xl border border-[#F3F4F6] bg-white p-5 ${className}`}>
-      <h2 className={`${SANS} mb-3 text-[20px] font-medium leading-[150%] text-[#191919]`}>{title}</h2>
+      <h2 className={`${SANS} mb-5 text-[20px] font-medium leading-[150%] text-[#191919]`}>{title}</h2>
       {children}
     </section>
   );
@@ -55,20 +55,24 @@ function Card({ title, children, className = "" }: { title: string; children: Re
  *  (native read); remainder #E9E9EA and the 6px track are pixel-sampled and
  *  remain disclosed as sampled in docs/design-api-gaps.md. */
 function Gauge({ pct }: { pct: number }) {
+  // 270-degree ring (gap at the bottom), 177.61px ellipse, ~11px stroke
+  // #27272B on a light track - geometry per native ellipse read plus the
+  // zoomed capture; the needle maps the same fraction as the arc.
   const clamped = Math.min(100, Math.max(0, pct));
-  const angle = Math.PI * (1 - clamped / 100);
+  const cx = 95, cy = 95, r = 83.3;
+  const start = (225 * Math.PI) / 180; // lower-left, math angle
+  const sweep = (270 * Math.PI) / 180;
+  const pt = (a: number) => `${(cx + r * Math.cos(a)).toFixed(1)} ${(cy - r * Math.sin(a)).toFixed(1)}`;
+  const end = start - sweep;
+  const frac = start - (sweep * clamped) / 100;
   return (
-    <svg viewBox="0 0 190 112" className="mx-auto w-[190px]">
-      <path d="M6.2 105 A88.8 88.8 0 0 1 183.8 105" fill="none" stroke="#E9E9EA" strokeWidth="6" strokeLinecap="round" />
-      <path
-        d={`M6.2 105 A88.8 88.8 0 0 1 ${95 + 88.8 * Math.cos(angle)} ${105 - 88.8 * Math.sin(angle)}`}
-        fill="none"
-        stroke="#27272B"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-      <line x1="95" y1="105" x2={95 + 53 * Math.cos(angle)} y2={105 - 53 * Math.sin(angle)} stroke="#27272B" strokeWidth="4" strokeLinecap="round" />
-      <circle cx="95" cy="105" r="5" fill="#FFFFFF" stroke="#27272B" strokeWidth="3" />
+    <svg viewBox="0 0 190 190" className="mx-auto w-[177.61px]">
+      <path d={`M${pt(start)} A${r} ${r} 0 1 1 ${pt(end)}`} fill="none" stroke="#E9E9EA" strokeWidth="11" strokeLinecap="round" />
+      {clamped > 0 ? (
+        <path d={`M${pt(start)} A${r} ${r} 0 ${clamped > 50 ? 1 : 0} 1 ${pt(frac)}`} fill="none" stroke="#27272B" strokeWidth="11" strokeLinecap="round" />
+      ) : null}
+      <line x1={cx} y1={cy} x2={cx + 52 * Math.cos(frac)} y2={cy - 52 * Math.sin(frac)} stroke="#27272B" strokeWidth="5" strokeLinecap="round" />
+      <circle cx={cx} cy={cy} r="6" fill="#FFFFFF" stroke="#27272B" strokeWidth="3.5" />
     </svg>
   );
 }
@@ -177,15 +181,21 @@ function ProjectDetailContent() {
   return (
     <div className="min-h-screen bg-[#F6F8FA]">
       <DashboardNavbar userName={userName} userRole={userRole} active="Projects" />
-      <main className="relative px-4 pt-8 sm:px-8 lg:px-16 lg:pt-[43px]">
-        <div>
-          <div>
+      {/* Native layout (frame 181-1158): header block top 104 (navbar 76),
+          left 65, 1311 wide, Hug 71: title column (Fill 955, vertical gap 16:
+          breadcrumb + title row) beside the Due Date card (Fixed 324x71,
+          radius 12, border #F3F4F6, padding 12, gap 16). Content frame top
+          207: tabs row (Hug 28, gap 30), gap 32, cards grid (707 tall): left
+          column Fixed 864, right column Fixed 416, separated 32. */}
+      <main className="px-4 pt-7 sm:px-8 lg:px-16 lg:pt-[28px]">
+        <div className="flex items-start justify-between gap-8">
+          <div className="flex flex-col gap-4">
             <p className={`${SANS} text-sm text-black/60`}>
               <Link href="/projects" className="hover:underline">Projects</Link>
               <span className="px-1">&gt;</span>
               {project?.name ?? "…"}
             </p>
-            <div className="mt-[10px] flex items-baseline gap-3">
+            <div className="flex items-baseline gap-3">
               <h1
                 className={`${SANS} text-[31px] font-semibold leading-[150%] text-black`}
                 style={{ textBoxTrim: "trim-both", textBoxEdge: "cap alphabetic" } as React.CSSProperties}
@@ -196,26 +206,23 @@ function ProjectDetailContent() {
             </div>
           </div>
 
-          {/* Due Date card drawn in the top header, right of the title.
-              Absolutely positioned so it does not push the tabs row down;
-              the source's title/tabs flow is unchanged. */}
-          <section className="absolute right-4 top-8 hidden w-[284px] rounded-2xl border border-[#F3F4F6] bg-white p-5 sm:right-8 lg:right-16 lg:top-[38px] lg:block">
-            <h2 className={`${SANS} mb-3 text-[20px] font-medium leading-[150%] text-[#191919]`}>Due Date</h2>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#E6EFFF]">
+          <section className="hidden w-[324px] shrink-0 flex-col gap-2 rounded-[12px] border border-[#F3F4F6] bg-white p-3 lg:flex">
+            <h2 className={`${SANS} text-sm font-medium leading-[150%] text-[#191919]`}>Due Date</h2>
+            <div className="h-[3px] w-full overflow-hidden rounded-full bg-[#E6EFFF]">
               <div className="h-full rounded-full bg-[#005AFB]" style={{ width: `${Math.round(elapsed * 100)}%` }} />
             </div>
-            <div className="mt-3 flex items-center justify-between">
-              <p className={`${SANS} text-[13px] text-[#383838]`}>
+            <div className="flex items-center justify-between">
+              <p className={`${SANS} text-[11px] text-[#383838]`}>
                 Start Date: <span className="font-medium">{shortDate(project?.start_date)}</span>
               </p>
-              <p className={`${SANS} text-[13px] text-[#383838]`}>
+              <p className={`${SANS} text-[11px] text-[#383838]`}>
                 Deadline: <span className="font-medium">{shortDate(project?.deadline)}</span>
               </p>
             </div>
           </section>
         </div>
 
-        <nav className="mt-[40px] flex items-center gap-8">
+        <nav className="mt-8 flex h-7 items-center gap-[30px]">
           {TABS.map((t, i) =>
             i === 0 ? (
               <span key={t} aria-current="page" className={`${SANS} border-b-2 border-[#005AFB] pb-1 text-base font-medium text-[#005AFB]`}>
@@ -229,8 +236,8 @@ function ProjectDetailContent() {
           )}
         </nav>
 
-        <div className="mt-[46px] grid gap-6 lg:grid-cols-[862px_416px] lg:justify-between">
-          <div className="flex flex-col gap-6">
+        <div className="mt-8 grid gap-6 lg:grid-cols-[864px_416px] lg:justify-between">
+          <div className="flex flex-col gap-8">
             <Card title="Description">
               <p className={`${SANS} text-base leading-[150%] text-[#525256]`}>
                 {project?.description ?? ""}
@@ -277,7 +284,7 @@ function ProjectDetailContent() {
             </Card>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             <Card title="Project Progress">
               <Gauge pct={pct} />
               <p className={`${SANS} mt-1 text-center text-base font-medium text-black`}>{pct}%</p>

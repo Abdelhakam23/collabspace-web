@@ -33,7 +33,9 @@ const PRIORITIES: TaskPriority[] = ["Low", "Medium", "High", "Urgent"];
 // Labels notch into the field border as drawn in the frame: they sit on the
 // top border line with a white chip behind the text, not above the field.
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
-const fieldBox = `${SANS} h-[62px] w-full rounded-[12px] border border-[#CBD5E0] bg-[#F9FAFB] px-4 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
+// Native input: Fixed 56px, radius 12, border 1px #CBD5E0, padding 8/16,
+// gap 12, no fill (the modal's white shows through).
+const fieldBox = `${SANS} h-14 w-full rounded-[12px] border border-[#CBD5E0] bg-transparent px-4 py-2 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
 
 export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [name, setName] = useState("");
@@ -113,7 +115,9 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           </button>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-[1.6fr_1fr]">
+        {/* Fields stack: vertical, gap 33 (native). Name + Priority share a
+            row: name Fixed 410, priority Fill 229, row gap 33. */}
+        <div className="grid gap-[33px] sm:grid-cols-[410px_1fr]">
           <label className="relative block">
             <span className={fieldLabel}>Project Name</span>
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#718096]">
@@ -159,7 +163,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
                   setGuess("");
                 }
               }}
-              className="absolute right-2 top-1/2 flex h-10 -translate-y-1/2 items-center gap-1.5 rounded-full bg-[#000712] px-5 text-sm font-medium text-white"
+              className="absolute right-4 top-1/2 flex h-[30px] -translate-y-1/2 items-center gap-1.5 rounded-full bg-[#27272B] px-[22px] text-sm font-medium text-white"
             >
               Add
               <svg width="9.33" height="9.33" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
@@ -168,7 +172,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
             </button>
           </div>
           {members.length ? (
-            <div className="mt-3 flex items-center gap-[12.5px]">
+            <div className="mt-4 flex h-10 items-center gap-[12.5px]">
               {members.map((m) => (
                 <span key={m.id} title={m.name} className="flex h-10 w-10 items-center justify-center rounded-full border-[2.5px] border-[#C2C2C2] bg-[#F6F8FA] text-xs text-[#000712]">
                   {m.avatar_url ? (
@@ -183,7 +187,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           ) : null}
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-[33px] sm:grid-cols-2">
           <label className="relative block">
             <input
               required
@@ -208,12 +212,13 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           </label>
         </div>
 
-        <div>
-          <span className={`${SANS} mb-1 block text-xs text-[#718096]`}>Add Project Files</span>
+        {/* Upload block: Fixed 163, vertical, gap 16 (native) */}
+        <div className="flex h-[163px] flex-col gap-4">
+          <span className={`${SANS} block text-xs text-[#718096]`}>Add Project Files</span>
           <button
             type="button"
             onClick={() => fileInput.current?.click()}
-            className="flex h-[129px] w-full items-center justify-center gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white p-9 text-sm text-[#718096]"
+            className="flex w-full flex-1 items-center justify-center gap-2 rounded-[4px] border-[0.5px] border-dashed border-[#718096] bg-white text-sm text-[#718096]"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 16V4m0 0 4 4m-4-4L8 8" />

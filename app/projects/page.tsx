@@ -165,59 +165,78 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        <div className="mt-[27px]">
-          <div className="grid grid-cols-[171px_184px_178px_180px_184px_176px_1fr] items-center border-b border-[#E8E9EB] pl-[28px]">
+        {/* Table per native reads: vertical list, gap 16, header Hug 59
+            (border-bottom 1px #BCBCBD, padding T4 B8) and rows Hug 60 (white,
+            padding T4 B4, 12px horizontal) each holding seven equal Fill cells
+            (header 181.71px, rows 184px) with 10px cell padding, plus the
+            header's trailing 40x40 bordered box. Because header and row cell
+            widths differ by design, header labels and row values sit a few
+            pixels apart - that offset is drawn, not a defect. */}
+        <div className="mt-5 flex flex-col gap-4">
+          <div className="flex items-center border-b border-[#BCBCBD] pb-2 pt-1">
             {["Project Name", "Start Date", "Deadline", "Status", "Files", "Teams", "Priority"].map((h) => (
-              <span key={h} className={`${SANS} py-4 text-[18px] font-medium leading-[150%] text-[#000712]`}>
+              <span key={h} className={`${SANS} flex-1 p-[10px] text-left text-[18px] font-medium leading-[150%] text-[#000712]`}>
                 {h}
               </span>
             ))}
+            <span aria-hidden="true" className="h-10 w-10 shrink-0 rounded-lg border border-[#27272B]" />
           </div>
           {(projects ?? []).filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase())).map((p) => {
             const members = (p.teams ?? []).flatMap((t) => t.members ?? []);
+            const cell = "flex flex-1 items-center p-[10px]";
             return (
               <Link
                 key={p.id}
                 href={`/projects/${p.id}`}
-                className="grid h-[60px] grid-cols-[171px_184px_178px_180px_184px_176px_1fr] items-center border-b border-[#F3F4F6] bg-white py-1 pl-[28px] [&>*:first-child]:pl-7"
+                className="flex h-[60px] items-center border-b border-[#F3F4F6] bg-white px-3 py-1"
               >
-                <span className="flex items-center gap-2">
+                <span className={`${cell} gap-2`}>
                   <ProjectIcon />
                   <span className={`${SANS} text-sm text-[#000712]`}>{p.name}</span>
                 </span>
-                <span className={`${SANS} text-sm text-[#000712]`}>{p.start_date ?? ""}</span>
-                <span className={`${SANS} text-sm text-[#000712]`}>{p.deadline ?? ""}</span>
-                <span className={`${SANS} text-sm`} style={{ color: STATUS_COLORS[p.status] ?? "#000712" }}>
-                  {p.status === "Completed" ? "Done" : p.status.toLowerCase()}
+                <span className={cell}>
+                  <span className={`${SANS} text-sm text-[#000712]`}>{p.start_date ?? ""}</span>
                 </span>
-                <span className="flex items-center gap-2">
+                <span className={cell}>
+                  <span className={`${SANS} text-sm text-[#000712]`}>{p.deadline ?? ""}</span>
+                </span>
+                <span className={cell}>
+                  <span className={`${SANS} text-sm`} style={{ color: STATUS_COLORS[p.status] ?? "#000712" }}>
+                    {p.status === "Completed" ? "Done" : p.status.toLowerCase()}
+                  </span>
+                </span>
+                <span className={`${cell} gap-2`}>
                   <FolderIcon />
                   <span className={`${SANS} text-sm text-[#000712]`}>{p.files_count ?? 0} Files</span>
                 </span>
-                <span className="flex items-center">
-                  {members.slice(0, 4).map((m, i) => (
-                    <span
-                      key={m.id}
-                      className={`${SANS} flex h-[23.73px] w-[23.73px] items-center justify-center rounded-full border-[1.48px] border-[#C2C2C2] bg-[#F6F8FA] text-[9px] text-[#000712] ${i > 0 ? "-ml-1.5" : ""}`}
-                      title={m.user.name}
-                    >
-                      {m.user.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={m.user.avatar_url} alt={m.user.name} className="h-full w-full rounded-full object-cover" />
-                      ) : (
-                        initials(m.user.name)
-                      )}
-                    </span>
-                  ))}
+                <span className={cell}>
+                  <span className="flex items-center">
+                    {members.slice(0, 4).map((m, i) => (
+                      <span
+                        key={m.id}
+                        className={`${SANS} flex h-[23.73px] w-[23.73px] items-center justify-center rounded-full border-[1.48px] border-[#C2C2C2] bg-[#F6F8FA] text-[9px] text-[#000712] ${i > 0 ? "-ml-1.5" : ""}`}
+                        title={m.user.name}
+                      >
+                        {m.user.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={m.user.avatar_url} alt={m.user.name} className="h-full w-full rounded-full object-cover" />
+                        ) : (
+                          initials(m.user.name)
+                        )}
+                      </span>
+                    ))}
+                  </span>
                 </span>
-                <span className={`${SANS} text-sm`} style={{ color: PRIORITY_COLORS[p.priority] ?? "#000712" }}>
-                  {p.priority}
+                <span className={cell}>
+                  <span className={`${SANS} text-sm`} style={{ color: PRIORITY_COLORS[p.priority] ?? "#000712" }}>
+                    {p.priority}
+                  </span>
                 </span>
               </Link>
             );
           })}
           {projects !== null && projects.length === 0 ? (
-            <div className={`${SANS} border-b border-[#F3F4F6] bg-white py-6 pl-[34px] text-sm text-[#718096]`}>
+            <div className={`${SANS} border-b border-[#F3F4F6] bg-white px-3 py-6 text-sm text-[#718096]`}>
               No projects yet.
             </div>
           ) : null}
