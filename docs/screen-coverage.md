@@ -75,19 +75,30 @@ DONE (/meetings, node-read measurements):
 - This Week control + Duration overlay: only "This Week" is enabled
   (sends the documented time_filter=upcoming); the other four drawn
   options have no documented value and render disabled with a title.
-  Closed control's border is pixel-estimated as #CBD5E0 (native
-  control too small to sample cleanly).
+  ASSUMED MAPPING: "This Week" is the frame's label; the endpoint's
+  actual scope for time_filter=upcoming is not documented and could
+  not be verified without live reads, so the grid renders every
+  meeting it receives and never trims the list to the label. Closed
+  control's border is pixel-estimated as #CBD5E0 (native control too
+  small to sample cleanly).
 - Week grid (114-2617: 1311 at left 64/top 281): six equal 218.5px
-  columns (time column + five days), rows fixed 137px with 1px #F3F4F6
-  row/cell borders, day cells p16/12 gap2, time cell p16 gap2. The
-  frame repeats the weekday+number header (Rubik 400 14/16 #000,
-  centered) inside every row, so the grid does the same. Today column
-  filled #E6EFFF (pixel-sampled). The frame draws a "Today" column
-  plus weekday labels ("Thurs" spelling kept), so the grid shows today
-  plus the next four days with real dates. Hour rows are the drawn
-  9:00-13:00; meetings outside that window have no cell (design
-  limitation). The native frame's grid (Hug 789) overflows its own
-  1024 frame, so the web page scrolls naturally instead.
+  columns (time column + five days), rows with 1px #F3F4F6 row/cell
+  borders, day cells p16/12 gap2, time cell p16 gap2. The frame
+  repeats the weekday+number header (Rubik 400 14/16 #000, centered)
+  inside every row, so the grid does the same. Today column filled
+  #E6EFFF (pixel-sampled). The frame draws a "Today" column plus
+  weekday labels ("Thurs" spelling kept), so the grid shows today
+  plus the next four days with real dates. Two design conflicts were
+  resolved for correctness: drawn rows are fixed 137px but the drawn
+  card+header stack is 171px, so cells use 137px as a MINIMUM and grow
+  with their cards (the first implementation clipped cards at the row
+  boundary); and the drawn 9:00-13:00 hour window grows when returned
+  meetings start earlier or later, so no appointment loses its cell.
+  Meetings whose day falls outside the five drawn columns are counted
+  in a line under the grid ("N more meetings fall outside the five
+  days the design draws.") instead of disappearing. The native
+  frame's grid (Hug 789) overflows its own 1024 frame, so the web
+  page scrolls naturally instead.
 - Meeting card (114-3050: Fill194.5 x Fixed105, r16, 1px #F3F4F6, p12,
   white; has an on-click interaction to the Join frame): title Inter
   400 14/16 #000, time Inter 400 12/16 #000/75% (native marks center

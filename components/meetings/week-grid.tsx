@@ -6,21 +6,25 @@ import type { Meeting } from "@/lib/types";
  * container is 1311px at left 64 with six equal 218.5px columns: a time
  * column plus five day columns. Native rows are 137px tall with a 1px
  * #F3F4F6 bottom border; cells carry a 1px right border in the same color,
- * vertical padding 16 (12 on the sides for day cells) and a 2px gap. The
- * frame repeats the weekday/day-number header inside every row, so the grid
- * does the same. The "Today" column is filled #E6EFFF (pixel-sampled).
- *
- * The frame draws a "Today" column followed by weekday labels, so the grid
- * shows today plus the next four days with real dates; the drawn hour rows
- * are 9:00-13:00 and meetings are placed by their start hour (meetings
- * outside the drawn window have no cell, disclosed in
- * docs/screen-coverage.md). Weekday labels use the frame's own spelling
- * ("Thurs").
+ * vertical padding 16 (12 on the sides for day cells) and a 2px gap. Cells
+ * use 137px as a MINIMUM and grow with their cards, because the drawn
+ * card+header stack (171px) is taller than the drawn row and clipped in
+ * the first implementation. The frame repeats the weekday/day-number
+ * header inside every row, so the grid does the same. The "Today" column
+ * is filled #E6EFFF (pixel-sampled). The frame draws a "Today" column
+ * followed by weekday labels, so the grid shows today plus the next four
+ * days with real dates; weekday labels keep the frame's spelling
+ * ("Thurs"). The drawn hour rows are 9:00-13:00; the window grows when
+ * returned meetings start earlier or later so every returned meeting
+ * keeps a cell, and meetings outside the five drawn days are counted
+ * below the grid instead of disappearing.
  */
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const RUBIK = "font-[family-name:var(--font-rubik)]";
-const HOURS = [9, 10, 11, 12, 13];
+// Drawn hour window; the grid widens it when returned meetings need it.
+const DRAWN_START = 9;
+const DRAWN_END = 13;
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thurs", "Fri", "Sat"];
 
 function sameDay(a: Date, b: Date) {
@@ -121,6 +125,13 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
   const placed = meetings
     .map((meeting) => ({ meeting, start: new Date(meeting.start_time) }))
     .filter(({ start }) => !Number.isNaN(start.getTime()));
+  // The drawn rows are 9:00-13:00; grow the window so no returned meeting
+  // loses its cell.
+  const inGrid = placed.filter(({ start }) => days.some((d) => sameDay(start, d)));
+  const startHour = Math.min(DRAWN_START, ...inGrid.map(({ start }) => start.getHours()));
+  const endHour = Math.max(DRAWN_END, ...inGrid.map(({ start }) => start.getHours()));
+  const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => startHour + i);
+  const hiddenCount = placed.length - inGrid.length;
 
   return (
     <div className="mt-[39px] max-w-[1311px]">
@@ -138,10 +149,10 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
           </div>
         ))}
       </div>
-      {/* One row per drawn hour; the frame repeats the day headers per row. */}
-      {HOURS.map((hour) => (
+      {/* One row per hour; the frame repeats the day headers per row. */}
+      {hours.map((hour) => (
         <div key={hour} className="grid grid-cols-6 border-b border-[#F3F4F6]">
-          <div className="flex h-[137px] flex-col gap-0.5 border-r border-[#F3F4F6] p-4">
+          <div className="flex min-h-[137px] flex-col gap-0.5 border-r border-[#F3F4F6] p-4">
             <span className={`${RUBIK} text-sm font-normal leading-4 text-black`}>{hour}:00</span>
           </div>
           {days.map((d, i) => {
@@ -149,7 +160,7 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
             return (
               <div
                 key={d.toDateString()}
-                className={`flex h-[137px] flex-col items-center gap-0.5 px-3 py-4 ${i < days.length - 1 ? "border-r border-[#F3F4F6]" : ""} ${i === 0 ? "bg-[#E6EFFF]" : ""}`}
+                className={`flex min-h-[137px] flex-col items-center gap-0.5 px-3 py-4 ${i < days.length - 1 ? "border-r border-[#F3F4F6]" : ""} ${i === 0 ? "bg-[#E6EFFF]" : ""}`}
               >
                 <DayHeader date={d} label={i === 0 ? "Today" : WEEKDAYS[d.getDay()]} />
                 {cellMeetings.map(({ meeting }) => (
@@ -160,6 +171,11 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
           })}
         </div>
       ))}
+      {hiddenCount > 0 ? (
+        <p className={`${SANS} mt-4 text-sm text-[#606C80]`}>
+          {hiddenCount} more {hiddenCount === 1 ? "meeting falls" : "meetings fall"} outside the five days the design draws.
+        </p>
+      ) : null}
     </div>
   );
 }
