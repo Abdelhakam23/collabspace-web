@@ -8,7 +8,12 @@ export async function listTasks(query?: { project_id: string | number; status: s
 
 export async function getKanbanBoardForProject(projectId: number | string) {
   const { data } = await apiClient.get<ApiEnvelope<KanbanColumn[]>>(`/api/v1/projects/${encodeURIComponent(projectId)}/tasks/kanban`);
-  return data;
+  const raw = data.data as unknown as { columns?: Record<string, { name: string; tasks: Task[] }> } | KanbanColumn[];
+  const columns = Array.isArray(raw) ? raw : Object.entries(raw.columns ?? {}).map(([status, column]) => ({
+    status: status as Task["status"],
+    tasks: column.tasks.map((task) => ({ ...task, title: task.title ?? (task as Task & { name?: string }).name ?? "" })),
+  }));
+  return { ...data, data: columns };
 }
 
 export interface CreateTaskPayload {
@@ -24,7 +29,7 @@ export interface CreateTaskPayload {
 
 export async function createTask(payload: CreateTaskPayload) {
   const { data } = await apiClient.post<ApiEnvelope<{ task: Task }>>(`/api/v1/tasks`, payload);
-  return data;
+  return { ...data, data: { task: data.data.task ?? (data.data as unknown as Task) } };
 }
 
 export async function getTaskDetails(taskId: number | string) {
