@@ -71,11 +71,11 @@ export default function DashboardPage() {
       <main className="space-y-6 px-4 py-6 sm:px-8 xl:px-16 xl:pb-10 xl:pt-5">
         {error ? <p className="rounded-lg bg-[#fdecea] px-4 py-2 text-sm text-[#af2622]" role="alert">{error}</p> : null}
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 2xl:grid-cols-4">
           <KpiCard label="Pending Tasks" value={pending} tone="orange" ratio={total > 0 ? pending / total : 0} fraction={`${pending}/${total}`} />
           <KpiCard label="In Progress" value={inProgress} tone="blue" ratio={total > 0 ? inProgress / total : 0} fraction={`${inProgress}/${total}`} />
           <KpiCard label="Completed" value={completed} tone="green" ratio={total > 0 ? completed / total : 0} fraction={`${completed}/${total}`} />
-          <section className="rounded-2xl border border-[#F3F4F6] bg-white p-5 xl:h-[160px]">
+          <section className="rounded-2xl border border-[#F3F4F6] bg-white p-5 2xl:h-[160px]">
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={`${M} text-[20px] font-medium leading-[150%] text-[#000000]`}>Completion Rate</h2>
@@ -86,8 +86,8 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-          <Card title="Project overview" className="xl:col-span-6 xl:h-[285px]"
+        <div className="grid grid-cols-1 gap-6 2xl:grid-cols-12">
+          <Card title="Project overview" className="2xl:col-span-6 2xl:h-[285px]"
             actions={
               <span className={`${M} flex items-center gap-4 text-xs font-medium text-[#000712]`}>
                 <span aria-disabled="true" className="flex items-center gap-1"><ChevronDown size={12} />All Projects</span>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
             </div>
           </Card>
 
-          <Card title="Active Projects" actions={<ViewAll />} className="xl:col-span-3 xl:h-[285px] xl:overflow-hidden">
+          <Card title="Active Projects" actions={<ViewAll />} className="2xl:col-span-3 2xl:h-[285px] 2xl:overflow-hidden">
             <ul className="space-y-4">
               {(data?.active_projects.items ?? []).map((p, idx) => {
                 const color = PROJECT_COLORS[idx % PROJECT_COLORS.length];
@@ -132,7 +132,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Recent Files" actions={<ViewAll />} className="xl:col-span-3 xl:h-[285px] xl:overflow-hidden">
+          <Card title="Recent Files" actions={<ViewAll />} className="2xl:col-span-3 2xl:h-[285px] 2xl:overflow-hidden">
             <ul className="space-y-4">
               {(data?.recent_files.items ?? []).map((f) => (
                 <li key={f.id} className="flex items-center justify-between gap-3">
@@ -153,8 +153,8 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-          <Card title="Tasks" actions={<ViewAll />} className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden">
+        <div className="grid grid-cols-1 gap-6 2xl:grid-cols-12">
+          <Card title="Tasks" actions={<ViewAll />} className="2xl:col-span-3 2xl:h-[414px] 2xl:overflow-hidden">
             <ul className="space-y-4">
               {(data?.tasks.items ?? []).map((task) => {
                 const tone = PRIORITY_TONES[(task.priority ?? "").toLowerCase()];
@@ -178,7 +178,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Teams" className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden"
+          <Card title="Teams" className="2xl:col-span-3 2xl:h-[414px] 2xl:overflow-hidden"
             actions={
               <span aria-disabled="true" className={`${M} flex items-center gap-1 text-xs font-medium text-[#000712]`}>
                 {teams[0]?.name ?? "All"}<ChevronDown size={12} />
@@ -202,7 +202,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Up coming meetings" actions={<ViewAll />} className="xl:col-span-3 xl:h-[414px] xl:overflow-hidden">
+          <Card title="Up coming meetings" actions={<ViewAll />} className="2xl:col-span-3 2xl:h-[414px] 2xl:overflow-hidden">
             <ul className="space-y-4">
               {(data?.upcoming_meetings.items ?? []).map((m) => (
                 <li key={m.id} className="rounded-xl border border-[#eef1f5] p-3">
@@ -231,7 +231,7 @@ export default function DashboardPage() {
             </ul>
           </Card>
 
-          <Card title="Ask AI" className="!bg-[#F0F6FC] xl:col-span-3 xl:flex xl:h-[414px] xl:flex-col xl:overflow-hidden">
+          <Card title="Ask AI" className="!bg-[#F0F6FC] 2xl:col-span-3 2xl:flex 2xl:h-[414px] 2xl:flex-col 2xl:overflow-hidden">
                         <Link href="/ask-ai" className="flex flex-1 flex-col" aria-label="Open the Collabspace AI assistant">
               <div className="flex flex-col items-center gap-4 py-4">
                 <Image src="/ask-ai-robot.png" alt="" width="42.67" height="64" aria-hidden="true" />
