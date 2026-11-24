@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Calendar, ChevronDown, Download } from "lucide-react";
+import { Briefcase, Calendar, ChevronDown, Download, File, Send } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { AreaChart } from "@/components/charts/area-chart";
+import { Bar } from "@/components/dashboard/bar";
+import { Card, ViewAll } from "@/components/dashboard/card";
+import { Gauge } from "@/components/dashboard/gauge";
+import { KpiCard } from "@/components/dashboard/kpi";
 import { getDashboardOverview } from "@/lib/api/dashboard";
 import { getProfile } from "@/lib/api/profile";
 
@@ -33,84 +37,6 @@ type DashboardPayload = {
 };
 
 const M = "font-[family-name:var(--font-sans)]";
-
-function Card({ title, actions, children, className = "" }: { title: string; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`rounded-2xl border border-[#F3F4F6] bg-white p-5 ${className}`}>
-      <header className="mb-4 flex items-center justify-between gap-2">
-        <h2 className={`${M} text-[20px] font-medium leading-[150%] text-[#191919]`}>{title}</h2>
-        {actions}
-      </header>
-      {children}
-    </section>
-  );
-}
-
-function ViewAll() {
-  return <span aria-disabled="true" className={`${M} text-xs font-medium text-[#005AFB]`}>View All</span>;
-}
-
-function Bar({ ratio, color, className = "" }: { ratio: number; color: string; className?: string }) {
-  const width = `${Math.min(100, Math.max(0, Math.round(ratio * 100)))}%`;
-  return (
-    <span className={`block h-1.5 rounded-full bg-[#f0f2f5] ${className}`} aria-hidden="true">
-      <span className="block h-full rounded-full" style={{ width, backgroundColor: color }} />
-    </span>
-  );
-}
-
-function KpiIcon({ tone }: { tone: "orange" | "blue" | "green" }) {
-  const tones = { orange: ["#FFF5E6", "#FA9E00"], blue: ["#E5EFFF", "#005AFB"], green: ["#E7F6EC", "#22B14C"] } as const;
-  const [bg, fg] = tones[tone];
-  return (
-    <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ backgroundColor: bg }} aria-hidden="true">
-      <Calendar size={18} color={fg} />
-    </span>
-  );
-}
-
-function KpiCard({ label, value, tone, ratio, fraction }: { label: string; value: number; tone: "orange" | "blue" | "green"; ratio: number; fraction: string }) {
-  const colors = { orange: "#FA9E00", blue: "#005AFB", green: "#22B14C" } as const;
-  return (
-    <section className="rounded-2xl border border-[#F3F4F6] bg-white p-5 xl:h-[160px]">
-      <div className="flex items-center justify-between">
-        <h2 className={`${M} text-[20px] font-medium leading-[150%] text-[#000000]`}>{label}</h2>
-        <KpiIcon tone={tone} />
-      </div>
-      <p className={`${M} mt-1 text-[31px] font-semibold leading-[150%] text-[#000000]`}>{value}</p>
-      <div className="mt-2 flex items-center justify-between gap-3">
-        <Bar ratio={ratio} color={colors[tone]} className="w-2/3" />
-        <span className={`${M} text-xs font-medium text-[#525256]`}>{fraction}</span>
-      </div>
-    </section>
-  );
-}
-
-function Gauge({ ratio }: { ratio: number }) {
-  const clamped = Math.min(1, Math.max(0, ratio));
-  // Semicircular gauge with a needle, as in the final frame.
-  const cx = 42, cy = 44, r = 32;
-  const angle = Math.PI - clamped * Math.PI;
-  const nx = cx + Math.cos(angle) * (r - 8);
-  const ny = cy - Math.sin(angle) * (r - 8);
-  const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => {
-    const a = Math.PI - t * Math.PI;
-    return {
-      x1: cx + Math.cos(a) * (r + 2), y1: cy - Math.sin(a) * (r + 2),
-      x2: cx + Math.cos(a) * (r + 6), y2: cy - Math.sin(a) * (r + 6),
-    };
-  });
-  return (
-    <svg width="84" height="52" viewBox="0 0 84 52" aria-hidden="true">
-      <path d={`M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy}`} fill="none" stroke="#eef1f5" strokeWidth="7" />
-      {ticks.map((t, i) => (
-        <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="#cbd2da" strokeWidth="1.5" strokeLinecap="round" />
-      ))}
-      <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#000712" strokeWidth="3" strokeLinecap="round" />
-      <circle cx={cx} cy={cy} r="4" fill="#000712" />
-    </svg>
-  );
-}
 
 const PRIORITY_TONES: Record<string, { text: string; bg: string }> = {
   high: { text: "#D92D20", bg: "#FEE4E2" },
@@ -203,11 +129,8 @@ export default function DashboardPage() {
                 const totalTasks = p.tasks_total ?? 0;
                 return (
                   <li key={p.id} className="flex items-start gap-3 rounded-xl border border-[#eef1f5] p-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: `${color}1A` }} aria-hidden="true">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="7" width="18" height="13" rx="2" />
-                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      </svg>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: `${color}1A`, color }} aria-hidden="true">
+                      <Briefcase size={16} />
                     </span>
                     <span className="w-full min-w-0">
                       <span className={`${M} block truncate text-sm font-medium text-[#000712]`}>{p.name}</span>
@@ -226,11 +149,8 @@ export default function DashboardPage() {
               {(data?.recent_files.items ?? []).map((f) => (
                 <li key={f.id} className="flex items-center justify-between gap-3">
                   <span className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FDE8E8]" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E5484D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <path d="M14 2v6h6" />
-                      </svg>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#FDE8E8] text-[#E5484D]" aria-hidden="true">
+                      <File size={14} />
                     </span>
                     <span className="min-w-0">
                       <p className={`${M} truncate text-sm font-medium text-[#000712]`}>{f.name}</p>
@@ -306,7 +226,7 @@ export default function DashboardPage() {
                     <p className={`${M} text-sm font-normal text-[#000000]`}>{m.title}</p>
                     {m.date_label ? (
                       <span className={`${M} flex shrink-0 items-center gap-1 rounded-md bg-[#f0f2f5] px-2 py-0.5 text-[10px] text-[#525256]`}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></svg>
+                        <Calendar size={10} />
                         {m.date_label}
                       </span>
                     ) : null}
@@ -344,10 +264,9 @@ export default function DashboardPage() {
             </div>
             <p className={`${M} flex items-center justify-between rounded-xl bg-[#F6F8FA] px-4 py-3 text-sm text-[#718096]`}>
               ask me anything about...
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#005AFB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" aria-disabled="true">
-                <path d="m22 2-7 20-4-9-9-4z" />
-                <path d="M22 2 11 13" />
-              </svg>
+              <span className="text-[#005AFB]" aria-hidden="true" aria-disabled="true">
+                <Send size={16} />
+              </span>
             </p>
           </Card>
         </div>
