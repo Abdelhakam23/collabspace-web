@@ -102,8 +102,13 @@ dropdown contents remain undesigned, so the controls stay inert.
 The frame draws only two samples per column: active #FA2B75 and Done
 #2BA52E for status, High #DB302A and Medium #E6BA0E for priority. Other
 API values (On Hold, Delayed, Low, Urgent) render in the default text
-color until their design treatment exists. Column x positions are
-pixel-measured at 46% zoom (auto layout exposes no absolute offsets).
+color until their design treatment exists. Native reads replaced the
+pixel measurements: the table container is a vertical stack at top 250 /
+left 64 with 16px gaps, the header is Fill 1312 x Hug 59 (border-bottom
+1px #BCBCBD, 7 cells of Fill 181.71px plus a trailing 40x40 bordered
+box), and each data row is Fill 1312 x Hug 60 with 7 cells of Fill 184px
+plus 12px horizontal inset. The header/row value offsets are by design
+and the implementation reproduces that structure.
 
 ## New Project overlay payload gaps
 The overlay has no description or status fields. A4.2 lists both without
@@ -134,20 +139,25 @@ documented start_date and deadline; the frame draws the track without
 stating its semantics. Product Details icon tints and icon colors are
 pixel-sampled from the 46% capture (#F2E9F1/#BF75A9 start date,
 #FFEDE6/#FB743A deadline, #FBEAEA/#DB302A priority, #F3F4F6/#191919 total
-tasks); the gauge track uses #27272B on #E9E9EA as sampled. All of these
-sampled values remain unresolved approximations pending native component
-reads from the file; they are not accepted final values. Tasks, Teams
+tasks). Native reads since replaced the pixel estimates: the gauge is a
+270-degree ring (gap at the bottom), 177.61px ellipse, #27272B stroke
+~11px on the light track, needle plus white center dot. Header block:
+Fixed 1311 x Hug 71 at top 104 / left 65 with a 32px gap to the Due Date
+card (Fixed 324 x Hug 71, radius 12, border #F3F4F6, padding 12). The
+Product Details icon tints above remain sampled, not native. Tasks, Teams
 and Files tabs are drawn in the frame but their sibling frames are not yet
 implemented, so they render inert with an aria-disabled note. Table rows on
 All Projects navigate to this page (Link), matching the breadcrumb's
 "Projects" back-navigation drawn in the frame.
 
-## Project detail verticals (pixel-measured at 46%, pending application)
-Breadcrumb text y115-124, title glyphs y146-170 (H4 cap-trim box), tabs row
-~211-245, Description card top ~297. Right column: Due Date card ~110-176,
-Project Progress card region ~159-495, Team Members card ~504 onward.
-Current implementation places the breadcrumb ~20px lower (pt-[61px] vs the
-~43px these readings imply); tabs/content spacing to be adjusted together
-with these. Row frame native read on All Projects: Fill 1312 x Hug 60,
-white, padding 4 vertical, border-bottom 1px, justify space-between, click
-navigates to All Projects/Alpha.
+## Project detail header geometry (native, applied)
+Header block: Fixed 1311 x Hug 71 at top 104 / left 65, gap 32 between the
+title column (Fill 955: breadcrumb + title row) and the Due Date card
+(Fixed 324 x Hug 71, radius 12, border #F3F4F6, padding 12, blue track
+#005AFB on #E6EFFF). Content frame: Fixed 1312 x 785 at top 207, left 64,
+tabs row (Hug 28, gap 30, active #005AFB underline) above a space-between
+grid: left column Fixed 864 (Description, Project overview chart, Product
+Details), right column Fixed 416 (Statistics details gauge, Team Members),
+32px column separation. The header is implemented in-flow at these
+measurements; the chart card remains omitted pending the undocumented
+A4.3/A4.4 response shapes (see above).
