@@ -4,7 +4,6 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-rubik: var(--font-rubik), ui-sans-serif, system-ui, sans-serif;
 
-  /* Primary - Blue */
   --color-primary-50: #e8efff;
   --color-primary-100: #b0ccfe;
   --color-primary-200: #8ab3fd;
@@ -16,7 +15,6 @@
   --color-primary-800: #00328a;
   --color-primary-900: #002669;
 
-  /* Secondary - neutrals */
   --color-secondary-50: #e9e9ea;
   --color-secondary-100: #bcbcbd;
   --color-secondary-200: #9c9c9d;
@@ -28,7 +26,6 @@
   --color-secondary-800: #151518;
   --color-secondary-900: #101012;
 
-  /* Support colors */
   --color-support-purple: #6837a4;
   --color-support-magenta: #a43782;
   --color-support-pink: #c8225e;
@@ -36,15 +33,14 @@
   --color-support-red: #af2622;
   --color-support-gold: #cca60c;
 
-  /* Typography - base 16px, scale 1.25 (from the Figma type panel) */
-  --text-h1: 3.813rem;   /* 61px */
-  --text-h2: 3.063rem;   /* 49px */
-  --text-h3: 2.438rem;   /* 39px */
-  --text-h4: 1.938rem;   /* 31px */
-  --text-h5: 1.563rem;   /* 25px */
-  --text-h6: 1.25rem;    /* 20px */
-  --text-body: 1rem;     /* 16px */
-  --text-small: 0.8rem;  /* 13px */
+  --text-h1: 3.813rem;
+  --text-h2: 3.063rem;
+  --text-h3: 2.438rem;
+  --text-h4: 1.938rem;
+  --text-h5: 1.563rem;
+  --text-h6: 1.25rem;
+  --text-body: 1rem;
+  --text-small: 0.8rem;
 
   --color-background: #ffffff;
   --color-foreground: var(--color-secondary-900);
