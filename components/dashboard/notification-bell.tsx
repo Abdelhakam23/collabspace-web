@@ -99,3 +99,4 @@ export function NotificationBell() {
     </span>
   );
 }
+
