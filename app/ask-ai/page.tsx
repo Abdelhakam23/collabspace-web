@@ -7,7 +7,7 @@ import { EmptyHero } from "@/components/ask-ai/empty-hero";
 import { MessageList, type ChatMessage } from "@/components/ask-ai/messages";
 import { askAi } from "@/lib/api/ai";
 import { getProfile } from "@/lib/api/profile";
-import type { User } from "@/lib/types";
+import type { User } from "@/types";
 
 export default function AskAiPage() {
   const [me, setMe] = useState<User | null>(null);
