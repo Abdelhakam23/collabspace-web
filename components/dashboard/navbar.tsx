@@ -15,7 +15,7 @@ import { NotificationBell } from "@/components/dashboard/notification-bell";
 const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Reports"];
 const M = "font-[family-name:var(--font-rubik)]";
 
-const ROUTES: Record<string, string> = { Dashboard: "/dashboard", Projects: "/projects", Tasks: "/tasks" };
+const ROUTES: Record<string, string> = { Dashboard: "/dashboard", Projects: "/projects", Tasks: "/tasks", Meetings: "/meetings" };
 
 export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { userName: string; userRole?: string; active?: string }) {
   return (

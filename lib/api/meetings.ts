@@ -2,7 +2,7 @@ import { apiClient } from "@/lib/api-client";
 import type { ApiEnvelope, Meeting, MeetingSummary, Paginated } from "@/lib/types";
 
 /** GET /api/v1/meetings — List Meetings (with filters) (A6.1) */
-export async function listMeetings(query?: { project_id: string | number; time_filter: string | number; per_page: string | number }) {
+export async function listMeetings(query?: { project_id?: string | number; time_filter?: string | number; per_page?: string | number }) {
   const { data } = await apiClient.get<ApiEnvelope<Paginated<Meeting>>>(`/api/v1/meetings`, { params: query });
   return data;
 }
@@ -13,9 +13,10 @@ export interface ScheduleMeetingPayload {
   meeting_date: string;
   start_time: string;
   end_time: string;
-  meeting_link: string;
-  project_id: number;
-  participants: string;
+  // Not drawn in the Add Meeting overlay, so the form never invents them.
+  meeting_link?: string;
+  project_id?: number;
+  participants?: number[];
 }
 
 /** POST /api/v1/meetings — Schedule Meeting (A6.2) */

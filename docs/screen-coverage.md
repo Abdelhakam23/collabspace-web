@@ -55,15 +55,62 @@ it, not yet implemented; EXCLUDED = one source missing, reason given.
   zero results).
 - Column actions menu: EXCLUDED — no column-level endpoint.
 
-## Meetings (design frames + A6.1-A6.10): TODO
-Hi-fi frames: Meetings (screen; node id pending), Meetings / Join
-Meeting (274-12876), Add Meeting overlay (139-2808), Duration overlay
-(139-1583: Today / This Week / This Month / Last Three Month / This
-Year — compare with A6.1 time_filter values before wiring). Items like
-"Up coming meetings", "Create meetings", "Meetings settings", "Sprint
-Planning Meeting" are in-screen labels/cards, not standalone frames
-(find-box type evidence, 2026-11-24). AI summary work (A6.6-A6.9)
-depends on what the summary surface offers.
+## Meetings (design frames + A6.1-A6.10): page + scheduling DONE; room TODO
+Hi-fi frames: Meetings (screen 114-2597, 1440x1024, #F6F8FA),
+Meetings / Join Meeting (274-12876, 720x502), Add Meeting overlay
+(139-2808, 720xHug595 r16 p24 gap32), Duration overlay (139-1583,
+210x164 r16 p16 white: Today / This Week / This Month / Last Three
+Month / This Year). Items like "Up coming meetings", "Create
+meetings", "Meetings settings", "Sprint Planning Meeting" are
+in-screen labels/cards, not standalone frames (find-box type
+evidence, 2026-11-24).
+
+DONE (/meetings, node-read measurements):
+- Header row (114-2599: top 120/left 65, gap 32): H1 Inter 600 31px
+  lh150% #000; Add Meeting pill (114-3005: Hug142x40, r32,
+  p12/12/12/20 gap8, #005AFB, Inter 500 14 #FFF) opens the overlay.
+- Toolbar row (114-2606: top 202): month label Inter 500 20px #000712
+  (H6). A6.1 takes no date range, so the month arrows render disabled
+  with an explanatory title; the label shows the real current month.
+- This Week control + Duration overlay: only "This Week" is enabled
+  (sends the documented time_filter=upcoming); the other four drawn
+  options have no documented value and render disabled with a title.
+  Closed control's border is pixel-estimated as #CBD5E0 (native
+  control too small to sample cleanly).
+- Week grid (114-2617: 1311 at left 64/top 281): six equal 218.5px
+  columns (time column + five days), rows fixed 137px with 1px #F3F4F6
+  row/cell borders, day cells p16/12 gap2, time cell p16 gap2. The
+  frame repeats the weekday+number header (Rubik 400 14/16 #000,
+  centered) inside every row, so the grid does the same. Today column
+  filled #E6EFFF (pixel-sampled). The frame draws a "Today" column
+  plus weekday labels ("Thurs" spelling kept), so the grid shows today
+  plus the next four days with real dates. Hour rows are the drawn
+  9:00-13:00; meetings outside that window have no cell (design
+  limitation). The native frame's grid (Hug 789) overflows its own
+  1024 frame, so the web page scrolls naturally instead.
+- Meeting card (114-3050: Fill194.5 x Fixed105, r16, 1px #F3F4F6, p12,
+  white; has an on-click interaction to the Join frame): title Inter
+  400 14/16 #000, time Inter 400 12/16 #000/75% (native marks center
+  alignment; pixels show left, so left), avatars 32px circle border
+  2px #C2C2C2 (initials placeholders - data limitation), +N chip Inter
+  800 10/16 #606C80 in a #F3F4F6 circle (chip bg pixel-estimated),
+  Join (Hug44x16 r16 gap4, Inter 400 12/16 cap-trim #383838 +
+  ion:add-outline 12px). Join links to meeting_link when the list
+  item carries one (A6.1 fields are undocumented; A6.2 includes the
+  field); otherwise it is disabled with an explanation.
+- Add Meeting overlay wired to A6.2: title/description/meeting_date/
+  start_time from Subject/Note/Date/Time; end_time = start + the
+  selected duration. The drawn "Select Duration" has no option list
+  anywhere in the file, so the select offers common durations (its
+  choice only shifts the computed end_time). meeting_link and
+  project_id have no drawn control and are NOT sent. Guests resolve
+  against A12.1 like the Create Task overlay. Fixture-tested against a
+  stubbed POST (no live mutation authority).
+
+TODO: Meetings / join Meeting room (274-12876). In intersection: A6.3
+details + A6.7 summary (its AI Summary tab); the drawn video player
+has no API and Note/Comments have no endpoints. AI summary work
+(A6.6-A6.9) depends on what the summary surface offers.
 
 ## Chats (design frames + A8.1-A8.7): TODO
 Hi-fi frames: Chats (screen; node id pending). "Project Chat", "Search
