@@ -9,13 +9,6 @@ import type { User } from "@/lib/types";
 
 const SANS = "font-[family-name:var(--font-sans)]";
 
-/**
- * "Chats" frame (node 126-2481, 1440x1024, page background #F6F8FA), Project
- * Chats tab state: navbar with the Chats pill active, the sidebar card with
- * the channel list, and the "Select Chat" empty state on the right. The drawn
- * inbox tab (direct messages) is disabled: there is no DM endpoint. "Select
- * Chat" styling is estimated (unmeasured in the source).
- */
 export default function ChatsPage() {
   const [me, setMe] = useState<User | null>(null);
   const { channels } = useChannels();
