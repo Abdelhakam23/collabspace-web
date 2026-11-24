@@ -64,7 +64,7 @@ function ProjectDetailContent() {
 
   return (
     <ProjectShell projectId={id}>
-        <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[864px_416px] lg:justify-between">
+        <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,416px)]">
           <div className="flex min-w-0 flex-col gap-8">
             <Card title="Description" gap={20}>
               <p className={`${SANS} -my-[6px] text-[16px] leading-6 text-[#525256]`}>
