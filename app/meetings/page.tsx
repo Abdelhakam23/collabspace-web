@@ -33,15 +33,19 @@ export default function MeetingsPage() {
   const [error, setError] = useState(false);
   const [adding, setAdding] = useState(false);
 
-  const load = useCallback(async () => {
-    try {
-      const [list, profile] = await Promise.all([listMeetings({ time_filter: "upcoming", per_page: 15 }), getProfile()]);
-      setMeetings(list.data.data ?? []);
-      setMe(profile.data.user);
-    } catch {
-      setError(true);
-    }
-  }, []);
+  const load = useCallback(
+    () =>
+      // Promise callbacks keep the state updates asynchronous (react-hooks
+      // set-state-in-effect): the effect below only kicks off the fetch.
+      Promise.all([listMeetings({ time_filter: "upcoming", per_page: 15 }), getProfile()]).then(
+        ([list, profile]) => {
+          setMeetings(list.data.data ?? []);
+          setMe(profile.data.user);
+        },
+        () => setError(true),
+      ),
+    [],
+  );
 
   useEffect(() => {
     load();

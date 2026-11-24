@@ -13,7 +13,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { ReportPoint } from "@/lib/reports-normalize";
+
+interface ReportPoint {
+  label: string;
+  value: number;
+}
 
 const SANS = "font-[family-name:var(--font-sans)]";
 const AXIS_TICK = { fontSize: 11, fill: "#606C80" };

@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { ApiEnvelope, User, Paginated } from "@/lib/types";
+import type { ApiEnvelope, User } from "@/lib/types";
 
 /** GET /api/v1/users — List Users (A12.1) */
 export async function listUsers(query?: { per_page: string | number }) {

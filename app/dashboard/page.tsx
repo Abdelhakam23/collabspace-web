@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Briefcase, Calendar, ChevronDown, Download, File, Send } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
@@ -247,7 +248,7 @@ export default function DashboardPage() {
             {/* The card is the design's entry to the Ask AI page (/ask-ai). */}
             <Link href="/ask-ai" className="flex flex-1 flex-col" aria-label="Open the Collabspace AI assistant">
               <div className="flex flex-col items-center gap-4 py-4">
-                <img src="/ask-ai-robot.png" alt="" width="42.67" height="64" aria-hidden="true" />
+                <Image src="/ask-ai-robot.png" alt="" width="42.67" height="64" aria-hidden="true" />
                 <p className={`${M} text-sm text-[#525256]`}>ask me anything about...</p>
               </div>
               <p className={`${M} flex flex-1 flex-col rounded-xl bg-[#F6F8FA] p-3 text-sm text-[#718096]`}>

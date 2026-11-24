@@ -18,12 +18,13 @@ it, not yet implemented; EXCLUDED = one source missing, reason given.
 - Forgot/reset password (A1.5-A1.7): EXCLUDED — layer search for
   "Forgot" on the UI Design page returns zero results; the
   "Forget Password?" link stays inert by design rule.
-- Language overlay (139-2996, 210xHug116 r16 p16, rows English (checked)
-  / Arabic / France): EXCLUDED — the overlay is drawn, but the measured
-  navbar right group (search, bell, user block only) contains no language
-  trigger and no other reachable screen draws one, and neither source
-  contains any translated strings. Rendering an English-only overlay with
-  disabled rows would add a control the design never places.
+- Language control + overlay (139-2996, rows English (checked) / Arabic /
+  France): the drawn control lives on the AUTH screens' top bar, where it
+  renders as a marked non-functional control (aria-disabled, reason in
+  the title): neither source contains any translated strings, so the
+  overlay's Arabic/France rows could never work and no translations are
+  invented. The app navbar draws no language trigger, so none is added
+  there.
 
 ## Core app
 - Dashboard (285-12895, A10.1): DONE.

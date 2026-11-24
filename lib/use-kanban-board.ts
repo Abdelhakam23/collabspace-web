@@ -11,7 +11,10 @@ import type { KanbanColumn } from "@/lib/types";
  */
 export function useKanbanBoard(projectId: string | number | null) {
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  // Deriving "loaded" from the id the fetch completed for avoids a
+  // synchronous reset setState when the project changes.
+  const [loadedId, setLoadedId] = useState<string | number | null>(null);
+  const loaded = loadedId === projectId;
   const [pendingMove, setPendingMove] = useState<number | null>(null);
   const [moveError, setMoveError] = useState<string | null>(null);
   // Ref guard: state alone cannot stop two drops in the same render batch.
@@ -19,7 +22,6 @@ export function useKanbanBoard(projectId: string | number | null) {
 
   useEffect(() => {
     if (projectId == null) return;
-    setLoaded(false);
     let cancelled = false;
     (async () => {
       try {
@@ -28,7 +30,7 @@ export function useKanbanBoard(projectId: string | number | null) {
       } catch {
         if (!cancelled) setColumns([]);
       } finally {
-        if (!cancelled) setLoaded(true);
+        if (!cancelled) setLoadedId(projectId);
       }
     })();
     return () => {
@@ -44,7 +46,7 @@ export function useKanbanBoard(projectId: string | number | null) {
     } catch {
       setColumns([]);
     } finally {
-      setLoaded(true);
+      setLoadedId(projectId);
     }
   }, [projectId]);
 

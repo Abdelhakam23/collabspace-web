@@ -51,15 +51,16 @@ export function Conversation({ project, onSent }: { project: Project; onSent?: (
   const sendingRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const load = useCallback(async () => {
-    try {
-      const res = await listProjectMessages(project.id, { per_page: 50 });
-      const list = res.data.data ?? [];
-      setMessages([...list].reverse());
-    } catch {
-      setError(true);
-    }
-  }, [project.id]);
+  const load = useCallback(
+    () =>
+      // Promise callbacks keep the state updates asynchronous (react-hooks
+      // set-state-in-effect): the effect below only kicks off the fetch.
+      listProjectMessages(project.id, { per_page: 50 }).then(
+        (res) => setMessages([...(res.data.data ?? [])].reverse()),
+        () => setError(true),
+      ),
+    [project.id],
+  );
 
   useEffect(() => {
     load();

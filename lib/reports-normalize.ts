@@ -26,11 +26,6 @@ export interface ReportMetric {
   delta: number | null;
 }
 
-export interface ReportPoint {
-  label: string;
-  value: number;
-}
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -79,38 +74,3 @@ export function teamActivityMetric(payload: unknown): ReportMetric | null {
   return rateKey ? { value: summary[rateKey] as number, delta: null } : null;
 }
 
-/**
- * A chart series is data.chart.data[] with the observed { label, <seriesKey> }
- * points. The observed payloads carry two task series (created_tasks,
- * completed_tasks); the drawn charts are single-series, so each chart binds
- * the one named series that matches its title and the other stays unused.
- */
-function chartSeries(payload: unknown, seriesKey: string): ReportPoint[] | null {
-  const chart = envelopeData(payload)?.chart;
-  if (!isRecord(chart)) return null;
-  const rows = chart.data;
-  if (!Array.isArray(rows) || rows.length === 0) return null;
-  const points: ReportPoint[] = [];
-  for (const row of rows) {
-    if (!isRecord(row) || typeof row.label !== "string") return null;
-    const value = row[seriesKey];
-    if (typeof value !== "number" || !Number.isFinite(value)) return null;
-    points.push({ label: row.label, value });
-  }
-  return points;
-}
-
-/** Task Completion Time vs Deadline: reports/tasks chart, completed tasks per month */
-export function taskCompletionSeries(payload: unknown): ReportPoint[] | null {
-  return chartSeries(payload, "completed_tasks");
-}
-
-/** Projects Progress: reports/projects chart, projects per month */
-export function projectProgressSeries(payload: unknown): ReportPoint[] | null {
-  return chartSeries(payload, "projects");
-}
-
-/** Worker Activity Rate: reports/users chart, completed tasks per month */
-export function workerActivitySeries(payload: unknown): ReportPoint[] | null {
-  return chartSeries(payload, "completed_tasks");
-}

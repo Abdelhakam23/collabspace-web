@@ -85,6 +85,9 @@ apiClient.interceptors.response.use(
     // Never on auth calls, so a wrong password still shows its real message.
     if (status === 401 && !isAuthRequest && typeof window !== "undefined") {
       clearStoredToken();
+      // An axios interceptor has no router; a hard navigation also drops any
+      // stale client state from the dead session, which is what we want here.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = "/login";
     }
 

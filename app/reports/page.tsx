@@ -4,17 +4,13 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { DashboardNavbar } from "@/components/dashboard/navbar";
 import { ReportAreaChart, ReportBarChart, ReportLineChart } from "@/components/reports/charts";
-import { projectReports, taskReportsProductivity, teamPerformanceReports, personalProductivityReport } from "@/lib/api/reports";
+import { projectReports, taskReportsProductivity, teamPerformanceReports } from "@/lib/api/reports";
 import { ApiError } from "@/lib/api-client";
 import {
   projectCompletionMetric,
-  projectProgressSeries,
   taskCompletionMetric,
-  taskCompletionSeries,
   teamActivityMetric,
-  workerActivitySeries,
   type ReportMetric,
-  type ReportPoint,
 } from "@/lib/reports-normalize";
 import { getProfile } from "@/lib/api/profile";
 import type { User } from "@/lib/types";
@@ -118,27 +114,20 @@ export default function ReportsPage() {
   const [taskMetric, setTaskMetric] = useState<LoadState<ReportMetric>>({ status: "loading" });
   const [projectMetric, setProjectMetric] = useState<LoadState<ReportMetric>>({ status: "loading" });
   const [teamMetric, setTeamMetric] = useState<LoadState<ReportMetric>>({ status: "loading" });
-  const [taskSeries, setTaskSeries] = useState<LoadState<ReportPoint[]>>({ status: "loading" });
-  const [projectSeries, setProjectSeries] = useState<LoadState<ReportPoint[]>>({ status: "loading" });
-  const [workerSeries, setWorkerSeries] = useState<LoadState<ReportPoint[]>>({ status: "loading" });
 
   useEffect(() => {
     getProfile()
       .then((res) => setMe(res.data.user))
       .catch(() => {});
     (async () => {
-      const [tasks, projects, teams, users] = await Promise.allSettled([
+      const [tasks, projects, teams] = await Promise.allSettled([
         taskReportsProductivity(),
         projectReports(),
         teamPerformanceReports(),
-        personalProductivityReport(),
       ]);
       setTaskMetric(metricState(tasks, taskCompletionMetric));
       setProjectMetric(metricState(projects, projectCompletionMetric));
       setTeamMetric(metricState(teams, teamActivityMetric));
-      setTaskSeries(metricState(tasks, taskCompletionSeries));
-      setProjectSeries(metricState(projects, projectProgressSeries));
-      setWorkerSeries(metricState(users, workerActivitySeries));
     })();
   }, []);
 
@@ -156,16 +145,19 @@ export default function ReportsPage() {
           <StatCard title="Teams Activity Rate" state={teamMetric} />
         </div>
         <div className="flex max-w-[1311px] gap-6">
+          {/* The observed payloads carry only monthly task/project counts;
+              counts do not establish the drawn chart meanings, so the charts
+              stay in their honest empty state (see lib/reports-normalize.ts). */}
           <ChartCard title="Task Completion Time vs Deadline">
-            <ReportBarChart points={taskSeries.status === "ready" ? taskSeries.value : null} />
+            <ReportBarChart points={null} />
           </ChartCard>
           <ChartCard title="Projects Progress" trailing={<DisabledSelect label="All Projects" reason={noFilterReason} />}>
-            <ReportAreaChart points={projectSeries.status === "ready" ? projectSeries.value : null} />
+            <ReportAreaChart points={null} />
           </ChartCard>
         </div>
         <div className="flex max-w-[1311px] gap-6 pb-10">
           <ChartCard title="Worker Activity Rate" trailing={<DisabledSelect label="Monthly" reason={noFilterReason} />}>
-            <ReportLineChart points={workerSeries.status === "ready" ? workerSeries.value : null} />
+            <ReportLineChart points={null} />
           </ChartCard>
           <div className="flex flex-1 flex-col gap-3 rounded-2xl bg-white p-5" title={submitReason}>
             <h2 className={`${SANS} text-[15px] font-semibold text-[#000712]`}>Submit a detailed report</h2>

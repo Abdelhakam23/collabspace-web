@@ -56,11 +56,14 @@ export function ProjectShell({ projectId, children }: { projectId: string; child
   const deadline = overview?.due_date_indicator?.deadline;
 
   // Due Date fill: elapsed fraction between the documented dates, clamped.
+  // The "now" reading is taken once per mount (state initializer), never
+  // during render.
+  const [now] = useState(() => Date.now());
   let elapsed = 0;
   if (startDate && deadline) {
     const s = new Date(startDate).getTime();
     const e = new Date(deadline).getTime();
-    if (e > s) elapsed = Math.min(1, Math.max(0, (Date.now() - s) / (e - s)));
+    if (e > s) elapsed = Math.min(1, Math.max(0, (now - s) / (e - s)));
   }
 
   const base = `/projects/${projectId}`;

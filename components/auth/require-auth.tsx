@@ -10,11 +10,16 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
-    if (getStoredToken()) {
-      setAllowed(true);
-    } else {
-      router.replace("/login");
-    }
+    // The token check stays inside a promise callback so the state update is
+    // asynchronous (react-hooks set-state-in-effect); a missing token goes
+    // straight to login.
+    Promise.resolve().then(() => {
+      if (getStoredToken()) {
+        setAllowed(true);
+      } else {
+        router.replace("/login");
+      }
+    });
   }, [router]);
 
   if (!allowed) return null;
