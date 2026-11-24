@@ -7,19 +7,10 @@ import { uploadFileToProject } from "@/lib/api/files";
 import { listUsers } from "@/lib/api/users";
 import type { TaskPriority, User } from "@/lib/types";
 
-/**
- * New Project modal (overlay frame 139-2255) backed by A4.2 create.
- * Unsupported fields stay inert; geometry notes: docs/design-api-gaps.md.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 const PRIORITIES: TaskPriority[] = ["Low", "Medium", "High", "Urgent"];
 
-// Labels notch into the field border as drawn in the frame: they sit on the
-// top border line with a white chip behind the text, not above the field.
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
-// Native input: Fixed 56px, radius 12, border 1px #CBD5E0, padding 8/16,
-// gap 12, no fill (the modal's white shows through).
 const fieldBox = `${SANS} h-14 w-full rounded-[12px] border border-[#CBD5E0] bg-transparent px-4 py-2 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
 
 export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
@@ -56,9 +47,6 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
     setPending(true);
     setError(null);
     try {
-      // A4.2 documents description/status without required markers and no
-      // validation rules, so only the designed fields are sent; the backend
-      // answer (422 or default) is surfaced instead of inventing values.
       const res = await createProject({
         name,
         start_date: startDate,
@@ -95,9 +83,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
           </button>
         </div>
 
-        {/* Fields stack (frame 2147224483): vertical, gap 33. Name + Priority
-            share a row: name Fixed 410, priority Fill 229, row gap 33. */}
-        <div className="flex flex-col gap-[33px]">
+                <div className="flex flex-col gap-[33px]">
         <div className="grid gap-[33px] sm:grid-cols-[410px_1fr]">
           <label className="relative block">
             <span className={fieldLabel}>Project Name</span>
@@ -200,8 +186,7 @@ export function NewProjectOverlay({ onClose, onCreated }: { onClose: () => void;
         </div>
         </div>
 
-        {/* Upload block: Fixed 163, vertical, gap 16 (native) */}
-        <div className="flex h-[163px] flex-col gap-4">
+                <div className="flex h-[163px] flex-col gap-4">
           <span className={`${SANS} block text-xs leading-[18px] text-[#718096]`}>Add Project Files</span>
           <button
             type="button"
