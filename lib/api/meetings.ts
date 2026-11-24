@@ -13,7 +13,7 @@ function normalizeSummary(value: MeetingSummary): MeetingSummary {
   return { ...raw, content: raw.content ?? [raw.summary, ...points.map((point) => `- ${point}`)].filter(Boolean).join("\n"), generated_at: raw.generated_at ?? raw.created_at ?? null };
 }
 
-export async function listMeetings(query?: { project_id?: string | number; time_filter?: string | number; per_page?: string | number }) {
+export async function listMeetings(query?: { page?: string | number; project_id?: string | number; time_filter?: string | number; per_page?: string | number }) {
   const { data } = await apiClient.get<ApiEnvelope<Paginated<Meeting>>>(`/api/v1/meetings`, { params: query });
   return { ...data, data: { ...data.data, data: (data.data.data ?? []).map(normalizeMeeting) } };
 }
