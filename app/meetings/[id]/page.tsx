@@ -11,31 +11,6 @@ import { getProfile } from "@/lib/api/profile";
 import { initials } from "@/lib/format";
 import type { Meeting, MeetingSummary, User } from "@/lib/types";
 
-/**
- * "Meetings / Join Meeting" room (canonical node 114-3107 on the UI Design
- * page, 1440x1024, background #F6F8FA): breadcrumb + H4 title (Inter 600
- * 31px), the meta row (project, attendees, date, time range), a 752x323
- * rounded-[28px] video placeholder (#D9D9D9 with a centered play glyph),
- * and the tabbed AI card below it (751px, card #F0F0F0 radius 20 with the
- * top-left corner squared off under the active white tab).
- *
- * Scope, from the design/API intersection:
- * - Meeting details come from A6.3 and the summary from A6.7. The project
- *   name is read through A4.3 (project overview), the only supported way
- *   to resolve project_id to a name.
- * - The drawn "Meeting Transcripts" side panel is omitted: the API has no
- *   endpoint that returns a transcript (A6.6 only accepts one as input
- *   when generating a summary), so there is nothing honest to fill it
- *   with.
- * - The video area is an inert placeholder. Nothing in the API embeds or
- *   starts a call, so no controls are drawn and nothing here implies one.
- * - The Note and Comments tabs are drawn but have no matching endpoint, so
- *   they stay visible and disabled with the reason on hover.
- * - The summary payload is a single content string; lines written as
- *   bullets ("- " / "* ") render under the drawn "Key Points" heading,
- *   everything else renders as paragraphs. No content is invented.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 const RUBIK = "font-[family-name:var(--font-rubik)]";
 

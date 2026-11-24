@@ -19,15 +19,6 @@ function joined(user: User): string | null {
   return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
-/**
- * Profile header (drawn 1313x92 hug card, 13px radius, 20px gap): avatar
- * with the camera badge linking to the settings screen, name, job title and
- * join date, then the Completed Tasks and Hours Worked stat cards and the
- * Overview / Tasks / Files tabs. The stats come from the personal
- * productivity report through the fail-closed extractor and render as "Not
- * available" when the payload does not carry them unambiguously. Tab text
- * styles are estimated (unmeasured).
- */
 export function ProfileHeader({
   user,
   completedTasks,

@@ -2,16 +2,6 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 
-/**
- * Navbar component (native State variants, 1440x72 white bar over a 4px
- * #091E42/13% shadow strip; inner frame padding 64px, justify-between).
- * Left group (632x44, gap 24): Rubik 20px logo + links pill (#F6F8FA,
- * radius 100, padding T4 R8 B4 L4, gap 19). Link pills hug at 36px tall,
- * 10px padding, active = #005AFB. Right group (400x40, gap 24): search
- * (206x32, #F6F8FA, radius 100, padding 4), bell (18x20.77) and user
- * block (gap 20, inner gap 8). Items whose screens are not built yet
- * stay inert. Geometry details: docs/design-api-gaps.md.
- */
 const NAV_ITEMS = ["Dashboard", "Projects", "Tasks", "Chats", "Meetings", "Reports"];
 const M = "font-[family-name:var(--font-rubik)]";
 
@@ -50,10 +40,7 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
           </div>
         </nav>
         <div className="ml-auto flex items-center gap-6">
-          {/* The collection has no global search endpoint, so the drawn
-              search box stays disabled with a reason instead of accepting
-              input it could never serve. */}
-          <label
+                    <label
             title="Global search is not documented in the API"
             className={`hidden h-8 w-[206px] cursor-not-allowed items-center gap-1 rounded-full bg-[#F6F8FA] p-1 pl-3 text-xs text-[#718096] opacity-60 lg:flex ${M}`}
           >
@@ -68,10 +55,7 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
           </label>
           <span className="flex items-center gap-5">
             <NotificationBell />
-            {/* The profile screens have no drawn prototype entry point;
-                the navbar user chip is the only drawn element that can
-                reach them, so it links to /profile (see coverage docs). */}
-            <Link href="/profile" title="Open your profile" className="flex items-center gap-2">
+                        <Link href="/profile" title="Open your profile" className="flex items-center gap-2">
               <span className={`${M} text-right text-xs leading-tight`}>
                 <span className="block font-medium text-[#000712]">{userName}</span>
                 {userRole ? <span className="block font-normal text-[#718096]">{userRole}</span> : null}
@@ -81,8 +65,7 @@ export function DashboardNavbar({ userName, userRole, active = "Dashboard" }: { 
           </span>
         </div>
       </div>
-      {/* Shadow strip under the bar (native: 1440x4 linear gradient #091E42 13%). */}
-      <div className="h-1 bg-[linear-gradient(to_bottom,rgba(9,30,66,0.13),rgba(9,30,66,0))]" aria-hidden="true" />
+            <div className="h-1 bg-[linear-gradient(to_bottom,rgba(9,30,66,0.13),rgba(9,30,66,0))]" aria-hidden="true" />
     </header>
   );
 }

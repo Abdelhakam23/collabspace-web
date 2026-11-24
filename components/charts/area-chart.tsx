@@ -2,8 +2,6 @@
 
 import { useId } from "react";
 
-// Catmull-Rom smoothed area chart used by the dashboard and project overview
-// cards (same visual language: blue line, soft gradient fill).
 export function AreaChart({ points, maxChart, className = "h-44 w-full" }: { points: number[]; maxChart: number; className?: string }) {
   const gradientId = useId();
   const w = 560, h = 180, pad = 4;

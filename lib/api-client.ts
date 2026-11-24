@@ -1,11 +1,9 @@
 import "client-only";
 import axios, { AxiosError } from "axios";
 
-/** One clear error type for the whole app. */
 export class ApiError extends Error {
   status?: number;
-  /** Validation messages keyed by field, when the API returns them. */
-  fields?: Record<string, string[]>;
+    fields?: Record<string, string[]>;
 
   constructor(message: string, status?: number, fields?: Record<string, string[]>) {
     super(message);
@@ -22,10 +20,6 @@ export function getStoredToken(): string | null {
   return localStorage.getItem(TOKEN_STORAGE_KEY) ?? sessionStorage.getItem(TOKEN_STORAGE_KEY);
 }
 
-/**
- * remember=true keeps the session across browser restarts (localStorage);
- * remember=false limits it to the current browser session (sessionStorage).
- */
 export function storeToken(token: string, remember = true): void {
   if (remember) {
     localStorage.setItem(TOKEN_STORAGE_KEY, token);
@@ -46,7 +40,6 @@ export const apiClient = axios.create({
   timeout: 15000,
 });
 
-// Attach the token to every request.
 apiClient.interceptors.request.use((config) => {
   const token = getStoredToken();
   if (token) {
@@ -66,8 +59,6 @@ function firstValidationMessage(body: LaravelErrorBody): string | undefined {
   return Array.isArray(first) ? first[0] : undefined;
 }
 
-// Turn every failure into one ApiError. Laravel returns
-// { success: false, message, errors?: { field: [messages] } }.
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<LaravelErrorBody>) => {
@@ -81,12 +72,8 @@ apiClient.interceptors.response.use(
     const url = error.config?.url ?? "";
     const isAuthRequest = url.includes("/auth/login") || url.includes("/auth/register");
 
-    // Expired session: clear the token and go to login.
-    // Never on auth calls, so a wrong password still shows its real message.
     if (status === 401 && !isAuthRequest && typeof window !== "undefined") {
       clearStoredToken();
-      // An axios interceptor has no router; a hard navigation also drops any
-      // stale client state from the dead session, which is what we want here.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = "/login";
     }

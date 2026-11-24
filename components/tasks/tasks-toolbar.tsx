@@ -5,19 +5,6 @@ import { Plus } from "lucide-react";
 import { TinyChevron } from "@/components/projects/tiny-chevron";
 import type { Project } from "@/lib/types";
 
-/**
- * Toolbar of the global "Tasks Page" frame (node 107-11473, Frame
- * 2147224445: 1312x44, justify-between): a 326x40 search pill (radius 100,
- * padding L16 R4), the "Project 1" and "My Task" chips (Hug x 44, radius
- * 16, 1px border, padding 10, gap 10, Inter label) and the primary
- * "Create Task +" button (shared Button component, Hug 136 x 40).
- * The My Task menu reproduces the "My task overlay" frame (210xHug 172,
- * radius 16, padding 16): its team entries are disabled because the tasks
- * API exposes no team field or team filter (docs/design-api-gaps.md).
- * Search and My Tasks filter the board loaded for the selected project
- * (A5.2 returns the full board with no pagination envelope).
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 
 export type TaskScope = "all" | "mine";
@@ -176,4 +163,4 @@ export function TasksToolbar({
       </button>
     </div>
   );
-}
+    }

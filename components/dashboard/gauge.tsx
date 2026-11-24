@@ -1,4 +1,3 @@
-/** Semicircular gauge with a needle, as in the dashboard completion-rate card. */
 export function Gauge({ ratio }: { ratio: number }) {
   const clamped = Math.min(1, Math.max(0, ratio));
   const cx = 42, cy = 44, r = 32;

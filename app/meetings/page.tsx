@@ -9,23 +9,6 @@ import { listMeetings } from "@/lib/api/meetings";
 import { getProfile } from "@/lib/api/profile";
 import type { Meeting, User } from "@/lib/types";
 
-/**
- * "Meetings" frame (node 114-2597, 1440x1024, page background #F6F8FA):
- * navbar with the Meetings pill active, the H1 row (native: Inter 600 31px
- * at top 120/left 65 with the #005AFB Add Meeting pill, 32px radius), the
- * toolbar row (top 202: month label Inter 500 20px #000712 and the
- * time-filter control), and the week grid (top 281) fed by A6.1 with the
- * documented time_filter=upcoming. The grid displays exactly the five
- * days the selected "Upcoming" option covers (renamed from the drawn
- * "This Week" with the user's sign-off, 2026-11-24); returned meetings
- * beyond those days are flagged
- * under the grid as an unresolved reach limitation (no drawn control or
- * documented API value can page to them). The frame's month arrows have no
- * matching API (the list takes no date range), so they are disabled with an
- * explanation instead of navigating a grid that could never fill; the label
- * shows the real current month. Add Meeting opens the A6.2 overlay.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 
 export default function MeetingsPage() {
@@ -36,8 +19,6 @@ export default function MeetingsPage() {
 
   const load = useCallback(
     () =>
-      // Promise callbacks keep the state updates asynchronous (react-hooks
-      // set-state-in-effect): the effect below only kicks off the fetch.
       Promise.all([listMeetings({ time_filter: "upcoming", per_page: 15 }), getProfile()]).then(
         ([list, profile]) => {
           setMeetings(list.data.data ?? []);

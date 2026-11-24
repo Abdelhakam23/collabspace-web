@@ -4,20 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { getKanbanBoardForProject, updateTaskStatus } from "@/lib/api/tasks";
 import type { KanbanColumn } from "@/lib/types";
 
-/**
- * Board state shared by the project Tasks tab and the global Tasks page:
- * A5.2 load for a project plus A5.6 status moves — optimistic, one move at
- * a time, rolling back with a visible notice when the update fails.
- */
 export function useKanbanBoard(projectId: string | number | null) {
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
-  // Deriving "loaded" from the id the fetch completed for avoids a
-  // synchronous reset setState when the project changes.
   const [loadedId, setLoadedId] = useState<string | number | null>(null);
   const loaded = loadedId === projectId;
   const [pendingMove, setPendingMove] = useState<number | null>(null);
   const [moveError, setMoveError] = useState<string | null>(null);
-  // Ref guard: state alone cannot stop two drops in the same render batch.
   const moving = useRef(false);
 
   useEffect(() => {
@@ -50,7 +42,6 @@ export function useKanbanBoard(projectId: string | number | null) {
     }
   }, [projectId]);
 
-  // A5.6 status move: optimistic, one at a time, rolls back visibly.
   async function moveTask(taskId: number, toStatus: string) {
     if (moving.current) return;
     moving.current = true;

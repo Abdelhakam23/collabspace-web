@@ -14,13 +14,6 @@ export interface ChatMessage {
 const URL_PATTERN = /(https?:\/\/[^\s]+)/g;
 const URL_TEST = /^https?:\/\/\S+$/;
 
-/**
- * Renders message text, turning any URL it contains into the frame's drawn
- * external-link card (blue card, link icon, title row, URL row). The card
- * shows only what the URL itself carries: the host as the title and the
- * URL as the body; the drawn placeholder description is omitted rather
- * than fabricated.
- */
 function MessageContent({ text }: { text: string }) {
   const parts = text.split(URL_PATTERN).filter(Boolean);
   return (
@@ -33,7 +26,6 @@ function MessageContent({ text }: { text: string }) {
         try {
           host = new URL(part).host;
         } catch {
-          // keep the raw text
         }
         return (
           <a
@@ -58,16 +50,6 @@ function MessageContent({ text }: { text: string }) {
   );
 }
 
-/**
- * Message bubbles of the "Ask Ai/ chat" frame (229-5948).
- * Bubble: white, radius 16, 1px #E2E8F0 border, padding 12, gap 4 to the
- * timestamp; text Plus Jakarta Sans Medium 14px/20px, -0.6% tracking,
- * #1E293B. AI rows lead with a 40px #EEF2FF "CB" circle and cap the bubble
- * at 412px; user rows right-align with a 40px avatar and cap at 320px.
- * Timestamp size/color and the CB text color are pixel-estimated.
- * The design's speaker/thumbs icons have no API and are omitted; copy is
- * kept because it works client-side.
- */
 export function MessageList({ messages, pending }: { messages: ChatMessage[]; pending: boolean }) {
   return (
     <div className="flex flex-col gap-2.5 px-24 pb-20 pt-8">
@@ -111,8 +93,7 @@ export function MessageList({ messages, pending }: { messages: ChatMessage[]; pe
               </span>
             </span>
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-300 text-xs font-semibold text-white" aria-hidden="true">
-              {/** Avatar placeholder: /me carries no avatar in fixtures. */}
-              ME
+                            ME
             </span>
           </div>
         ),

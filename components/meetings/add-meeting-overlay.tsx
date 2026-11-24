@@ -6,20 +6,6 @@ import { listUsers } from "@/lib/api/users";
 import { initials } from "@/lib/format";
 import type { User } from "@/lib/types";
 
-/**
- * "Add Meeting overlay" (node 139-2808: 720px wide, radius 16, padding 24,
- * gap 32, white) posting to A6.2. Field chrome reuses the Create Task
- * overlay's measurements. Only fields present in BOTH the frame and the
- * documented request body are sent: title (Meeting Subject), meeting_date
- * (Select Date), start_time (Select Time), end_time (Select Duration added
- * to the start time) and participants (added guests). The API's
- * meeting_link and project_id have no drawn control, so they are not
- * invented into the form. The frame's "Select Duration" has no drawn
- * option list; the select offers common durations and the choice only ever
- * shifts the computed end_time (docs/screen-coverage.md). Guests resolve
- * against A12.1 the same way the Create Task overlay resolves assignees.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 const fieldLabel = `${SANS} absolute -top-[9px] left-4 z-10 bg-white px-1.5 text-xs text-[#718096]`;
 const fieldBox = `${SANS} h-14 w-full rounded-[12px] border border-[#CBD5E0] bg-transparent px-4 py-2 text-sm text-[#000712] outline-none placeholder:text-[#718096]`;
@@ -44,7 +30,6 @@ export function AddMeetingOverlay({ onClose, onCreated }: { onClose: () => void;
   const [users, setUsers] = useState<User[]>([]);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Ref guard: state alone cannot stop two submits in the same render batch.
   const submitting = useRef(false);
 
   useEffect(() => {

@@ -8,11 +8,6 @@ import { ProjectShell } from "@/components/projects/project-shell";
 import { listFiles, uploadFileToProject } from "@/lib/api/files";
 import type { FileAttachment } from "@/lib/types";
 
-/** Files tab of the project screen ("All Projects / Alpha / Files",
- * node 181-2367), wired to A7.1. "Recent Files" is the three newest
- * uploads; the drawn Upload File button posts to A7.2 through the native
- * file picker, then the list refetches. */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 
 export default function ProjectFilesPage() {

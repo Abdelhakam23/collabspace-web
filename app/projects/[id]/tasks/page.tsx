@@ -6,9 +6,6 @@ import { KanbanBoard } from "@/components/projects/kanban-board";
 import { ProjectShell } from "@/components/projects/project-shell";
 import { useKanbanBoard } from "@/lib/use-kanban-board";
 
-/** Tasks tab of the project screen ("All Projects / Alpha / Tasks",
- * node 181-1418), wired to A5.2. */
-
 export default function ProjectTasksPage() {
   return (
     <Suspense>

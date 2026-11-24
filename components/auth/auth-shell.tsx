@@ -1,19 +1,12 @@
 import type { ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 
-/**
- * Page chrome shared by the auth screens: top bar + centered card.
- * Measurements taken from the Figma UI Design frames at 100% zoom:
- * page background #F6F8FA, card 600px wide, white, 24px radius, 64px side padding.
- */
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
     <div className="relative min-h-screen bg-[#f6f8fa]">
       <header className="absolute inset-x-0 top-0 flex items-center justify-between px-12 pt-12">
         <span className="text-lg font-semibold text-secondary-900">Collabspace</span>
-        {/* Language switcher: the design shows it, but there is no i18n API, so it
-            stays visible and intentionally non-functional. See docs/design-api-gaps.md. */}
-        <button
+                <button
           type="button"
           aria-disabled="true"
           className="flex items-center gap-1 rounded-full border border-[#E2E8F0] bg-white px-4 py-2 text-sm text-secondary-600"

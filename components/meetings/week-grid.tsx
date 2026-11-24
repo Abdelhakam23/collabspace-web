@@ -2,35 +2,8 @@ import Link from "next/link";
 import { initials } from "@/lib/format";
 import type { Meeting } from "@/lib/types";
 
-/**
- * Weekly calendar grid from the "Meetings" frame (node 114-2597). The grid
- * container is 1311px at left 64 with six equal 218.5px columns: a time
- * column plus five day columns. Native rows are 137px tall with a 1px
- * #F3F4F6 bottom border; cells carry a 1px right border in the same color,
- * vertical padding 16 (12 on the sides for day cells) and a 2px gap. Cells
- * use 137px as a MINIMUM and grow with their cards, because the drawn
- * card+header stack (171px) is taller than the drawn row and clipped in
- * the first implementation. The frame repeats the weekday/day-number
- * header inside every row, so the grid does the same. The "Today" column
- * is filled #E6EFFF (pixel-sampled). The frame draws a "Today" column
- * followed by weekday labels, so the grid shows today plus the next four
- * days with real dates; weekday labels keep the frame's spelling
- * ("Thurs"). The drawn hour rows are 9:00-13:00; the window grows when
- * returned meetings start earlier or later so every returned meeting
- * keeps a cell.
- *
- * Scope: the list is fetched with the only documented time_filter value
- * (upcoming) and the grid displays exactly the five days the "Upcoming"
- * control covers, which keeps the visible label true by construction.
- * Meetings the five drawn columns cannot hold CANNOT be reached by any
- * supported control (month navigation and the other Duration options
- * have no documented API backing), so they are reported under the grid
- * as an explicit unresolved limitation, not claimed as discoverable.
- */
-
 const SANS = "font-[family-name:var(--font-sans)]";
 const RUBIK = "font-[family-name:var(--font-rubik)]";
-// Drawn hour window; the grid widens it when returned meetings need it.
 const DRAWN_START = 9;
 const DRAWN_END = 13;
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thurs", "Fri", "Sat"];
@@ -58,9 +31,6 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
   const attendees = meeting.attendees ?? [];
   const shown = attendees.slice(0, 2);
   const extra = attendees.length - shown.length;
-  // The card's drawn on-click goes to the meeting room (114-3107), so Join
-  // always navigates there. meeting_link stays a scheduling-field value
-  // (A6.2); the design draws no control that opens it.
   return (
     <div className="flex h-[105px] w-full flex-col rounded-2xl border border-[#F3F4F6] bg-white p-3">
       <div className="flex flex-col gap-2">
@@ -117,8 +87,6 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
   const placed = meetings
     .map((meeting) => ({ meeting, start: new Date(meeting.start_time) }))
     .filter(({ start }) => !Number.isNaN(start.getTime()));
-  // The drawn rows are 9:00-13:00; grow the window so no returned meeting
-  // loses its cell.
   const inGrid = placed.filter(({ start }) => days.some((d) => sameDay(start, d)));
   const startHour = Math.min(DRAWN_START, ...inGrid.map(({ start }) => start.getHours()));
   const endHour = Math.max(DRAWN_END, ...inGrid.map(({ start }) => start.getHours()));
@@ -127,8 +95,7 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
 
   return (
     <div className="mt-[39px] max-w-[1311px]">
-      {/* Header row: "Time" cell + one header cell per day. */}
-      <div className="grid grid-cols-6 border-b border-[#F3F4F6]">
+            <div className="grid grid-cols-6 border-b border-[#F3F4F6]">
         <div className="flex h-[137px] flex-col gap-0.5 border-r border-[#F3F4F6] p-4">
           <span className={`${RUBIK} text-sm font-normal leading-4 text-black`}>Time</span>
         </div>
@@ -141,8 +108,7 @@ export function WeekGrid({ meetings }: { meetings: Meeting[] }) {
           </div>
         ))}
       </div>
-      {/* One row per hour; the frame repeats the day headers per row. */}
-      {hours.map((hour) => (
+            {hours.map((hour) => (
         <div key={hour} className="grid grid-cols-6 border-b border-[#F3F4F6]">
           <div className="flex min-h-[137px] flex-col gap-0.5 border-r border-[#F3F4F6] p-4">
             <span className={`${RUBIK} text-sm font-normal leading-4 text-black`}>{hour}:00</span>
